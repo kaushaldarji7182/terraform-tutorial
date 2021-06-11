@@ -1,0 +1,23 @@
+https://www.terraform.io/docs/language/values/variables.html
+
+Input variables 
+	let you customize Terraform modules 
+		without altering the module's own source code. 
+	Allows to share modules across different Terraform configurations
+		making your module composable and reusable.
+
+When you declare variables 
+	in root module of your configuration, 
+		you can set their values using CLI options and environment variables. 
+	in child modules
+		the calling module should pass values in the module block.
+
+	Input variables are like function arguments.
+	Output values are like function return values.
+	Local values are like a function's temporary local variables.
+	
+Terraform variables	
+	https://www.youtube.com/watch?v=9ck6LaBy-W8
+	
+Terraform output
+	https://www.youtube.com/watch?v=rg3qZXitjEg

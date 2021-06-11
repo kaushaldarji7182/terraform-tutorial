@@ -1,0 +1,333 @@
+	-------------------
+Infrastructure as Code (IaC) 
+	widespread terminology among DevOps professionals. 
+	Process of managing and provisioning the complete IT infrastructure 
+	(comprises both physical and virtual machines) 
+		using machine-readable definition files. 
+	Automate environment provisioning process.
+	Ease maintenance of the environment.
+	Manage the source code of it in SCM.
+
+
+Challenges with Infrastructure as Code :
+	Need to learn to code
+	Don’t know the change impact.
+	Need to revert the change
+	Can’t track changes
+	Can’t automate a resource
+	Multiple environments for infrastructure
+	Terraform has been created to solve these challenges.
+
+What is Terraform?
+	Open-source infrastructure as Code 
+	Developed by HashiCorp. 
+	Used to define and provision the complete infrastructure 
+	Declarative language.
+
+	Infrastructure provisioning tool 
+	Cloud infrastructure setup as codes. 
+	Similar to tools like CloudFormation
+		However provider independent.
+	
+	
+Adv. of Terraform
+	Does orchestration, not just configuration management
+	Supports multiple providers such as AWS, Azure, GCP, DigitalOcean and many more
+	Provide immutable infrastructure where configuration changes smoothly
+	Uses easy to understand language, HCL (HashiCorp configuration language)
+	Easily portable to any other provider
+	Supports Client only architecture, so no need for additional configuration management on a server
+	
+	
+	
+Terraform Lifecycle
+-------------------
+	Terraform lifecycle consists of – 
+		#validate: validates the syntax
+		init, 
+		plan, 
+		apply
+		destroy.
+
+	
+	Terraform init 
+		initializes the working directory which consists of all the configuration files
+	Terraform plan 
+		creates an execution plan to reach a desired state of the infrastructure. Changes in the configuration files are done in order to achieve the desired state.
+		This is optional
+	Terraform apply 
+		Makes the changes in the infrastructure as defined in the plan, and the infrastructure comes to the desired state.
+	Terraform destroy 
+		delete all the old infrastructure resources, which are marked tainted after the apply phase.
+	
+	
+How Terraform Works?
+---------------------
+Terraform has two main components that make up its architecture:
+	Terraform Core
+	Providers	
+	
+	
+	
+Terraform Core
+---------------
+Terraform core 
+	uses two input sources to do its job.
+	first input source 
+		Terraform configuration 
+		user configures. 
+		define what needs to be created or provisioned. 
+	second input source 
+		state where terraform keeps the current state.
+
+	It is a utility which can calculate the delta between the current state and the desired state - make/apply these changes on the infrastructure.
+	
+	terraform core 
+		takes the input
+		figures out the plan of what needs to be done. 
+		Compares current 
+			state and configuration 
+		with 
+			desired state and configuration 
+		
+		Figures out plan to get to that desired state. 
+		i.e. what needs to be 
+			created
+			updated
+			deleted 
+				to provision the infrastructure.
+
+	CRUD: create, read, update and delete
+	
+Providers
+---------
+Second component of the architecture 
+could be cloud providers like 
+	AWS, 
+	Azure, 
+	GCP
+	other infrastructure as a service platform. 
+	It is also a provider for more high-level components like Kubernetes or other platform-as-a-service tools, even some software as a self-service tool.
+
+Supports
+	For example – 
+		create an AWS infrastructure
+		deploy Kubernetes on top of it 
+		create services/components inside that Kubernetes cluster.
+
+Terraform has 
+	over a hundred providers 
+	different technologies
+	each provider then gives terraform user access to its resources. 
+	For e.g. AWS provider
+		gives access to hundreds of AWS resources 
+			like EC2 instances
+			AWS users, etc. 
+		With Kubernetes provider
+			access to commodities resources like services and deployments and namespaces, etc.	
+
+Further reference: https://geekflare.com/terraform-for-beginners/
+
+
+HCL
+---
+Low-level syntax of Terraform language 
+	defined in HCL (HashiCorp configuration language)
+	also used by configuration languages in other applications
+		particular other HashiCorp products. 
+	
+	Full definition of HCL syntax can be seen in https://github.com/hashicorp/hcl/blob/hcl2/hclsyntax/spec.md
+	
+	
+	
+	
+	Arguments
+	---------
+An argument assigns a value to a particular name:
+	image_id = "abc123"
+
+Syntax is like 	
+	argument name =  argument's value.
+	
+	Terraform uses the word "attribute" instead of "argument".
+	 
+	Blocks
+	------
+	A block is a container for other content:
+
+	} 
+
+	Syntax 
+	<block type> <parameters> {
+		key1 = value1
+		key2 = value2
+	}
+
+	Defined in curly braces.
+	Has key value pair
+	Defines 
+		an infrastructure platform
+		a set of resources with in that we want to create/manage
+		
+	
+	e.g. we want to create a file
+	mkdir temp
+	cd temp
+	
+-------------------------------------
+vi local.tf
+
+resource "local_file" "vilas"{
+	filename = "/root/vilas.txt"
+	content = "My name is Vilas"
+}
+-------------------------------------	
+This is a standard terraform block because the look and curly braces.
+type of block : resource
+	defined by terraform
+local_file: resource type
+	fixed value
+	depends on the provider
+	provides two information 
+		seperated by "_"
+		first: provider 
+		second: type of resource
+"vilas": resource name.
+	Logical name
+	Can be named anything.
+{Arguments}
+	Specific to type of resource we are creating.
+	Here specific to local_file.
+	filename: absolute path to the location where we want to create file.
+	content: content which should be in the file.
+	arguments vary based on the resource type.
+	We should follow the standard defined by the resource type.
+	
+-------------------------------------	
+
+resource "aws_instance" "example" {
+  ami = "abc123"
+
+  network_interface {
+	# ...
+  }
+}
+
+type: resource
+provider: aws
+require: EC2 instance
+example: name
+ami: ami of the instance
+network_interface: network interface for the instance
+-------------------------------------	
+Update local.tf
+
+vi local.tf
+
+resource "local_file" "vilas"{
+	filename = "/root/vilas.txt"
+	content = "My name is Vilas!!"
+	file_permission = "0700"
+}
+-------------------------------------	
+terraform apply 
+
+terraform will delete and create a new file.
+
+
+-------------------------------------	
+
+terraform init
+	executed from a directory with terraform configurations
+	terraform downloads and installs plugins for provider used in the configuration.
+	shows the version of the plugin installed
+		more on plugins latter
+		
+	
+	
+Providers
+	can be 
+		cloud providers
+			aws
+			azure
+			gcp ect.
+		local providers
+		ect.
+	Distributed by HashiCorp
+	Publicly available in the Terraform registry
+		registry.terraform.io
+	3 tiers of proviers
+		1. Owned and maintained by HashiCorp
+			e.g. 
+			aws
+			azure
+			gcp .
+			local providers
+		2. Verified provider
+			Owned and maintained by 3rd party provider company
+				Company in partnership with HashiCorp
+				
+			e.g. 
+				bigip provider from FI network
+				heroku
+				digitalocean
+		3. Community providers
+			Published and maintained by individual community providers of HashiCorp community.
+				activedirectory
+				ucloud
+				netapp-gcp
+
+Terraform uses a plugins based architecture
+	to work with 100's of infrastructure platforms
+	
+Plugins
+	Terraform init downloads and installs plugins
+	Provider specific.
+	Installed into a <directory>/.terraform/plugins
+	<directory>
+		directory where terraform configuration files are present.
+		Generate terraform init is executed being here.
+	plgin name : source address
+		e.g. hashicorp/local
+		can be seen while executing terraform init.
+		indentifier to locate and download pluigns
+		hashicorp: organizational namespace
+		local: type - provider name
+			can be 
+				aws
+				azure
+				rm
+		plugin name can have a host name 
+		registy.terraform.io/hashicorp/local
+		
+		
+		
+Configuration Directory
+-----------------------
+	Directory can have any number of configuration files.
+	Any file with .tf extension will participate in CRUD of the infrastructure components.
+	One file may have any number of configuraiton blocks.
+	Common naming convention: main.tf
+	
+	Common other files found
+		main.tf - main configurationv
+		variables.tf - variables delclaration
+		outputs.tf - outputs from resources.
+		providers.tf - define providers
+		
+		
+
+Multiple Providers
+------------------
+	Terraform supports working with multiple providers
+		e.g. random
+			can produce
+				random_id
+				random_password
+				random_int
+				random_string
+				ect.
+		
+	
+	
+Further reference: https://www.youtube.com/watch?v=YcJ9IeukJL8
