@@ -157,6 +157,7 @@ Syntax is like
 
 	} 
 
+
 	Syntax 
 	<block type> <parameters> {
 		key1 = value1
@@ -263,6 +264,7 @@ Providers
 			azure
 			gcp .
 			local providers
+			regirsty.hashicorp.io
 		2. Verified provider
 			Owned and maintained by 3rd party provider company
 				Company in partnership with HashiCorp
@@ -310,7 +312,7 @@ Configuration Directory
 	Common naming convention: main.tf
 	
 	Common other files found
-		main.tf - main configurationv
+		main.tf - main configuration
 		variables.tf - variables delclaration
 		outputs.tf - outputs from resources.
 		providers.tf - define providers
