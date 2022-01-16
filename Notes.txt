@@ -1,6 +1,34 @@
+Create high quality terraform content
+1.5 hours - foundation of Terraform (90 min. idle)
+	Team leads
+	managers
+	
+	should not be incomplete.
+	
+advanced (2.5 hours)
+	Complex end to end example
+	Cloud watch 
+	monitoring
+	auto scaling group.
+	
+	20 mcq question
+		10 avg. 
+		5 medium 
+		5 complex.
+		
+		based on the topics covered.
+		
+	not more than 4 hours overall content.
+	20 mcq.
+	
+	
+	Each module should be less than 20 min.
+
+
+
+
 	-------------------
 Infrastructure as Code (IaC) 
-	widespread terminology among DevOps professionals. 
 	Process of managing and provisioning the complete IT infrastructure 
 	(comprises both physical and virtual machines) 
 		using machine-readable definition files. 
@@ -18,6 +46,9 @@ Challenges with Infrastructure as Code :
 	Multiple environments for infrastructure
 	Terraform has been created to solve these challenges.
 
+
+Terraform introduction	
+----------------------
 What is Terraform?
 	Open-source infrastructure as Code 
 	Developed by HashiCorp. 
@@ -74,8 +105,7 @@ Terraform Core
 Terraform core 
 	uses two input sources to do its job.
 	first input source 
-		Terraform configuration 
-		user configures. 
+		User configured Terraform configuration 
 		define what needs to be created or provisioned. 
 	second input source 
 		state where terraform keeps the current state.
@@ -106,7 +136,7 @@ could be cloud providers like
 	AWS, 
 	Azure, 
 	GCP
-	other infrastructure as a service platform. 
+	other infrastructure as service platform. 
 	It is also a provider for more high-level components like Kubernetes or other platform-as-a-service tools, even some software as a self-service tool.
 
 Supports
@@ -141,8 +171,8 @@ Low-level syntax of Terraform language
 	
 	
 	
-	Arguments
-	---------
+Arguments
+---------
 An argument assigns a value to a particular name:
 	image_id = "abc123"
 
@@ -175,7 +205,14 @@ Syntax is like
 	mkdir temp
 	cd temp
 	
+	
+	 Identifiers
+	  Comments
+	  Character Encoding and Line Endings 
+	
 -------------------------------------
+Terraform Resources
+
 vi local.tf
 
 resource "local_file" "vilas"{
@@ -247,6 +284,7 @@ terraform init
 	
 	
 Providers
+---------
 	can be 
 		cloud providers
 			aws
@@ -257,7 +295,7 @@ Providers
 	Distributed by HashiCorp
 	Publicly available in the Terraform registry
 		registry.terraform.io
-	3 tiers of proviers
+	3 tiers of providers
 		1. Owned and maintained by HashiCorp
 			e.g. 
 			aws
@@ -283,13 +321,14 @@ Terraform uses a plugins based architecture
 	to work with 100's of infrastructure platforms
 	
 Plugins
+-------
 	Terraform init downloads and installs plugins
 	Provider specific.
 	Installed into a <directory>/.terraform/plugins
 	<directory>
 		directory where terraform configuration files are present.
 		Generate terraform init is executed being here.
-	plgin name : source address
+	plugin name : source address
 		e.g. hashicorp/local
 		can be seen while executing terraform init.
 		indentifier to locate and download pluigns
@@ -333,3 +372,867 @@ Multiple Providers
 	
 	
 Further reference: https://www.youtube.com/watch?v=YcJ9IeukJL8
+
+
+
+Core concepts/terminologies used in Terraform:
+---------------------------------------------
+	Variables
+		Input-variables
+			like function arguments	
+		Output variables
+			like function return values
+		Local values 
+			like a function's temporary local variables.
+			
+    Input-variables:
+		Also called 
+			Variables 
+			Terraform variables
+		key-value pair 
+		used by Terraform modules to allow customization.
+		Serve as parameters for a Terraform module
+		module can be customized without altering the module's own source code
+		modules can be reused between different configurations.
+		While declaring variables in the root module of your configuration
+			you can set their values using CLI options and environment variables. 
+		While declaring variables in child modules
+			the calling module should pass values in the module block.
+
+
+    Module: 
+		Folder with Terraform templates 
+		all the Terraform configurations are defined here
+		Similar to function definitions in traditional languages
+    State: 
+		Consists of cached information about the infrastructure managed by Terraform and the related configurations.
+    Resources: 
+		It refers to a block of one or more infrastructure objects 
+			compute instances
+			virtual networks, etc.
+			used in configuring and managing the infrastructure.
+    Data Source: 
+		Implemented by providers to return information on external objects to terraform.
+    Output Values: 
+		Return values of a terraform module that can be used by other configurations.
+    Plan: 
+		One of the stages 
+		Determines what needs to be 
+			created, 
+			updated, or 
+			destroyed to move from 
+				real/current state of the infrastructure --> desired state.
+    Apply: 
+		One of the stages 
+		Applies the changes real/current state of the infrastructure in order to move to the desired state.
+
+	Destroy
+		Removes all configurations applied as defined in the module
+
+	
+	https://www.youtube.com/channel/UCLDmEDH08DcTWCiXZeKxDrA
+	https://www.udemy.com/course/hashicorp-certified-terraform-associate-step-by-step/
+	
+
+
+
+	Variables 
+	---------
+	Declaring an Input Variable
+
+Each input variable accepted by a module must be declared using a variable block:
+
+------------------------------------------------------
+variable "image_id" {
+  type = string
+}
+
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}
+
+variable "docker_ports" {
+  type = list(object({
+    internal = number
+    external = number
+    protocol = string
+  }))
+  default = [
+    {
+      internal = 8300
+      external = 8300
+      protocol = "tcp"
+    }
+  ]
+}
+------------------------------------------------------
+
+	The label 
+		after the variable keyword 
+		like a variable in the function.
+		name for the variable (image_id e.g.)
+		must be unique among all variables with in a module. 
+		name used to 
+			assign a value to the variable from outside 
+			reference the variable's value from within the module.
+
+		can be any valid identifier except the following: 
+			source, 
+			version, 
+			providers, 
+			count, 
+			for_each, 
+			lifecycle, 
+			depends_on, 
+			locals.
+		These names are reserved for meta-arguments in module configuration blocks
+		cannot be declared as variable names.
+	
+	Like other blocks, variable also supports attributes
+	Following optional arguments for variable declarations:
+
+		default - 
+			default value 
+			If present, the variable is considered to be optional
+			default value will be used if no value is set 
+			Should be a literal value 
+			cannot reference other objects in the configuration.
+		type - 
+			define type of variable.
+			allows you to restrict the type of value 
+			type constraints are optional
+			recommend specifying them
+			If no type constraint is set 
+				then a value of any type is accepted.
+			Advantages
+				helpful reminders for users
+				Terraform can return a helpful error message if the wrong type is used.
+
+			e.g. Supported type keywords (value) are:
+				string
+				number
+				bool
+				any
+					keyword any 
+					indicate that any type is acceptable.
+
+			The type constructors allow you to specify complex types such as collections:
+				list(<TYPE>)
+				set(<TYPE>)
+				map(<TYPE>)
+				object({<ATTR NAME> = <TYPE>, ... })
+				tuple([<TYPE>, ...])
+
+			If both the type and default arguments are specified, 
+				the given default value must be convertible to the specified type.
+		
+		
+		description - 
+			description.
+			
+			Input Variable Documentation
+
+
+			variable "image_id" {
+			  type        = string
+			  description = "The id of the machine image (AMI) to use for the server."
+			}
+
+			Concisely explain the 
+				purpose of the variable 
+				what kind of value is expected. 
+				Might be included in documentation 
+				writte from the perspective of the user and not dev.
+			
+		validation - 
+			A block 
+			define validation rules
+			usually in addition to type constraints.
+			
+			
+			
+			Custom Validation Rules
+				Feature introduced in Terraform CLI v0.13.0.
+				Module author can specify custom validation rules 
+				use validation block nested within the corresponding variable block:
+--------------------------------------------------------------------------------------
+variable "image_id" {
+  type        = string
+  description = "The id of the machine image (AMI) to use for the server."
+
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+  }
+}
+--------------------------------------------------------------------------------------
+			condition argument 
+				expression must use the value of the variable to return 
+					true if the value is valid
+					false if it is invalid. 
+				expression can refer only to the variable that the condition applies to
+				expression must not produce errors.
+
+			If the failure of an expression is the basis of the validation decision, 
+				use the can function to detect such errors. For example:
+
+			variable "image_id" {
+			  type        = string
+			  description = "The id of the machine image (AMI) to use for the server."
+
+			  validation {
+				# regex(...) fails if it cannot find a match
+				condition     = can(regex("^ami-", var.image_id))
+				error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+			  }
+			}
+
+			If condition evaluates to false
+				Terraform will produce an error message 
+					includes the sentences given in error_message. 
+			The error message string should be at least one full sentence explaining the constraint that failed
+			
+			
+			
+			
+		
+---------------------------			
+		sensitive - 
+			Limits Terraform UI output when the variable is used in configuration.	
+			
+			»
+			Suppressing Values in CLI Output
+			--------------------------------
+				Feature was introduced in Terraform v0.14.0.
+
+				Hands-on: Try the Protect Sensitive Input Variables tutorial on HashiCorp Learn.
+
+				Setting a variable as sensitive prevents Terraform from showing its value in the plan or apply output
+					when you use that variable elsewhere in your configuration.
+
+				Terraform will still record sensitive values in the state
+				anyone who can access the state data will have access to the sensitive values in cleartext. 
+				
+			Declare a variable as sensitive by setting the sensitive argument to true:
+
+			variable "user_information" {
+			  type = object({
+				name    = string
+				address = string
+			  })
+			  sensitive = true
+			}
+
+			resource "some_resource" "a" {
+			  name    = var.user_information.name
+			  address = var.user_information.address
+			}
+
+			Any expressions whose result depends on the sensitive variable will be treated as sensitive 
+			so in the above example 
+				"some_resource" "a" will also be hidden in the plan output:
+
+			Terraform will perform the following actions:
+
+			  # some_resource.a will be created
+			  + resource "some_resource" "a" {
+				  + name    = (sensitive)
+				  + address = (sensitive)
+				}
+
+			Plan: 1 to add, 0 to change, 0 to destroy.
+
+			In some cases where you use a sensitive variable inside a nested block, Terraform may treat the entire block as redacted. This happens for resource types where all of the blocks of a particular type are required to be unique, and so disclosing the content of one block might imply the content of a sibling block.
+
+			  # some_resource.a will be updated in-place
+			  ~ resource "some_resource" "a" {
+				  ~ nested_block {
+					  # At least one attribute in this block is (or was) sensitive,
+					  # so its contents will not be displayed.
+					}
+				}
+
+			A provider can also declare an attribute as sensitive, which will cause Terraform to hide it from regular output regardless of how you assign it a value. For more information, see Sensitive Resource Attributes.
+
+			If you use a sensitive value from as part of an output value then Terraform will require you to also mark the output value itself as sensitive, to confirm that you intended to export it.
+			»
+			Cases where Terraform may disclose a sensitive variable
+
+			A sensitive variable is a configuration-centered concept, and values are sent to providers without any obfuscation. A provider error could disclose a value if that value is included in the error message. For example, a provider might return the following error even if "foo" is a sensitive value: "Invalid value 'foo' for field"
+
+			If a resource attribute is used as, or part of, the provider-defined resource id, an apply will disclose the value. In the example below, the prefix attribute has been set to a sensitive variable, but then that value ("jae") is later disclosed as part of the resource id:
+
+			  # random_pet.animal will be created
+			  + resource "random_pet" "animal" {
+				  + id        = (known after apply)
+				  + length    = 2
+				  + prefix    = (sensitive)
+				  + separator = "-"
+				}
+
+			Plan: 1 to add, 0 to change, 0 to destroy.
+
+			...
+
+			random_pet.animal: Creating...
+			random_pet.animal: Creation complete after 0s [id=jae-known-mongoose]
+
+			»
+			Using Input Variable Values
+
+			Within the module that declared a variable, its value can be accessed from within expressions as var.<NAME>, where <NAME> matches the label given in the declaration block:
+
+			Note: Input variables are created by a variable block, but you reference them as attributes on an object named var.
+
+			resource "aws_instance" "example" {
+			  instance_type = "t2.micro"
+			  ami           = var.image_id
+			}
+
+			The value assigned to a variable can only be accessed in expressions within the module where it was declared.
+			»
+			Assigning Values to Root Module Variables
+
+			When variables are declared in the root module of your configuration, they can be set in a number of ways:
+
+				In a Terraform Cloud workspace.
+				Individually, with the -var command line option.
+				In variable definitions (.tfvars) files, either specified on the command line or automatically loaded.
+				As environment variables.
+
+			The following sections describe these options in more detail. This section does not apply to child modules, where values for input variables are instead assigned in the configuration of their parent module, as described in Modules.
+			»
+			Variables on the Command Line
+
+			To specify individual variables on the command line, use the -var option when running the terraform plan and terraform apply commands:
+
+			terraform apply -var="image_id=ami-abc123"
+			terraform apply -var='image_id_list=["ami-abc123","ami-def456"]' -var="instance_type=t2.micro"
+			terraform apply -var='image_id_map={"us-east-1":"ami-abc123","us-east-2":"ami-def456"}'
+
+			The above examples show appropriate syntax for Unix-style shells, such as on Linux or macOS. For more information on shell quoting, including additional examples for Windows Command Prompt, see Input Variables on the Command Line.
+
+			You can use the -var option multiple times in a single command to set several different variables.
+
+			»
+			Variable Definitions (.tfvars) Files
+
+			To set lots of variables, it is more convenient to specify their values in a variable definitions file (with a filename ending in either .tfvars or .tfvars.json) and then specify that file on the command line with -var-file:
+
+			terraform apply -var-file="testing.tfvars"
+
+			Note: This is how Terraform Cloud passes workspace variables to Terraform.
+
+			A variable definitions file uses the same basic syntax as Terraform language files, but consists only of variable name assignments:
+
+			image_id = "ami-abc123"
+			availability_zone_names = [
+			  "us-east-1a",
+			  "us-west-1c",
+			]
+
+			Terraform also automatically loads a number of variable definitions files if they are present:
+
+				Files named exactly terraform.tfvars or terraform.tfvars.json.
+				Any files with names ending in .auto.tfvars or .auto.tfvars.json.
+
+			Files whose names end with .json are parsed instead as JSON objects, with the root object properties corresponding to variable names:
+
+			{
+			  "image_id": "ami-abc123",
+			  "availability_zone_names": ["us-west-1a", "us-west-1c"]
+			}
+
+			»
+			Environment Variables
+
+			As a fallback for the other ways of defining variables, Terraform searches the environment of its own process for environment variables named TF_VAR_ followed by the name of a declared variable.
+
+			This can be useful when running Terraform in automation, or when running a sequence of Terraform commands in succession with the same variables. For example, at a bash prompt on a Unix system:
+
+			$ export TF_VAR_image_id=ami-abc123
+			$ terraform plan
+			...
+
+			On operating systems where environment variable names are case-sensitive, Terraform matches the variable name exactly as given in configuration, and so the required environment variable name will usually have a mix of upper and lower case letters as in the above example.
+			»
+			Complex-typed Values
+
+			When variable values are provided in a variable definitions file, you can use Terraform's usual syntax for literal expressions to assign complex-typed values, like lists and maps.
+
+			Some special rules apply to the -var command line option and to environment variables. For convenience, Terraform defaults to interpreting -var and environment variable values as literal strings, which need only shell quoting, and no special quoting for Terraform. For example, in a Unix-style shell:
+
+			$ export TF_VAR_image_id='ami-abc123'
+
+			However, if a root module variable uses a type constraint to require a complex value (list, set, map, object, or tuple), Terraform will instead attempt to parse its value using the same syntax used within variable definitions files, which requires careful attention to the string escaping rules in your shell:
+
+			$ export TF_VAR_availability_zone_names='["us-west-1b","us-west-1d"]'
+
+			For readability, and to avoid the need to worry about shell escaping, we recommend always setting complex variable values via variable definitions files. For more information on quoting and escaping for -var arguments, see Input Variables on the Command Line.
+			»
+			Values for Undeclared Variables
+
+			If you have defined a variable value, but not its corresponding variable {} definition, you may get an error or warning depending on how you have provided that value.
+
+			If you provide values for undeclared variables defined as environment variables you will not get an error or warning. This is because environment variables may be declared but not used in all configurations that might be run.
+
+			If you provide values for undeclared variables defined in a file you will get a warning. This is to help in cases where you have provided a variable value meant for a variable declaration, but perhaps there is a mistake in the value definition. For example, the following configuration:
+
+			variable "moose" {
+			  type = string
+			}
+
+			And the following .tfvars file:
+
+			mosse = "Moose"
+
+			Will cause Terraform to warn you that there is no variable declared "mosse", which can help you spot this mistake.
+
+			If you use .tfvars files across multiple configurations and expect to continue to see this warning, you can use the -compact-warnings option to simplify your output.
+
+			If you provide values for undeclared variables on the command line, Terraform will error. To avoid this error, either declare a variable block for the value, or remove the variable value from your Terraform call.
+			»
+			Variable Definition Precedence
+
+			The above mechanisms for setting variables can be used together in any combination. If the same variable is assigned multiple values, Terraform uses the last value it finds, overriding any previous values. Note that the same variable cannot be assigned multiple values within a single source.
+
+			Terraform loads variables in the following order, with later sources taking precedence over earlier ones:
+
+				Environment variables
+				The terraform.tfvars file, if present.
+				The terraform.tfvars.json file, if present.
+				Any *.auto.tfvars or *.auto.tfvars.json files, processed in lexical order of their filenames.
+				Any -var and -var-file options on the command line, in the order they are provided. (This includes variables set by a Terraform Cloud workspace.)
+
+			Important: In Terraform 0.12 and later, variables with map and object values behave the same way as other variables: the last value found overrides the previous values. This is a change from previous versions of Terraform, which would merge map values instead of overriding them.
+
+			
+
+
+	
+	
+		
+	
+	
+---------------------------------------------------------------------------------------------------------------------------------------------------------	
+
+Skipping
+	Install VSCode Editor, VS Code Terraform Plugin and AWS CLI
+Windows: Install Terraform & AWS CLI on Windows
+	Step-03: Configure AWS CLI
+Linux: Install Terraform Windows
+---------------------------------------------------------------------------------------------------------------------------------------------------------	
+
+
+Terraform Workflow 
+	using Terraform Commands
+
+AMI ID and Region
+Terraform core commands
+Terraform Configuration Syntax
+Terraform Arguments, Meta-Arguments and Attributes
+Blocks in Terraform
+	Terraform Top Level Blocks
+	Terraform fundamental block
+	Terraform Settings Block Introduction
+	required_version in Terraform Block
+	required_providers in Terraform Block
+
+Terraform Providers 
+	Understand about Provider Block
+	Create VPC Resource, Test and Clean-Up
+	Terraform Multiple Providers and clean up
+	Terraform Provider Dependency Lock File 
+
+	Create S3 bucket with existing Lock File AWS provider version
+	Upgrade AWS Provider, Test, Fix S3 Bucket Issues and Clean-Up
+
+
+
+Resources
+	Terraform Resources Syntax Introduction
+	Terraform Resources Behavior Part-1
+	Terraform State 
+		terraform.tfstate file
+	Terraform Resource 
+		Update In Place
+		Destroy and Recreate and Destroy
+	Terraform Desired & Current State 
+		Clean-Up
+	Resources Meta-Arguments
+		depends_on
+
+
+
+	Create Key Pair terraform-key and also review c1-versions.tf
+	Create VPC 
+	Create EC2 Instance 
+	Create Elastic IP 
+		depends_on 
+	Verify and Clean-Up VPC, EC2 Instance and Elastic IP
+	Resources Meta-Argument count
+
+	Create EC2 Instance 
+		Count & 
+		Count.Index and 
+		Clean-Up
+	Resources Meta-Argument for_each
+		for_each with Maps
+		for_each with Set of Strings
+	Resource Meta-Argument lifecycle
+	Lifecycle Meta-Argument - 
+		create_before_destroy - 
+		prevent_destroy 
+		ignore_changes implement and test
+
+
+
+Variables
+	Terraform Input Variables Introduction
+	Assign value When Prompted using CLI
+	Override default value with -
+		var argument
+	environment vairables
+	Assign with terraform.tfvars
+	Assign with -var-file argument
+	Assign with .auto.tfvars files
+	Complex Constructor of Type List
+	Complex Constructor of Type Map
+	Length and SubString Functions
+	Custom Validation Rules
+	Sensitive Variables
+	Variable Definition Precedence
+	File Function
+	Terraform Output Values Introduction
+	Terraform Outputs Implementation
+	Terraform Local Values Introduction
+
+
+
+Datasource
+	Terraform Datasources Introduction
+	Create a data resource to get latest AMI ID
+
+
+
+State
+
+Terraform STATE 
+Remote State Storage Introduction
+Configure AWS S3 as Terraform Backend for Remote State Storage
+
+Implement State Locking using AWS DynamoDB
+Understand Terraform internals
+Terraform commands
+	Terraform refresh command
+	Terraform state command - 
+		List, 
+		Show  
+		mv
+		rm 
+		replace provider
+		pull, 
+		push 
+		force-unlock
+		Clean-Up
+	Terraform taint and untaint commands
+	Terraform plan or apply -target command
+
+
+
+
+Workspaces
+	Review / Create Terraform Manifests to support multiple workspaces
+	Local Backend: 
+		Create Resources in default workspace
+		Create Resources in new workspace
+		Switch and Delete non-default workspaces
+		Remote Backends with Workspaces
+
+Creating a typical aws network of resources using terraform
+Create EC2 Instances using Terraform Modules
+Create Outputs 
+Taint resources in modules and clean-up
+Create S3 such that it is accessible from EC2 instance created.
+Create Re-usable Terraform Module
+
+
+	IAM - users and roles
+	EC2, EBS
+	Docker (Redis & MySQL)
+	VPC (public and private subnets)
+	NACL, SG (Security Group)
+	S3 (with VPC endpoint & RT entry for the endpoint)
+	Cloud Trail, Event Bridge
+	Cloud Watch (log group expiry, contributor insights)
+	DynamoDB (with VPC Endpoint & RT entry for the endpoint)
+	Lambda (Frontend, backend, scheduled, asynch)
+	SES, SNS, SQS
+	Budgets
+
+
+AWS CLI (ssh scripts, db backup script)
+
+
+
+
+Terraform Debug
+
+Include the below
+https://datafloq.com/read/terraform-benefits-use-cases/11354
+https://www.hashicorp.com/resources/terraforming-real-world-experience-best-practices
+
+https://github.com/wardviaene/terraform-course
+https://github.com/hashicorp/tfc-guide-example
+https://github.com/terraform-aws-modules/terraform-aws-eks
+https://github.com/collabnix/terraform
+https://github.com/LinkedInLearning/advanced-terraform-2823489
+
+
+Business expectation
+	https://www.plutora.com/blog/infrastructure-as-code
+	https://sensu.io/blog/infrastructure-as-code-evolution-and-practice
+	https://superadmins.com/infrastructure-as-code-demystified-iac-benefits-challenges-best-practices/
+
+Challenges of Terraform
+https://www.terraform.io/docs/cloud/guides/recommended-practices/part1.html
+
+Recommended practices
+https://www.terraform.io/docs/cloud/guides/recommended-practices/index.html
+
+Internet Gateway/Router
+VPC Peering
+
+https://www.slideshare.net/wlscaudill/aws-network-topologyarchitecture
+
+https://github.com/cloudposse/terraform-aws-efs
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ebs_volume
+
+IaC
+Consistency
+Terraform feeding to configuration
+Security expectation
+Performance expectation
+High availability expectation
+Dev/prod parity
+
+
+
+file:///D:/PraiseTheLord/HSBGInfotech/DevOps/Terraform/terraform-modules.pdf
+file:///D:/PraiseTheLord/HSBGInfotech/DevOps/Terraform/terraform-Deep-dive-with-no-fear.pdf
+
+Scaling
+	https://dzone.com/articles/managing-infrastructure-at-scale-with-terraform
+	https://www.brighttalk.com/webcast/13895/436834/how-to-scale-your-infrastructure-using-terraform
+	
+	https://www.hashicorp.com/resources/scaling-with-terraform-startup-enterprise
+	https://www.singlestoneconsulting.com/blog/terraform-iac-at-enterprise-scale/
+	https://medium.com/manomano-tech/managing-a-terraformed-infrastructure-at-scale-a-feedback-43e4675e5769
+
+Cost	
+	https://github.com/antonbabenko/terraform-cost-estimation
+	https://www.ionos.com/digitalguide/server/tools/what-is-terraform/
+	
+Adv. IaC
+	https://bluesentryit.com/benefits-of-infrastructure-as-code/
+	https://superadmins.com/infrastructure-as-code-demystified-iac-benefits-challenges-best-practices/
+	
+Idemopotency
+	https://shahadarsh.com/2020/07/12/principles-patterns-and-practices-for-effective-infrastructure-as-code/
+	https://stackoverflow.com/questions/51495993/terraform-how-do-you-make-a-resource-idempotent-i-e-create-if-not-exists-but
+	
+Configuration drift
+	https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform
+	https://newcontext.com/managing-terraform-configuration-drift/
+	
+Terraform in IaC
+	https://medium.com/workfall/how-to-manage-infrastructure-as-code-iac-with-terraform-on-aws-1fa6cd6bccfe
+	https://aviatrix.com/learn-center/cloud-networking/terraform-and-infrastructure-as-code/
+	https://blog.knoldus.com/infrastructure-as-code-using-terraform/
+	https://www.toptal.com/devops/terraform-aws-cloud-iac
+
+
+Terraform with configuration mgmt
+	https://victorops.com/blog/writing-ansible-playbooks-for-new-terraform-servers
+	https://www.digitalocean.com/community/tutorials/how-to-use-ansible-with-terraform-for-configuration-management
+	https://www.cprime.com/resources/blog/terraform-and-ansible-tutorial-integrating-terraform-managed-instances-with-ansible-control-nodes/
+	
+Security 
+	https://bridgecrew.io/infrastructure-as-code-security/terraform/
+	https://www.hashicorp.com/blog/using-terraform-to-improve-infrastructure-security
+	https://www.datocms-assets.com/2885/1598300367-tfc4bsecuritybriefv2.pdf
+	https://blog.gitguardian.com/security-in-infrastructure-as-code-with-terraform/
+	https://support.snyk.io/hc/en-us/articles/360010916577-Scan-and-fix-security-issues-in-your-Terraform-files
+	
+---------------------------------------------------------------------------------------------------------------------------------------------------------	
+Skipping
+Provisioners and Null resources
+
+Step-02: Implement Connection Block for File Provisioners & Review Manifests
+Step-03: File Provisioner: Execute Terraform Commands to Verify
+Step-04: Learn Provisioner failure behavior using onfailure=continue
+Step-05: remote-exec Provisioner Demo
+Step-06: local-exec Provisioner Demo
+Step-07: Terraform Null Resource Introduction & Review Manifests
+Step-08: Null Resource - Execute Terraform Commands and Test
+
+
+
+
+
+Modules
+
+
+
+
+
+
+
+Cloud and enterprise capabilities
+
+
+Introduction to Terraform Cloud VCS Integration
+Step-02: Setup Github Repository Local & Remote
+Step-03: Create Terraform Organization, Workspace and Input Variables
+Step-04: Set Environment Variables in Terraform Cloud
+Step-05: Understand Queue Plan & also check-in changed files to git and observe
+Step-06: Understand Workspace Settings and Destroy Resources using TF Cloud
+Step-07: Introduction to Private Modules Registry
+Step-08: Create Github Repo for a Private Module
+Step-09: Add VCS Provider as Github using OAuth App in TF Cloud
+Step-10: Import Terraform Module from Github and Review
+Step-11: Call from Root Module using CLI and Test
+Step-12: Introduction to Terraform Cloud CLI-Driven Workflow
+Step-13: Create TF Cloud Workspace with CLI-Driven Workflow
+Step-14: Execute Terraform Commands & Fix Provider credentials issue
+Step-15: Review terraform manifests and provision using local backend
+Step-16: Migrate State to Terraform Cloud
+
+
+Cloud sentinels
+
+Step-02: Review Terraform Manifests used as part of this Demo
+05:05
+Step-03: Understand Terraform Free and Paid Plan Features and Enable Trial for T
+07:04
+Step-04: Create CLI-Driven Workspace in Terraform Cloud
+09:54
+Step-05: Review Sentinel Policy: Check Terraform Version
+10:10
+Step-06: Review Sentinel Policy: Restrict S3 Buckets
+13:20
+Step-07: Review sentinel.hcl file where we reference policies
+05:25
+Step-08: Create Github Repo for Sentinel Policies and Policy Sets in TF Cloud
+07:17
+Step-09: Test Sentinel Policies - Passing case
+07:16
+Step-10: Test Sentinel Policies - Failing case
+08:13
+Step-11: Review Sentinel Cost Control Policies and Publish to Git Repo
+07:36
+Step-12: Add Policy Set and Test Pass and Failed cases with terraform-cloud-demo
+11:26
+Step-13: Review Sentinel CIS Policies and Publish to Git Repo
+07:16
+Step-14: CIS: Add Policy Set and Test with terraform-cloud-demo1 workspace
+
+
+
+Import
+
+Step-01: Terraform State Import Introduction
+03:51
+Step-02: Import State using terraform command and write tf configuration for ec2
+11:09
+Step-03: Manage EC2 Instance using Terraform for Modify and Destroy commands fro
+05:28
+Step-04: Terraform Import - S3 Bucket Demo
+
+
+Graph
+
+ep-01: Terraform Graph Implementation
+05:00
+Step-02: Graphviz Offline Install on Windows and generate graphs
+
+
+Expressions
+Step-00: Introduction to Terraform Expressions
+02:27
+Step-01: Part-1: Learn various Terraform Functions using Terraform Console
+12:35
+Step-02: Part-2: Learn various Terraform Functions using Terraform Console
+05:30
+Step-03: Understand in detail about templatefile and concat functions with AWS E
+06:26
+Step-04: Execute Terraform Commands and view the behavior of templatefile and co
+04:36
+Step-05: Part-1: Review Terraform Manifests c1 to c7
+11:32
+Step-06: Part-2: Review Terraform Manifests c1 to c7
+11:59
+Step-07: Part-3: Review Terraform Manifests c1 to c7
+03:39
+Step-08: Execute Terraform Commands to Test Dynamic and Splat Expressions
+12:46
+Step-09: Terraform Dynamic Block Implementation
+
+
+
+Debug
+Step-01: Terraform Debug
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------	
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Introduction to IaC
+	What is IaC
+		Infrastructure as code, also referred to as IaC, is an IT practice that codifies and manages underlying IT infrastructure as software. The purpose of infrastructure as code is to enable developers or operations teams to automatically manage, monitor and provision resources, rather than manually configure discrete hardware devices and operating systems. Infrastructure as code is sometimes referred to as programmable or software-defined infrastructure.
+
+		The concept of infrastructure as code is similar to programming scripts, which are used to automate IT processes. However, scripts are primarily used to automate a series of static steps that are repeated numerous times across multiple servers. Infrastructure as code uses higher-level or descriptive language to code more versatile and adaptive provisioning and deployment processes. For example, infrastructure-as-code capabilities included with Ansible, an IT management and configuration tool, can install MySQL server, verify that MySQL is running properly, create a user account and password, set up a new database and remove unneeded databases.
+
+		The code-based infrastructure automation process closely resembles software design practices in which development teams carefully control code versions, test iterations and limit deployment until the software is proven and approved for production.
+
+	Advantages of IaC
+		Speed and efficiency. 
+			Automated provisioning and management are faster and more efficient than manual processes. This stretches not just to provisioned resources and virtualization, but also to databases, networking, user account management and other tied-in services. IaC also can include code that automatically scales (adds or shuts down environments and resources when they are no longer needed).
+		Consistency. 
+			Software developers can use code to provision and deploy servers and applications according to business practices and policies, rather than rely on system administrators in a DevOps environment. A developer might create a configuration file to provision and deploy a new application for quality assurance or experimental deployment before operations takes over for live deployment in production.
+		Alignment with DevOps.
+			With the infrastructure setup written as code, it can go through the same version control, automated testing and other steps of a continuous integration and continuous delivery (CI/CD) pipeline that developers use for application code. An organization may choose to combine infrastructure as code with containers, which abstract the application from the infrastructure at the operating system level. Because the OS and hardware infrastructure are provisioned automatically and the application is encapsulated atop it, these technologies prove complementary for diverse deployment targets, such as test, staging and production.
+			
+
+
+	Infrastructure as code and cloud computing
+
+		Cloud computing shares a general starting vision with infrastructure as code: IT resources such as compute, storage and networking are abstracted from physical hardware, tied to additional services, and loaded into instances that are spun up and down as needed.
+
+		IaC takes this a step further, to automate this process through predefined sets of instructions:
+
+			Provision resources.
+			Configure the instance.
+			Configure and deploy a workload into the instance.
+			Connect associated services.
+			Monitor and manage the deployment over time.
+
+		This depth of automation is especially important because of the cloud's vast array of applications, services and functions, stacked together and mainly connected through APIs. The scale and scope of cloud requires an automated governed process, rather than doing everything manually. Organizations with hybrid cloud benefit even more, as such templated configurations and resources can be applied across multiple environments.
+
+	Immutable vs. mutable infrastructure
+		Mutable infrastructure refers to the practice whereby infrastructure components are changed in production, while the overall service or application continues to operate as normal. Immutable infrastructure assembles and sets components and resources to create a full service or application. If a change is required for any component, they are not changed or reconfigured -- they are all updated and effectively redeployed in an instance. A new iteration is assembled, tested, validated and launched, while the old iteration is discontinued and its resources released for reuse.
+
+		Immutable infrastructure has gained favor particularly for cloud and microservices environments, which are highly scalable and involve many more interdependent components and services. Any one-off updates to address specific issues can cause configuration drift that cascades as updates are rapidly pushed to production. It's more efficient and effective to reissue sets of immutable services and components than to patch and reconfigure individual infrastructure components.
+
+	Difference between IaC and Configuration Managmenet
+		https://www.quora.com/What-is-the-difference-between-Infrastructure-Management-and-Configuration-Management
+	
+Terraform Introduction
+	https://learn.hashicorp.com/tutorials/terraform/infrastructure-as-code
+	https://www.terraform.io/intro/index.html
+	
+	
+
+		

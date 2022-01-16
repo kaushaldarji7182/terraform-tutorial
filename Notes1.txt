@@ -1,0 +1,229 @@
+1. Install and configure AWS Command line on your system
+2. Install Terraform binary in your system
+3. Install AWS Command line tool and Terraform binary on Windows
+4. Code Editor : VSCode
+
+5. Define AWS as provider
+	
+	3 ways to define provider details.
+		a. hardcode in the provider section
+			access_key = "aaaaaaaaaaaaaa"
+			..
+	
+		b. Static credentials in environment variables
+		
+			EXPORT AWS_ACEESS_KEY_ID="AAAAAAAAAAAAAAAAAAAAAAAAA"
+			...
+		
+		c. Shared credentials
+			~/.aws/credentials
+			
+		d. In aws EC2 role 
+			ec2 instance or jenkins instance used for resource provisioning.
+
+10. Clone this GITHUB repo
+
+
+11. Deploy single server : EC2 Instance
+16min
+
+12. Deploy single web server - using user_data
+15min
+
+13. Deploy single configurable web server using variable
+17min
+
+14. Deploy cluster of web servers : use count parameter
+17min
+
+15. Deploy cluster of web servers in Auto Scaling Group
+15min
+
+16. Deploy cluster of webs servers in Auto Scaling Group with
+
+
+
+
+
+Terraform Plan and Apply Deeper Dive
+Terraform State Deeper Dive
+Terraform Console and Outputs
+The Join Function
+The Random Resource
+Multiple Resources and Count
+The Splat Expression
+"For" Loops
+Tainting and Updating Resources
+Terraform Import
+Terraform Refresh and State rm (Updated!)
+Adding Variables
+Variable Validation (v 0.13+ only)
+Variables and Output Files
+Sensitive Variables and .tfvars files
+Variable Definition Precedence
+The Bind Mount and Local-Exec
+Utilizing Local Values
+Min and Max Functions and the Expand Expression
+Path References and String Interpolation
+Maps and Lookups: the Image Variable
+Maps and Lookups: External Ports
+Terraform Workspaces
+Referencing your Workspaces
+Utilizing Map Keys instead of Lookups
+
+
+
+Modules
+	Modules Intro
+	First Module!
+	Module Variables
+	Terraform Graph
+	Troubleshooting Dependencies
+	The Container Module
+	Module Outputs
+	Lifecycle Customization and Targeting
+	One Module for Multiple Resources
+	Using for_each
+	Deploying Containers with for_each
+	Using Count and for_each Together
+	New Outputs and Map Transformations
+	Grafana Apply Yourself!
+	Grafana Solution
+	Self Referencing and Provisioner Failure Modes
+	Terraform Apply Yourself - Self Referencing
+	Dynamic Blocks
+	Nesting the Volume Module
+	Weather Dashboard Project!
+	
+
+Deploy AWS resources with Terraform
+	The AWS Provider
+	Deploy a VPC
+	Remote State in Terraform Cloud
+	VPC Subnets "Hardcoded"
+	VPC Subnets - Terraform Apply Yourself!
+	The cidrsubnet() Function
+	The aws_availability_zones Data Source
+	The random_shuffle Resource
+	Why didn't we use for_each?
+	Route Tables and the Internet Gateway
+	VPC Security Groups "Hardcoded"
+	VPC Security Groups Dynamic
+	VPC Security Groups - Terraform Apply Yourself!
+	VPC RDS Subnet Group and Conditionals
+	Basic RDS Setup
+	VPC Outputs for RDS - Terraform Apply Yourself!
+	Managing Sensitive RDS Values
+	ALB Initial Setup
+	ALB Security Group and Subnets - Terraform Apply Yourself!
+	ALB Target Group and the uuid and substr functions
+	ALB Listener
+	Upgrading Terraform (0.14.1+ required for ignore_changes)
+	The aws_ami Data Source
+	Scaffolding Our EC2 Instance and random_id
+	EC2 - Terraform Apply Yourself!
+	SSH Key for Our Instance and the file Function
+	Controlling random_id Changes with Keepers
+	EC2 User Data and Template Files
+	EC2 User Data Template Variables - Terraform Apply Yourself!
+	Deploying NGINX to Our Kubernetes Cluster!
+	Adding our EC2 Instances to the Target Group
+	Adding some Outputs for our Resources
+	Sensitive Outputs and How to Access Them
+	Terraform Apply Yourself - Outputs!
+	Utilizing the local-exec Provisioner to SCP our Kubeconfig File
+	Utilizing the remote-exec Provisioner to Run Commands on EC2 Instances
+	Terraform Apply Yourself! - Cleanup and Create a Destroy Provisioner
+	Deploying K8s Resources from our Cloud9 Instance!	
+	
+Terraform Cloud
+		
+	
+	
+	
+	--------------------------------------------
+	https://www.hashicorp.com/certification/terraform-associate
+	
+	IaC patterns
+
+		Patterns and Practices
+
+			Everything in Source Control
+			Modularize and Version
+			Documentation
+			Testing
+			Security and Compliance
+
+		Automate Execution from a Shared Environment
+			Infrastructure as Code Pipeline
+
+
+	Explain when to use and not use provisioners and when to use local-exec or remote-exec
+	
+	
+	4 	Use the Terraform CLI (outside of core workflow)
+		4a 	Given a scenario: choose when to use terraform fmt to format code
+		4b 	Given a scenario: choose when to use terraform taint to taint Terraform resources
+		4c 	Given a scenario: choose when to use terraform import to import existing infrastructure into your Terraform state
+		4d 	Given a scenario: choose when to use terraform workspace to create workspaces
+		4e 	Given a scenario: choose when to use terraform state to view Terraform state
+		4f 	Given a scenario: choose when to enable verbose logging and what the outcome/value is
+		
+	
+	5 	Interact with Terraform modules
+		5a 	module Vs source options
+		5b 	Interact with module inputs and outputs
+		5c 	Describe variable scope within modules/child modules
+		5d 	Discover modules from the public Terraform Module Registry
+		5e 	Defining module version	
+		
+		
+	6 	Navigate Terraform workflow
+		6a 	Describe Terraform workflow ( Write -> Plan -> Create )
+		6b 	Initialize a Terraform working directory (terraform init)
+		6c 	Validate a Terraform configuration (terraform validate)
+		6d 	Generate and review an execution plan for Terraform (terraform plan)
+		6e 	Execute changes to infrastructure with Terraform (terraform apply)
+		6f 	Destroy Terraform managed infrastructure (terraform destroy)	
+		
+	7 	Implement and maintain state
+		7a 	Describe default local backend
+		7b 	Outline state locking
+		7c 	Handle backend authentication methods
+		7d 	Describe remote state storage mechanisms and supported standard backends
+		7e 	Describe effect of Terraform refresh on state
+		7f 	Describe backend block in configuration and best practices for partial configurations
+		7g 	Understand secret management in state files
+
+	8 	Read, generate, and modify configuration
+		8a 	Demonstrate use of variables and outputs
+		8b 	Describe secure secret injection best practice
+		8c 	Understand the use of collection and structural types
+		8d 	Create and differentiate resource and data configuration
+		8e 	Use resource addressing and resource parameters to connect resources together
+		8f 	Use Terraform built-in functions to write configuration
+		8g 	Configure resource using a dynamic block
+		8h 	Describe built-in dependency management (order of execution based)
+
+	9 	Understand Terraform Cloud and Enterprise capabilities
+		9a 	Describe the benefits of Sentinel, registry, and workspaces
+		9b 	Differentiate OSS and TFE workspaces
+		9c 	Summarize features of Terraform Cloud	
+		
+		
+		I am currently working as a Devops consultant with Natwest, UK. In past I have been working as a Devops consultant with Reon and Geestarz, India.
+		Responsibility include
+			Create and maintain fully automated CI/CD pipelines for code deployment using Terraform, Ansibile, Jenkins, git, github, docker, kubernetes, bitbucket, gitlab, maven, nexus, artifactory, sonarqube etc..
+			--------------------------------------------------------------------------------------------
+			
+			
+			init
+				Initialize a working directory containing terraform config
+			validate
+			plan 
+			apply
+			destroy
+			
+			
+			https://github.com/stacksimplify/terraform-iacdevops-with-aws-codepipeline
+			https://github.com/stacksimplify/terraform-on-aws-ec2

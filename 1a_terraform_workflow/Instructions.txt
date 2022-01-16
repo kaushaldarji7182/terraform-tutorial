@@ -1,0 +1,31 @@
+Terraform Commands
+------------------
+
+terraform init
+terraform plan 
+terraform apply 
+terraform destroy
+
+
+----------------------------------------
+terraform init
+terraform validate
+terraform plan -out vilas.tfplan
+terraform apply "vilas.tfplan"
+terraform destroy
+
+----------------------------------------
+terraform apply "vilas1.tfplan"
+terraform show
+terraform output
+terraform destroy
+----------------------------------------
+terraform init
+terraform workspace new Dev
+terraform plan -out dev.tfplan
+terraform apply "dev.tfplan"
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------
+----------------------------------------

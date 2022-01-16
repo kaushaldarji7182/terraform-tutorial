@@ -1,0 +1,33 @@
+
+
+Initial Setup
+--------------
+--------------------------------------------------------------------------------------------------------------
+install terraform
+	https://www.terraform.io/downloads
+install az
+	https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+	https://docs.microsoft.com/en-us/cli/azure/
+	az login 
+	check back in console
+	
+	Find all important files in C:\Users\vilas\.azure
+	important files	
+		accessTokens.json
+		azureProfile.json
+		
+	https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-bash?tabs=bash	
+	
+--------------------------------------------------------------------------------------------------------------			
+	Rest we can follow 
+		https://github.com/HoussemDellai/terraform-course
+		
+		
+		
+		https://docs.microsoft.com/en-us/azure/developer/terraform/
+--------------------------------------------------------------------------------------------------------------		
+		Azure Storage Account
+		AKV - Azure Key Vault
+		Azure Data Factory
+		AKS Cluster
+	
