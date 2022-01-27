@@ -20,14 +20,33 @@ install az
 	
 --------------------------------------------------------------------------------------------------------------			
 	Rest we can follow 
+		D:\PraiseTheLord\HSBGInfotech\Others\terraform-course\
 		https://github.com/HoussemDellai/terraform-course
-		
+		https://github.com/in4it/terraform-azure-course/tree/master/application-gateway
 		
 		
 		https://docs.microsoft.com/en-us/azure/developer/terraform/
 --------------------------------------------------------------------------------------------------------------		
+		
+		o Arguments
+		o Blocks
+		o Identifiers
+		o Comments
+		o Providers
+		o Resources
+		o Module
+		o Variables
+		o State
+		o Expressions
+
+		
+		Working 
+			01 - 01_ResourceGroup
+			02 - 02_WebApp
+			03 - 06_vm_linux
+			04 - 07_kubernetes_aks
+	
 		Azure Storage Account
 		AKV - Azure Key Vault
 		Azure Data Factory
 		AKS Cluster
-	
