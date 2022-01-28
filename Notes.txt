@@ -1,29 +1,4 @@
 Create high quality terraform content
-1.5 hours - foundation of Terraform (90 min. idle)
-	Team leads
-	managers
-	
-	should not be incomplete.
-	
-advanced (2.5 hours)
-	Complex end to end example
-	Cloud watch 
-	monitoring
-	auto scaling group.
-	
-	20 mcq question
-		10 avg. 
-		5 medium 
-		5 complex.
-		
-		based on the topics covered.
-		
-	not more than 4 hours overall content.
-	20 mcq.
-	
-	
-	Each module should be less than 20 min.
-
 
 
 
@@ -68,7 +43,117 @@ Adv. of Terraform
 	Uses easy to understand language, HCL (HashiCorp configuration language)
 	Easily portable to any other provider
 	Supports Client only architecture, so no need for additional configuration management on a server
+
+
+References: D:\PraiseTheLord\HSBGInfotech\DevOps\Terraform\TerraformTOC.txt
+
+Understanding terraform
+
+	Terraform Providers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	https://github.com/vilasvarghese/terraform-tutorial/blob/master/2e_Providers/providers.tf
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The Core Terraform Workflow
+
+
+The core Terraform workflow has three steps:
+    Write - Author infrastructure as code.
+    Plan - Preview changes before applying.
+    Apply - Provision reproducible infrastructure.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Terraform core commands
+	terraform init
+	terraform validate
+	terraform plan 
+	terraform apply
+	terraform destroy
 	
+	init
+
+		Initialize a working directory
+		First command in workflow
+		Downloads plugins specific to the provider
+	validate
+		Verifies the 
+			syntax 
+			consistency 
+				of the configuration.
+	plan
+		Creates execution plan
+		Performs a refresh and determines what action to performance
+	apply
+		Again executes the plan (unless we have persisted)
+		CRUD of infrastructure
+	destroy
+		Destroy infrastructure.
+
+	
+
+	
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+How Terraform Works With Plugins
+https://www.terraform.io/docs/extend/how-terraform-works.html
+	Terraform
+		tool for building, changing, and versioning infrastructure 
+			safely and efficiently. 
+		built on a plugin-based architecture
+		enable capabilities using  plugins.
+
+	Terraform 
+		logically split into two main parts: 
+			Terraform Core and 
+			Terraform Plugins. 
+	Terraform Core 
+		The primary responsibilities of Terraform Core :
+			Infrastructure as code: 
+				reading and interpolating configuration files and modules
+			Resource state management
+			Construction of the Resource Graph
+			Plan execution
+			Communication with plugins over RPC
+				offers multiple ways to discover and load plugins
+			high-level framework that abstracts plugin discovery and RPC communication	
+		Includes statically-compiled binary CLI
+			written in Go 
+			entrypoint for anyone using Terraform. 
+			open source code 
+				github.com/hashicorp/terraform.
+		
+	Terraform Plugins 
+		expose an implementation for a specific 
+			service provider e.g. AWS, or 
+			provisioner e.g. bash.
+
+		written in Go 
+		executable binaries invoked by Terraform Core over RPC. 
+		Each plugin exposes an implementation for a specific 
+			service e.g. AWS, or 
+			provisioner, e.g. bash. 
+		All Providers and Provisioners used in Terraform configurations are plugins. 
+			Provider:
+				Actual service with which we want to provision resources
+				e.g. create ec2 instance
+			Provisioners:
+				execute scripts on a local or remote machine as part of resource creation
+				e.g. install java on an ec2 instance
+		Executed as a separate process 
+		communicate with the main Terraform binary over an RPC interface. 
+		Terraform has several Provisioners built-in
+		Providers are discovered dynamically as needed 
+		 so developers do not need to manage either.
+		»The primary responsibilities of Provider Plugins are:
+			Initialization of any included libraries used to make API calls
+			Authentication with the Infrastructure Provider
+			Define Resources that map to specific Services
+	
+	
+		
 	
 	
 Terraform Lifecycle
@@ -92,14 +177,6 @@ Terraform Lifecycle
 		delete all the old infrastructure resources, which are marked tainted after the apply phase.
 	
 	
-How Terraform Works?
----------------------
-Terraform has two main components that make up its architecture:
-	Terraform Core
-	Providers	
-	
-	
-	
 Terraform Core
 ---------------
 Terraform core 
@@ -110,7 +187,8 @@ Terraform core
 	second input source 
 		state where terraform keeps the current state.
 
-	It is a utility which can calculate the delta between the current state and the desired state - make/apply these changes on the infrastructure.
+	Utility which can calculate the delta between the current state and the desired state - 
+		make/apply these changes on the infrastructure.
 	
 	terraform core 
 		takes the input
@@ -168,6 +246,11 @@ Low-level syntax of Terraform language
 	
 	Full definition of HCL syntax can be seen in https://github.com/hashicorp/hcl/blob/hcl2/hclsyntax/spec.md
 	
+	Includes
+		Arguments
+		Blocks
+		Identifiers
+		Comments
 	
 	
 	
@@ -193,6 +276,20 @@ Syntax is like
 		key1 = value1
 		key2 = value2
 	}
+		Block
+		-----
+		Block options
+			resource
+			provider
+			settings
+			input variables
+			output 
+			data sources
+			ect.
+			
+		Types of block
+			Top level
+			Block inside block
 
 	Defined in curly braces.
 	Has key value pair
@@ -207,13 +304,34 @@ Syntax is like
 	
 	
 	 Identifiers
+	 ----------
+	 In key = value
+	 key - identifier
+	 value - argument value
+		Arguments
+			Mandatory arguments
+			Optional arguments
+			Meta arguments 
+	 
 	  Comments
 	  Character Encoding and Line Endings 
 	
+	
+	Comments
+	--------
+	//single line
+	/*
+		multi-line comment
+	*/
 -------------------------------------
 Terraform Resources
 
 vi local.tf
+
+<block type> "<block label>" "Block Name" {
+	#Block body
+	<Identifier> = <Expression> #Argument
+}
 
 resource "local_file" "vilas"{
 	filename = "/root/vilas.txt"
@@ -342,6 +460,7 @@ Plugins
 		registy.terraform.io/hashicorp/local
 		
 		
+--------------------------------------------------------------------------------------------
 		
 Configuration Directory
 -----------------------
@@ -356,7 +475,7 @@ Configuration Directory
 		outputs.tf - outputs from resources.
 		providers.tf - define providers
 		
-		
+			can be .tf.json also 
 
 Multiple Providers
 ------------------
@@ -398,6 +517,9 @@ Core concepts/terminologies used in Terraform:
 			you can set their values using CLI options and environment variables. 
 		While declaring variables in child modules
 			the calling module should pass values in the module block.
+	
+	Output Variables
+		id of a resource
 
 
     Module: 
@@ -413,6 +535,8 @@ Core concepts/terminologies used in Terraform:
 			used in configuring and managing the infrastructure.
     Data Source: 
 		Implemented by providers to return information on external objects to terraform.
+		We can define our own data sources - which reads data from existing resources and returns it to us for use in terraform.
+		e.g. get ami id in aws.
     Output Values: 
 		Return values of a terraform module that can be used by other configurations.
     Plan: 
@@ -430,11 +554,6 @@ Core concepts/terminologies used in Terraform:
 		Removes all configurations applied as defined in the module
 
 	
-	https://www.youtube.com/channel/UCLDmEDH08DcTWCiXZeKxDrA
-	https://www.udemy.com/course/hashicorp-certified-terraform-associate-step-by-step/
-	
-
-
 
 	Variables 
 	---------
@@ -567,6 +686,8 @@ variable "image_id" {
   }
 }
 --------------------------------------------------------------------------------------
+
+
 			condition argument 
 				expression must use the value of the variable to return 
 					true if the value is valid
@@ -1233,6 +1354,40 @@ Terraform Introduction
 	https://learn.hashicorp.com/tutorials/terraform/infrastructure-as-code
 	https://www.terraform.io/intro/index.html
 	
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 
 		

@@ -6,6 +6,7 @@ provider "aws" {
 
 variable "zones" {
   default = ["us-east-1a", "us-east-1b"]
+  type = list[string]
 }
 
 resource "aws_instance" "example" {
