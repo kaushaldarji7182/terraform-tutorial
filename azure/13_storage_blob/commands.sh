@@ -1,3 +1,31 @@
+Azure Storage 
+-------------
+	Blob storage 
+		storage tiers
+	File storage
+	Table storage
+	Queue storage
+	Disk storage
+	
+Data
+	structured
+		e.g. relational data
+	unstructured
+		workspace
+	semi-structured
+		tables
+			row doesnt need to follow schemas.
+			each row can have it's on rules
+			
+	
+
+
+
+
+
+
+
+
 # make sure terraform CLI is installed
 terraform
 
