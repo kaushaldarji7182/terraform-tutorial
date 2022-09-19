@@ -1,0 +1,4123 @@
+Day 1
+
+------------------------------------------------------------------------------------------------------
+Introduction
+------------------------------------------------------------------------------------------------------
+	1. Install terraform
+		https://learn.hashicorp.com/tutorials/terraform/install-cli
+	2. Install azure cli
+		https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=script
+		Instead of 
+			sudo dnf install azure-cli
+			sudo yum install azure-cli
+	3. Configure azure
+	
+	Step-05: Terraform - Authenticating using the Azure CLI
+		Azure Provider: Authenticating using the Azure CLI
+		# Azure CLI Login
+		az login
+
+		# List Subscriptions
+		az account list
+
+		# Set Specific Subscription (if we have multiple subscriptions)
+		az account set --subscription="SUBSCRIPTION_ID"	
+	
+	-------------------
+Infrastructure as Code (IaC) 
+	Process of managing and provisioning the complete IT infrastructure 
+	(comprises both physical and virtual machines) 
+		using machine-readable definition files. 
+	Automate environment provisioning process.
+	Ease maintenance of the environment.
+	Manage the source code of it in SCM.
+
+
+Challenges with Infrastructure as Code :
+	Need to learn to code
+	Don’t know the change impact.
+	Need to revert the change
+	Can’t track changes
+	Can’t automate a resource
+	Multiple environments for infrastructure
+	Terraform has been created to solve these challenges.
+
+
+Terraform introduction	
+----------------------
+What is Terraform?
+	Open-source infrastructure as Code 
+	Developed by HashiCorp. 
+	Used to define and provision the complete infrastructure 
+	Declarative language.
+
+	Infrastructure provisioning tool 
+	Cloud infrastructure setup as codes. 
+	Similar to tools like CloudFormation
+		However provider independent.
+	
+	
+Adv. of Terraform
+	Does orchestration, not just configuration management
+	Supports multiple providers such as AWS, Azure, GCP, DigitalOcean and many more
+	Provide immutable infrastructure where configuration changes smoothly
+	Uses easy to understand language, HCL (HashiCorp configuration language)
+	Easily portable to any other provider
+	Supports Client only architecture, so no need for additional configuration management on a server
+
+
+References: D:\PraiseTheLord\HSBGInfotech\DevOps\Terraform\TerraformTOC.txt
+
+The Core Terraform Workflow
+The core Terraform workflow has three steps:
+    Write - Author infrastructure as code.
+    Plan - Preview changes before applying.
+    Apply - Provision reproducible infrastructure.
+
+Vilas: Copied from my notes
+------------------------------------------------------------------------------------------------------
+
+https://www.terraform.io/language
+Terraform Language
+	main purpose 
+		declare resources
+			represent infrastructure objects. 
+	
+	All other language features 
+		make the definition of resources more flexible and convenient.
+
+A Terraform configuration 
+	complete document in Terraform language 
+	Tells Terraform 
+		how to manage a given collection of infrastructure. 
+	Can consist of multiple files and directories.
+
+Syntax of the Terraform language 
+	simple
+
+resource "aws_vpc" "main" {
+  cidr_block = var.base_cidr_block
+}
+
+<BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK LABEL>" {
+  # Block body
+  <IDENTIFIER> = <EXPRESSION> # Argument
+}
+e.g. 
+resource "azurerm_resource_group" "myrg" { # Resource BLOCK
+  name = "myrg-1" # Argument
+  location = "East US" # Argument 
+}
+
+Blocks 
+------
+	Most of Terraform's features 
+		controlled by top-level blocks in a configuration file.
+		
+	containers for other content 
+	represent configuration of an object
+		e.g. resource. 
+	have a block type
+	
+	can have 
+		zero or more labels
+	a body 
+		contains (number of) arguments 
+		nested blocks. 
+	
+
+
+
+Arguments 
+---------
+	assign a value to a name. 
+	They appear within blocks.
+	can be 
+		required or 
+		optional
+	Meta-Arguments 
+		change a resource type's behavior 
+			e.g.: 
+				count, 
+				for_each
+
+
+Expressions 
+-----------
+	represent a value
+	either 
+		literally or 
+		by referencing and combining other values. 
+	Appear as values for arguments, or within other expressions.
+	format:
+		resource_type.resource_name.attribute_name
+	 
+The Terraform language 
+----------------------
+	declarative
+		Describing an intended goal 
+		Not steps to reach that goal. 
+	The ordering of 
+		blocks and 
+		files 
+			not significant; 
+			
+	Considers 
+		implicit and 
+		explicit relationships 
+			between resources when determining an order of operations.
+
+Files and Directories
+---------------------
+	Files containing Terraform 
+		called configuration files.
+
+	Configuration (Module) Directory
+	-----------------------
+		Directory 
+			can have any number of configuration files.
+		Any file with .tf extension 
+			will participate in CRUD of the infrastructure components.
+		One file 
+			any number of configuraiton blocks.
+		
+		Common other files found
+			main.tf - main configuration
+			variables.tf - variables delclaration
+			outputs.tf - outputs from resources.
+			providers.tf - define providers
+			
+				can be .tf.json also - but commonly used.
+		
+	File Extension
+	--------------
+		Code in Terraform language 
+			Stored in simple text files 
+			.tf file extension. 
+			or JSON-based variant - .tf.json file extension.
+
+	Text Encoding
+	-------------
+		Configuration files must always use UTF-8 encoding, and by convention usually use Unix-style line endings (LF) rather than Windows-style line endings (CRLF), though both are accepted.
+
+	Directories and Modules
+	-----------------------
+		
+		A module 
+			collection of .tf and/or .tf.json files 
+			kept together in a directory.
+		
+		Similar to function definitions in traditional languages
+		
+		A Terraform module 
+			consists of the top-level configuration files in a directory; 
+			nested directories 
+				treated as completely separate modules
+				not automatically included in the configuration.
+
+		Terraform evaluates 
+			all configuration files in a module
+			treat the entire module as a single document. 
+		Separating blocks into different files 
+			purely for the convenience 
+			no effect on the module's behavior.
+
+	A Terraform module 
+		can use module calls 
+		explicitly include other modules into the configuration. 
+		Child modules can come from 
+			nested directories, or 
+			anywhere else on disk or 
+			external sources 
+				e.g. Terraform Registry.
+
+The Root Module
+---------------
+	Terraform 
+		always runs in the context of a single root module. 
+		A complete Terraform configuration 
+			has a root module 
+			tree of child modules 
+			(modules called by the root module
+			modules called by those modules, etc.).
+
+	root module 
+		working directory where Terraform command is invoked. 
+
+
+
+Hands-on
+	different ways to configure terraform with azure
+	
+		Configure Terraform in 
+			Azure Cloud Shell 
+				with Bash
+					https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-bash
+				with PowerShell
+					https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-cloud-shell-powershell
+			Windows 
+				with Bash
+					https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-windows-bash
+				with PowerShell
+					https://docs.microsoft.com/en-us/azure/developer/terraform/get-started-windows-powershell
+			Azure with Terraform on linux_amd64
+				https://github.com/vilasvarghese/terraform-tutorial/blob/master/azure/GettingStarted.txt
+				Configure Azure
+					configure storage 
+				Install Terraform 
+					https://github.com/vilasvarghese/terraform-tutorial/blob/master/1d_Linux_install/terrafrom.sh
+				Install azure cli
+					azure login
+					az account list
+					az account set --subscription="95cbd6d2-947f-4cf1-bba7-5f90bc47dc43"
+
+------------------------------------------------------------------------------------------------------
+Terraform Setting and Provider Block
+------------------------------------------------------------------------------------------------------
+	Step-01: Terraform Settings Block Introduction
+	------------------------------------------------------------------------------------------------------
+	Terraform Settings
+	------------------
+		A special terraform configuration block 
+		Used to configure 
+			of Terraform itself
+			e.g. minimum Terraform version to apply your configuration.
+
+		Terraform Block Syntax
+		terraform {
+		  # ...
+		}
+		
+		Each terraform block 
+			can contain a number of settings 
+			only constant values permitted
+			
+		Options supported in terraform block .
+			Configuring Terraform Cloud
+				https://www.terraform.io/language/settings
+			Configuring a Terraform Backend
+				For Remote State Storage
+				https://www.terraform.io/language/settings
+			Specifying a Required Terraform Version
+			Specifying Provider Requirements
+			Experimental Language Features
+				https://www.terraform.io/language/settings
+			Passing Metadata to Providers
+				https://www.terraform.io/language/settings
+				provider_meta block 
+					for each provider a module 
+				if the provider defines a schema for it. 
+					This allows the provider to receive module-specific information
+					primarily intended for modules distributed 
+					by the same vendor as the associated provider.
+	
+	------------------------------------------------------------------------------------------------------
+	Step-02: Understand required_version in Terraform Block
+	------------------------------------------------------------------------------------------------------
+		
+		Hands-on: 
+			Manage Terraform Versions 
+			required_version setting 
+				accepts a version constraint string
+				If the running version of Terraform 
+					doesn't match the constraints 
+					Terraform give error 
+					exit without taking any further actions.
+
+		For child modules, 
+			each module can specify its own version requirements. 
+			The requirements of all modules in the tree must be satisfied.
+
+		Use Terraform version constraints 
+			in a collaborative environment to ensure that everyone 
+			is using a specific Terraform version, 
+			or using at least a minimum Terraform version 
+			that has behavior expected by the configuration.
+
+		The required_version setting applies only to the version of Terraform CLI. 
+		Terraform's resource types are implemented by provider plugins, 
+		whose release cycles are independent of Terraform CLI and of each other. 
+		Use the required_providers block to manage the expected versions for each provider you use.
+		
+
+	------------------------------------------------------------------------------------------------------
+	Step-03: Terraform Provider Introduction
+	------------------------------------------------------------------------------------------------------
+		The required_providers block 
+			specify all of the providers 
+				required by the current module
+			map each local provider name 
+				to 
+					a source address and 
+					a version constraint.
+
+		terraform {
+		  required_providers {
+			aws = {
+			  version = ">= 2.7.0"
+			  source = "hashicorp/aws"
+			}
+		  }
+		}
+		
+		terraform {
+		  required_providers {
+			azurerm = {
+			  source  = "hashicorp/azurerm"
+			  version = "=3.0.0"
+			}
+		  }
+		}
+
+		Reference: steps/1/
+		terraform init
+		change version=">=3.0.0" 
+						"=3.0.0"
+		terraform init
+	------------------------------------------------------------------------------------------------------
+	Step-04: Understand required_providers in Terraform Block and Provider Block
+	------------------------------------------------------------------------------------------------------
+	Provider Requirements
+
+	Terraform relies on plugins called "providers" 
+		to interact with remote systems. 
+		Terraform configurations must declare 
+			which providers they require
+		Terraform will install and use them. 
+
+
+
+    Hands-on: Try the Perform CRUD Operations with Providers tutorial on HashiCorp Learn.
+
+
+	Values in 
+		[] 
+			called list
+		{}
+			caleld Map
+
+
+	Note: 
+		Supported from Terraform 0.13 and later; 
+		A provider requirement consists of 
+			local name (mycloud below)
+			a source location, and 
+			a version constraint:
+
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "mycorp/mycloud"
+      version = "~> 1.0"
+    }
+  }
+}
+
+	key: mycloud
+		provider's local name 
+		unique identifier 
+			unique per-module
+			module-specific
+		value is an object 
+			source - 
+				the global source address 
+				e.g. hashicorp/aws.
+			version - 
+				a version constraint 
+		can choose any local name 
+		has a preferred local name (e.g. aws)
+		uses as a prefix for all of its resource types.
+		hashicorp/aws - aws, like aws_instance or aws_security_group.)
+
+		If possible
+			use a provider's preferred local name. 
+			make configurations easier to understand, 
+				omit the provider meta-argument 
+					from most of your resources. 
+			(If provider is NOT configured, 
+				first word of the resource type 
+					as a local provider name.)
+
+
+	Note: The name = { source, version } syntax
+		added in Terraform v0.13. 
+		
+	Outside of the required_providers block, 
+		Terraform configurations refer to providers by their local names.
+
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "mycorp/mycloud"
+      version = "~> 1.0"
+    }
+  }
+}
+
+provider "mycloud" {
+  # ...
+}
+
+----------------------
+lab/2
+
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+
+# Configure the Microsoft Azure Provider
+provider "azurerm" {
+  features {}
+}
+
+# Create a resource group
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+----------------------
+
+#Vilas: Consider below if required.. Else virtual network covers it
+# Create a virtual network within the resource group
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  address_space       = ["10.0.0.0/16"]
+}
+
+Source Addresses
+----------------
+
+A provider's source address 
+	global identifier. 
+	primary location to download.
+	three parts 
+		delimited by slashes (/), as follows:
+		[<HOSTNAME>/]<NAMESPACE>/<TYPE>
+
+    Hostname (optional): 
+		hostname of the Terraform registry 
+			distributes the provider. 
+		default:
+			registry.terraform.io
+			public Terraform Registry.
+    Namespace (mandatory): 
+		organizational namespace 
+			in registry
+		In 
+			public Terraform Registry and 
+			Terraform Cloud's private registry, 
+				organization that publishes the provider. 
+    Type(mandatory): 
+		A short name for 
+			platform provider manages. 
+		Must be unique in 
+			namespace on a particular registry host.
+		provider's preferred local name. 
+		(Exceptions; 
+			hashicorp/google-beta 
+				alternate to hashicorp/google
+				preferred local name is google. 
+		)
+
+	official HTTP provider 
+		part of hashicorp namespace 
+		on registry.terraform.io
+		source address 
+			registry.terraform.io/hashicorp/http or, 
+			commonly: hashicorp/http.
+
+	The source address 
+		with all three components 
+			called the provider's fully-qualified address. 
+	can be seen in various outputs
+		e.g. error messages
+		in most cases a simplified display version is used. 
+	
+	Display version 
+		omits the source host 
+		for public registry, 
+		so "hashicorp/random" 
+			instead of "registry.terraform.io/hashicorp/random".
+
+	Note: 
+		If you omit the source argument for provider, 
+		default registry.terraform.io/hashicorp/<LOCAL NAME>. 
+		recommend: using explicit source addresses for all providers.
+
+Version Constraints
+	Each provider plugin 
+		has set of versions
+		functionality of the provider 
+			can evolve over time. 
+		Each provider 
+			define version constraint 
+			given in the version argument 
+		so Terraform can select a single version per provider 
+		that all modules are compatible with.
+
+	The version argument is optional; 
+		if omitted, 
+		accept any version of the provider as compatible. 
+		recommend 
+			specify a version constraint.
+
+	To ensure Terraform always installs the same provider versions 
+		for a given configuration, 
+		use Terraform CLI 
+			to create a dependency lock file and 
+			commit it to version control 
+	If a lock file is present, 
+		Terraform Cloud, 
+		CLI, and 
+		Enterprise 
+			will all obey it when installing providers.
+
+		Hands-on: 
+			Try the Lock and Upgrade Provider Versions.
+
+Best Practices for Provider Versions
+	declare the minimum provider version 
+		use >= version constraint syntax:
+
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "hashicorp/aws"
+      version = ">= 1.0"
+    }
+  }
+}
+
+root module of a configuration — 
+	specify the maximum provider version 
+	avoid accidental upgrades 
+	to incompatible new versions. 
+	~> operator  
+	The following example 
+
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "hashicorp/aws"
+      version = "~> 1.0.4"
+    }
+  }
+}
+Recommendation:
+Child modules can define minimum version 
+	root module manage the maximum version.
+
+
+
+Built-in Providers
+------------------
+Most Terraform providers 
+	distributed as plugins
+
+one built in provider  
+	provides the terraform_remote_state data source.
+don't need to declare 
+	available to define in required_providers block 
+For consistency 
+	has special provider source address, 
+	terraform.io/builtin/terraform. 
+	sometimes appear in Terraform's error messages 
+
+Deprecated provider
+-------------------
+	Another provider with source address 
+		hashicorp/terraform
+		older version of the now-built-in provider 
+		not compatible with Terraform v0.11 or later 
+		should never be declared in a required_providers block.
+
+
+In-house Providers
+------------------
+We can 
+	develop and distribute 
+	Terraform providers. 
+
+
+
+run an in-house private registry
+	implement provider registry protocol.
+Providers 
+	mandatory: 
+		source address 
+		hostname of a registry
+		hostname does not need to provide an actual registry service. 
+		in-house providers  
+			use an arbitrary hostname 
+			
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "terraform.example.com/examplecorp/ourcloud"
+      version = ">= 1.0"
+    }
+  }
+}
+
+address: terraform.example.com/examplecorp/ourcloud/1.0.0
+
+In 1.0.0 directory
+	an additional directory 
+		platform, 
+		e.g. linux_amd64 - AMD64/x64 processor, and 
+	
+
+v0.12-Compatible Provider Requirements
+--------------------------------------
+Explicit provider source addresses were introduced with Terraform v0.13, so the full provider requirements syntax is not supported by Terraform v0.12.
+
+However, in order to allow writing modules that are compatible with both Terraform v0.12 and v0.13, versions of Terraform between v0.12.26 and v0.13 will accept but ignore the source argument in a required_providers block.
+
+Consider the following example written for Terraform v0.13:
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 1.0"
+    }
+  }
+}
+
+Terraform v0.12.26 will accept syntax like the above but will understand it in the same way as the following v0.12-style syntax:
+
+terraform {
+  required_providers {
+    aws = "~> 1.0"
+  }
+}
+
+In other words, Terraform v0.12.26 ignores the source argument and considers only the version argument, using the given local name as the un-namespaced provider type to install.
+
+When writing a module that is compatible with both Terraform v0.12.26 and Terraform v0.13.0 or later, you must follow the following additional rules so that both versions will select the same provider to install:
+
+    Use only providers that can be automatically installed by Terraform v0.12. Third-party providers, such as community providers in the Terraform Registry, cannot be selected by Terraform v0.12 because it does not support the hierarchical source address namespace.
+
+    Ensure that your chosen local name exactly matches the "type" portion of the source address given in the source argument, such as both being "aws" in the examples above, because Terraform v0.12 will use the local name to determine which provider plugin to download and install.
+
+    If the provider belongs to the hashicorp namespace, as with the hashicorp/aws provider shown above, omit the source argument and allow Terraform v0.13 to select the hashicorp namespace by default.
+
+    Provider type names must always be written in lowercase. Terraform v0.13 treats provider source addresses as case-insensitive, but Terraform v0.12 considers its legacy-style provider names to be case-sensitive. Using lowercase will ensure that the name is selectable by both Terraform major versions.
+
+This compatibility mechanism is provided as a temporary transitional aid only. When Terraform v0.12 detects a use of the new source argument it doesn't understand, it will emit a warning to alert the user that it is disregarding the source address given in that argument.
+
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Terraform Apply and Destroy Commands Auto Approve Option
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/cli/commands/apply
+	Command: apply
+	
+	terraform apply
+	terraform apply -auto-approve
+	terraform destroy
+	terraform destroy -auto-approve
+
+	The terraform apply 
+		execute the actions proposed in a Terraform plan.
+
+
+
+	run terraform apply 
+		without plan file
+		creates a new execution plan = terraform plan
+		prompts to approve 
+		takes the indicated actions. 
+		
+Warning: If you use -auto-approve, 
+	recommend 
+		no one can change outside Terraform workflow. 
+		
+Saved Plan Mode
+---------------
+	pass a saved plan file to terraform apply, 
+	no confirmation required. 
+	use in automation.
+
+
+	step2/
+	terraform plan -out tfplan
+	terraform show tfplan #inspect saved plan
+	terraform apply "tfplan"
+
+When using a saved plan
+	additional planning modes not supported 
+	
+	
+Plan Options
+------------
+
+    Planning Modes: 
+		include 
+			terraform plan -destroy
+				creates a plan to destroy all remote objects
+			terraform plan -refresh-only
+				creates a plan to update 
+					Terraform state 
+					root module output values.
+    Planning Options: 
+		specify which 
+			resource instances Terraform should replace
+		setting Terraform input variables, etc.
+
+Apply Options
+-------------
+    -auto-approve 
+		Skips interactive approval 
+		option is ignored 
+			when you pass a previously-saved plan file, 
+    -compact-warnings
+    -input=false 
+		- Disables all of Terraform's interactive prompts. 
+		- prevents prompting for interactive approval of a plan
+    -json - 
+		machine readable JSON UI output. 
+		implies -input=false.
+    -lock=false - Don't hold a state lock during the operation. This is dangerous if others might concurrently run commands against the same workspace.
+    -lock-timeout=DURATION - Unless locking is disabled with -lock=false, instructs Terraform to retry acquiring a lock for a period of time before returning an error. The duration syntax is a number followed by a time unit letter, such as "3s" for three seconds.
+    -no-color - Disables terminal formatting sequences in the output. Use this if you are running Terraform in a context where its output will be rendered by a system that cannot interpret terminal formatting.
+    -parallelism=n - Limit the number of concurrent operation as Terraform walks the graph. Defaults to 10.
+
+    All planning modes and planning options for terraform plan - Customize how Terraform will create the plan. Only available when you run terraform apply without a saved plan file.
+
+For configurations using the local backend only, terraform apply also accepts the legacy options -state, -state-out, and -backup.
+
+
+
+Command: destroy
+
+The terraform destroy command is a convenient way to destroy all remote objects managed by a particular Terraform configuration.
+
+While you will typically not want to destroy long-lived objects in a production environment, Terraform is sometimes used to manage ephemeral infrastructure for development purposes, in which case you can use terraform destroy to conveniently clean up all of those temporary objects once you are finished with your work.
+»Usage
+
+Usage: terraform destroy [options]
+
+This command is just a convenience alias for the following command:
+
+terraform apply -destroy
+
+For that reason, this command accepts most of the options that terraform apply accepts, although it does not accept a plan file argument and forces the selection of the "destroy" planning mode.
+
+You can also create a speculative destroy plan, to see what the effect of destroying would be, by running the following command:
+
+terraform plan -destroy
+terraform destroy -auto-approve (#terraform des
+
+This will run terraform plan in destroy mode, showing you the proposed destroy changes without executing them.
+
+Note: The -destroy option to terraform apply exists only in Terraform v0.15.2 and later. For earlier versions, you must use terraform destroy to get the effect of terraform apply -destroy.
+
+
+
+
+	-auto-approve is not mentioned in documentation for destroy. 
+	But may work.
+	
+
+
+
+
+https://learn.hashicorp.com/tutorials/terraform/apply?utm_source=WEBSITE&utm_medium=WEB_IO&utm_offer=ARTICLE_PAGE&utm_content=DOCS
+Apply configuration
+-------------------
+Steps terraform takes.
+	1. Lock your project's state
+			so other instances of Terraform 
+				will not attempt to 
+				modify state or 
+					apply changes to your resources. 
+	2. If Terraform detects an existing lock file 
+		(.terraform.tfstate.lock.info), 
+		report an error and exit.
+	3. Execute steps according to the plan.
+		Terraform 
+			executes in parallel 
+			when possible, 
+		and sequentially 
+			when one resource 
+				depends on another.
+	4. Update your project's state file 
+		with a snapshot of the current state 
+	5. Unlock the state file.
+	6. Print out 
+		(a) report of the changes it made
+		(b) any output values defined 
+		
+Errors during apply
+-------------------
+If apply has errors
+	Logs the error and reports it to the console.
+	Updates the state file with any changes to your resources.
+	Unlocks the state file.
+	Exits.
+Terraform does not support 
+	rolling back a partially-completed apply. 
+	infrastructure may be in an invalid state 
+		after a Terraform apply step errors out. 
+	So resolve error, 
+		apply configuration again 
+			to update your infrastructure to the desired state.
+
+
+
+Common reasons for apply:
+--------------------------------------
+	A change to a resource outside of Terraform's control.
+		while execution is going on someone deletes RG.
+	Networking or other transient errors.
+	An expected error from the upstream API, 
+		e.g. duplicate resource name or reaching a resource limit.
+	An unexpected error from the upstream API
+		e.g. internal server error.
+	A bug in 
+		Terraform provider code
+		Terraform itself.
+
+------------------------------------------------------------------------------------------------------	
+Terraform Multiple Provider
+------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Terraform Multiple Providers Introduction
+	------------------------------------------------------------------------------------------------------
+	Provider Configuration
+	----------------------
+	Providers 
+		allow Terraform to interact with 
+			cloud providers
+			SaaS providers, and 
+			other APIs.
+
+	Some providers require  
+		configure 
+			endpoint URLs, 
+			cloud regions
+			other settings 
+				before Terraform can use them. 
+	
+	
+	Provider Configuration
+	----------------------
+	Provider configurations 
+		belong in the root module of a Terraform configuration. 
+	A provider configuration 
+		use a provider block:
+
+provider "google" {
+  project = "acme-app"
+  region  = "us-central1"
+}
+
+	Provider block is optional
+	name ("google") 
+		local name of the provider to configure. 
+		provider should be included in 
+			required_providers block.
+	block (between { and }) contains 
+		configuration arguments for the provider. 
+		most options
+			defined by the provider 
+			project and region are specific to the google provider.
+		values 
+			supported values.
+			reference input variables
+			not attributes exported by resources 
+		provider's documentation 
+			should list which configuration arguments it expects. 
+	Some values
+		use shell environment variables 
+		(e.g. VM instance profiles) 
+		recommend 
+			use for credentials 
+				out of your version-controlled Terraform code.
+	two "meta-arguments" 
+		defined by Terraform itself 
+		available for all provider blocks:
+			alias:
+				use same provider with different configurations for different resources
+			version: 
+				not recommended 
+					(use provider requirements instead)
+	
+alias: Multiple Provider Configurations
+---------------------------------------
+	Optionally define 
+		multiple configurations 
+		for the same provider
+	select which one to use on 
+		per-resource 
+	or 
+		per-module basis. 
+	Why?
+		support multiple regions 
+		targeting multiple Docker hosts
+		multiple Consul hosts, etc.
+	To create multiple configurations for a provider, 
+		include multiple 
+			provider blocks 
+			with the same provider name. 
+	For each additional non-default configuration, 
+		use "alias" meta-argument 
+		to provide an extra name segment. 
+
+	For example:
+# The default provider configuration; resources that begin with `aws_` will use
+# it as the default, and it can be referenced as `aws`.
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Additional provider configuration for west coast region; resources can
+# reference this as `aws.west`.
+provider "aws" {
+  alias  = "west"	#This is critical
+  region = "us-west-2"
+}
+
+	To declare a configuration alias within a module
+		add "configuration_aliases" argument 
+		as below:
+
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "mycorp/mycloud"
+      version = "~> 1.0"
+      configuration_aliases = [ mycloud.alternate ]
+    }
+  }
+}
+
+	Default Provider Configurations
+	-------------------------------
+		default: 
+			provider block without alias 
+	
+	Referring to Alternate Provider Configurations
+	----------------------------------------------
+	Refer as 
+		<PROVIDER NAME>.<ALIAS>. 
+	e.g.		
+		aws.west 
+			refer to us-west-2 region.
+
+			not strings 
+			don't need to be quoted. 
+	
+	
+	Selecting Alternate Provider Configurations
+	---------------------------------------------
+	To use 
+		alternate provider configuration for 
+			a resource or 
+			data source
+		set its 
+			provider meta-argument to a 
+				<PROVIDER NAME>.<ALIAS> reference:
+
+resource "aws_instance" "foo" {
+  provider = aws.west
+
+  # ...
+}
+
+N.B: 
+Child Modules
+	A Terraform module (usually the root module of a configuration) can call other modules to include their resources into the configuration. A module that has been called by another module is often referred to as a child module.
+
+To select alternate provider configurations for a child module
+	use its providers meta-argument:
+
+module "aws_vpc" {
+  source = "./aws_vpc"
+  providers = {
+    aws = aws.west
+  }
+}
+
+
+	Most cases, 
+		only root modules 
+			should define provider configurations
+		child modules 
+			obtain their provider configurations from their parents.
+	version (Deprecated)
+	-----------
+	The version argument in provider configurations is deprecated. 
+	In Terraform 0.13 and later
+	always declare provider version constraints in the required_providers block. 
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Implement Terraform Multiple Providers & Clean-Up
+	------------------------------------------------------------------------------------------------------
+
+lab/3
+# Provider-1 for EastUS (Default Provider)
+provider "azurerm" {
+  features {}
+}
+
+# Provider-2 for WestUS Region
+provider "azurerm" {
+  features {
+    virtual_machine {
+      delete_os_disk_on_deletion = false # This will ensure when the Virtual Machine is destroyed, Disk is not deleted, default is true and we can alter it at provider level
+    }
+  }
+  alias = "provider2-westus"
+  #client_id = "XXXX"
+  #client_secret = "YYY"
+  #environment = "german"
+  #subscription_id = "JJJJ"
+}
+
+resource "azurerm_resource_group" "myrg1" {
+  name = "myrg-2"
+  location = "West US"
+    #<PROVIDER NAME>.<ALIAS NAME>
+  provider = azurerm
+}
+
+resource "azurerm_resource_group" "myrg2" {
+  name = "myrg-2"
+  location = "West US"
+    #<PROVIDER NAME>.<ALIAS NAME>
+  provider = azurerm.provider2-westus
+}
+
+
+
+
+
+	
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+Terraform Dependency Lock File
+------------------------------------------------------------------------------------------------------
+	Step-02: Create RG and Random String Resource
+	------------------------------------------------------------------------------------------------------
+		https://github.com/vilasvarghese/terraform-tutorial/blob/master/azure/01_1ResourceGroup/main.tf
+		
+		Randomn RG 
+			https://www.lightenna.com/tech/2019/terraform-resource-groups-in-Azure/
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create Terraform Storage Account Resource
+	------------------------------------------------------------------------------------------------------
+	
+	An Azure storage account 
+		store data objects
+		including 
+			blobs, 
+			file shares, 
+			queues, 
+			tables, and 
+			disks. 
+		provides a unique namespace for your Azure Storage data 
+			accessible from anywhere in the world over 
+				HTTP or HTTPS. 
+		Data in your storage account is 
+			durable  
+			highly available
+			secure 
+			massively scalable.
+	
+
+lab/4
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+
+resource "azurerm_storage_account" "example" {
+  name                     = "storageaccountname"	#This should be unique
+  resource_group_name      = azurerm_resource_group.example.name
+  location                 = azurerm_resource_group.example.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+
+  tags = {
+    environment = "staging"
+  }
+}
+
+
+arguments are supported:
+	name - 
+		(Required) 
+		Only lowercase Alphanumeric characters allowed. 
+		Change this 
+			a new resource will be created. 
+		Must be unique across 
+			Azure service
+			not just within the resource group.
+
+	resource_group_name - 
+		(Required) 
+		Change this 
+			new resource to be created.
+
+	location - 
+		(Required) 
+		Specifies the supported Azure location 
+		Change this 
+			a new resource will be created.
+
+	account_kind - 
+		(Optional) 
+		Defines the Kind of account. 
+		Valid options are 
+			BlobStorage, 
+			BlockBlobStorage, 
+			FileStorage, 
+			Storage and 
+			StorageV2. 
+		Changing this forces a new resource to be created. 
+		Defaults to StorageV2.
+
+https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account
+
+	
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Dependency Lock File Demo and CleanUp
+	------------------------------------------------------------------------------------------------------
+	
+https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/08-Providers-Dependency-Lock-File
+
+
+Terraform configuration 
+	has two external dependency
+	(outside it's code base)
+		Providers
+		Modules
+	
+	version constraints
+		define compatible dependency
+	Dependency lock file:
+		after selecting specific version 
+		terraform remembers decision based on 
+			dependency lock file
+		so same decision can be made again
+		Location: 
+			current directory
+	N.B: Currently supports only provider dependencies
+		For module use exact version. Don't use >=
+		
+	Advantages of lock file
+	-----------------------
+		Without lock file
+			download the latest version among supported
+				defined in required_providers block
+		With lock file
+			always install same provider version
+			dev./stage/production parity.
+			
+			
+		
+
+In provider block, features {} block is not present in Azure RM provider verion 1.44.0
+	
+lab/5
+# Terraform Block
+terraform {
+  required_version = ">= 1.0.0"
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "1.44.0"
+      #version = ">= 2.0" # Commented for Dependency Lock File Demo, uncomment and run. Verify the version
+    }
+    random = {
+      source = "hashicorp/random"
+      version = ">= 3.0"
+    }
+  }
+}
+
+# Provider Block
+provider "azurerm" {
+# features {}          # Commented for Dependency Lock File Demo
+}
+
+resource "azurerm_resource_group" "myrg1" {
+  name     = "myrg1"
+  location = "East US"
+}
+
+resource "random_string" "myrandom" {
+  length = 16
+  special = true
+  upper = false
+}
+
+resource "azurerm_storage_account" "mysa" {
+  name = "mysa${random_string.myrandom.id}"
+  resource_group_name      = azurerm_resource_group.myrg1.name
+  location                 = azurerm_resource_group.myrg1.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+  account_encryption_source = "Microsoft.Storage"
+
+  tags = {
+    environment = "staging"
+  }
+}
+
+
+
+
+Step
+	Create with version = "1.44.0"
+
+
+	
+
+# We will start with Base v1.44 `.terraform.lock.hcl` file
+cp .terraform.lock.hcl-v1.44 .terraform.lock.hcl
+
+
+# Initialize Terraform
+terraform init
+
+# Compare both files
+diff .terraform.lock.hcl-v1.44 .terraform.lock.hcl
+
+# Validate Terraform Configuration files
+terraform validate
+
+# Execute Terraform Plan
+terraform plan
+
+# Create Resources using Terraform Apply
+terraform apply
+
+
+	------------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------------
+Terraform Resource Syntax and Behaviour
+------------------------------------------------------------------------------------------------------
+	Step-01: Terraform Resource Syntax Introduction
+	------------------------------------------------------------------------------------------------------
+lab/6	
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+
+# Configure the Microsoft Azure Provider
+provider "azurerm" {
+  features {}
+}
+
+# Create a resource group
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+
+# Create a virtual network within the resource group
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  address_space       = ["10.0.0.0/16"]
+}
+
+The following arguments are supported:
+
+features - (Required) 
+	features block 
+		can customize certain Azure Provider resources.
+	https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/features-block
+
+client_id - (Optional) 
+	The Client ID  
+	Can also be sourced from 
+		ARM_CLIENT_ID Environment Variable.
+
+environment - (Optional) 
+	The [Cloud] Environment 
+	Possible values 
+		public, 
+		usgovernment, 
+		german, 
+		and china. 
+		Defaults to public. 
+	Can be sourced from the 
+		ARM_ENVIRONMENT Environment Variable.
+
+subscription_id - (Optional) 
+	The Subscription ID which should be used. This can also be sourced from the ARM_SUBSCRIPTION_ID Environment Variable.
+
+tenant_id - (Optional) The Tenant ID should be used. This can also be sourced from the ARM_TENANT_ID Environment Variable.
+
+auxiliary_tenant_ids - (Optional) List of auxiliary Tenant IDs required for multi-tenancy and cross-tenant scenarios. This can also be sourced from the ARM_AUXILIARY_TENANT_IDS Environment Variable.
+
+When authenticating as a Service Principal using a Client Certificate, the following fields can be set:
+
+client_certificate_password - (Optional) The password associated with the Client Certificate. This can also be sourced from the ARM_CLIENT_CERTIFICATE_PASSWORD Environment Variable.
+
+client_certificate_path - (Optional) The path to the Client Certificate associated with the Service Principal which should be used. This can also be sourced from the ARM_CLIENT_CERTIFICATE_PATH Environment Variable.
+
+More information on how to configure a Service Principal using a Client Certificate can be found in this guide.
+
+When authenticating as a Service Principal using a Client Secret, the following fields can be set:
+
+client_secret - (Optional) The Client Secret which should be used. This can also be sourced from the ARM_CLIENT_SECRET Environment Variable.
+More information on how to configure a Service Principal using a Client Secret can be found in this guide.
+
+When authenticating as a Service Principal using Open ID Connect, the following fields can be set:
+
+oidc_request_token - (Optional) The bearer token for the request to the OIDC provider. This can also be sourced from the ARM_OIDC_REQUEST_TOKEN or ACTIONS_ID_TOKEN_REQUEST_TOKEN Environment Variables.
+
+oidc_request_url - (Optional) The URL for the OIDC provider from which to request an ID token. This can also be sourced from the ARM_OIDC_REQUEST_URL or ACTIONS_ID_TOKEN_REQUEST_URL Environment Variables.
+
+oidc_token - (Optional) The ID token when authenticating using OpenID Connect (OIDC). This can also be sourced from the ARM_OIDC_TOKEN environment Variable.
+
+use_oidc - (Optional) Should OIDC be used for Authentication? This can also be sourced from the ARM_USE_OIDC Environment Variable. Defaults to false.
+
+More information on how to configure a Service Principal using OpenID Connect can be found in this guide.
+
+When authenticating using Managed Service Identity, the following fields can be set:
+
+msi_endpoint - (Optional) The path to a custom endpoint for Managed Service Identity - in most circumstances, this should be detected automatically. This can also, be sourced from the ARM_MSI_ENDPOINT Environment Variable.
+
+use_msi - (Optional) Should Managed Service Identity be used for Authentication? This can also be sourced from the ARM_USE_MSI Environment Variable. Defaults to false.
+
+More information on how to configure a Service Principal using Managed Service Identity can be found in this guide.
+
+For some advanced scenarios, such as where more granular permissions are necessary - the following properties can be set:
+
+disable_terraform_partner_id - (Optional) Disable sending the Terraform Partner ID if a custom partner_id isn't specified, which allows Microsoft to better understand the usage of Terraform. The Partner ID does not give HashiCorp any direct access to usage information. This can also be sourced from the ARM_DISABLE_TERRAFORM_PARTNER_ID environment variable. Defaults to false.
+
+metadata_host - (Optional) The Hostname of the Azure Metadata Service (for example management.azure.com), used to obtain the Cloud Environment when using a Custom Azure Environment. This can also be sourced from the ARM_METADATA_HOSTNAME Environment Variable.
+
+Note:
+environment must be set to the requested environment name in the list of available environments held in the metadata_host.
+
+partner_id - (Optional) A GUID/UUID registered with Microsoft to facilitate partner resource usage attribution). This can also be sourced from the ARM_PARTNER_ID Environment Variable. Supported formats are <guid> / pid-<guid> (GUIDs registered in Partner Center) and pid-<guid>-partnercenter (for published commercial marketplace Azure apps).
+
+auxiliary_tenant_ids - (Optional) Contains a list of (up to 3) other Tenant IDs used for cross-tenant and multi-tenancy scenarios with multiple AzureRM provider definitions. The list of auxiliary_tenant_ids in a given AzureRM provider definition contains the other, remote Tenants and should not include its own subscription_id (or ARM_SUBSCRIPTION_ID Environment Variable).
+
+skip_provider_registration - (Optional) Should the AzureRM Provider skip registering the Resource Providers it supports? This can also be sourced from the ARM_SKIP_PROVIDER_REGISTRATION Environment Variable. Defaults to false.
+
+Note
+By default, Terraform will attempt to register any Resource Providers that it supports, even if they're not used in your configurations to be able to display more helpful error messages. If you're running in an environment with restricted permissions, or wish to manage Resource Provider Registration outside of Terraform you may wish to disable this flag; however, please note that the error messages returned from Azure may be confusing as a result (example: API version 2019-01-01 was not found for Microsoft.Foo).
+
+storage_use_azuread - (Optional) Should the AzureRM Provider use AzureAD to connect to the Storage Blob & Queue API's, rather than the SharedKey from the Storage Account? This can also be sourced from the ARM_STORAGE_USE_AZUREAD Environment Variable. Defaults to false.
+
+
+
+
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create TF Config for Virtual Network
+	------------------------------------------------------------------------------------------------------
+	Manages a virtual network including any configured subnets. 
+	Each subnet can optionally be configured with a security group to be associated with the subnet.
+	
+lab/7
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+provider "azurerm" {
+  features {}
+}	
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+
+resource "azurerm_network_security_group" "example" {
+  name                = "example-security-group"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  address_space       = ["10.0.0.0/16"]
+  dns_servers         = ["10.0.0.4", "10.0.0.5"]
+
+  subnet {
+    name           = "subnet1"
+    address_prefix = "10.0.1.0/24"
+  }
+
+  subnet {
+    name           = "subnet2"
+    address_prefix = "10.0.2.0/24"
+    security_group = azurerm_network_security_group.example.id
+  }
+
+  tags = {
+    environment = "Production"
+  }
+}
+
+Arguments
+---------
+name - 
+	(Required) 
+	name of the virtual network. 
+	Change it	
+		new resource to be created.
+
+resource_group_name - 
+	(Required) 
+	
+	
+address_space - 
+	(Required) 
+	address space 
+	more than one address supported.
+
+location - (Required) 
+	The location/region where the virtual network is created. Changing this forces a new resource to be created.
+
+ddos_protection_plan - 
+	(Optional) 
+	ddos_protection_plan block 
+dns_servers - 
+	(Optional) 
+	List of IP addresses of DNS servers
+
+NOTE
+Since dns_servers can be 
+	inline 
+	separate azurerm_virtual_network_dns_servers resource, 
+	
+edge_zone - (Optional) 
+	Specifies the Edge Zone in Azure Region 
+	Change 
+		new Virtual Network to be created.
+
+flow_timeout_in_minutes - 
+	(Optional) 
+	flow timeout in minutes 
+	Possible values are between 4 and 30 minutes.
+
+subnet - 
+	(Optional) 
+	multiple times 
+		to define multiple subnets. 
+	can be 
+		inline and 
+		via separate azurerm_subnet resource
+
+tags - 
+	(Optional) 
+
+Timeouts
+The timeouts block allows you to specify timeouts for certain actions:
+
+create - 
+	(Defaults to 30 minutes) 
+	Used when creating the Virtual Network.
+update - 
+	(Defaults to 30 minutes) 
+	Used when updating the Virtual Network.
+read - 
+	(Defaults to 5 minutes) 
+	Used when retrieving the Virtual Network.
+delete - 
+	(Defaults to 30 minutes) 
+	Used when deleting the Virtual Network.
+
+Import
+Virtual Networks can be imported using the resource id, e.g.
+terraform import 
+	azurerm_virtual_network.exampleNetwork /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Network/virtualNetworks/myvnet1
+
+
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create TF Config for Subnet, Public IP and Network Interface
+	------------------------------------------------------------------------------------------------------
+https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
+
+Configuration with Network Interface
+lab/8
+------------------------------------------------------------
+
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+provider "azurerm" {
+  features {}
+}	
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+}
+
+resource "azurerm_subnet" "example" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.example.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "example" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.example.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+------------------------------------------------------------
+The following arguments are supported in:
+azurerm_network_interface
+ip_configuration - 
+	(Required) 
+	One or more ip_configuration blocks.
+
+location - 
+	(Required) 
+	The location of Network Interface. 
+	Change this 
+		a new resource to be created.
+
+name - 
+	(Required) 
+	The name of the Network Interface. 
+	Change this forces a new resource to be created.
+
+resource_group_name - 
+	(Required) 
+	The name of the Resource Group of the Network Interface. 
+	Changing this forces a new resource to be created.
+
+dns_servers - 
+	(Optional) 
+	list of IP Addresses 
+Note: 
+	will override the DNS Servers defined on the "Virtual Network".
+
+edge_zone - 
+	(Optional) 
+	Change this 
+		new Network Interface to be created.
+
+enable_ip_forwarding - 
+	(Optional) Should IP Forwarding be enabled? 
+	Defaults to false.
+
+enable_accelerated_networking - 
+	(Optional) Should Accelerated Networking be enabled? 
+	Defaults to false.
+
+Note:
+Check if Virtual Machine sizes are supported for Accelerated Networking 
+
+Note:
+To use Accelerated Networking in an Availability Set, the Availability Set must be deployed onto an Accelerated Networking enabled cluster.
+
+internal_dns_name_label - 
+	(Optional) The (relative) DNS Name used for internal communications between Virtual Machines in the same Virtual Network.
+
+tags - 
+	(Optional) A mapping of tags to assign to the resource.
+
+The ip_configuration block supports the following:
+
+name - 
+	(Required) A name used for this IP Configuration.
+
+gateway_load_balancer_frontend_ip_configuration_id - 
+	(Optional) 
+	The Frontend IP Configuration ID of a Gateway SKU Load Balancer.
+
+subnet_id - 
+	(Optional) 
+	The ID of the Subnet where this Network Interface should be located in.
+
+Note:
+This is required when private_ip_address_version is set to IPv4.
+
+private_ip_address_version - 
+	(Optional) 
+	The IP Version to use. Possible values are IPv4 or IPv6. Defaults to IPv4.
+
+private_ip_address_allocation - 
+	(Required) 
+	values: Dynamic and Static.
+
+Note:
+	Dynamic 
+		"An IP is automatically assigned 
+			during creation of this Network Interface"; 
+	Static 
+		"User supplied IP address will be used"
+
+public_ip_address_id - 
+	(Optional) 
+	Reference to a Public IP Address to associate with this NIC
+
+primary - 
+	(Optional) 
+	Must be true for the first ip_configuration 
+		when multiple are specified. 
+	Defaults to false.
+
+When private_ip_address_allocation is set to Static the following fields can be configured:
+
+private_ip_address - 
+	(Optional) The Static IP Address which should be used.
+	When private_ip_address_version is set to IPv4 the following fields can be configured:
+
+subnet_id - 
+	(Required) The ID of the Subnet where this Network Interface should be located in.
+
+Attributes Reference
+The following attributes are exported:
+
+applied_dns_servers - If the Virtual Machine using this Network Interface is part of an Availability Set, then this list will have the union of all DNS servers from all Network Interfaces that are part of the Availability Set.
+
+id - The ID of the Network Interface.
+
+internal_domain_name_suffix - Even if internal_dns_name_label is not specified, a DNS entry is created for the primary NIC of the VM. This DNS name can be constructed by concatenating the VM name with the value of internal_domain_name_suffix.
+
+mac_address - The Media Access Control (MAC) Address of the Network Interface.
+
+private_ip_address - The first private IP address of the network interface.
+
+Note:
+If a Dynamic allocation method is used Azure will allocate an IP Address on Network Interface creation.
+
+private_ip_addresses - The private IP addresses of the network interface.
+Note:
+If a Dynamic allocation method is used Azure will allocate an IP Address on Network Interface creation.
+
+virtual_machine_id - The ID of the Virtual Machine which this Network Interface is connected to.
+Timeouts
+The timeouts block allows you to specify timeouts for certain actions:
+
+	create - (Defaults to 30 minutes) Used when creating the Network Interface.
+	update - (Defaults to 30 minutes) Used when updating the Network Interface.
+	read - (Defaults to 5 minutes) Used when retrieving the Network Interface.
+	delete - (Defaults to 30 minutes) Used when deleting the Network Interface.
+
+
+------------------------------------------------------------
+lab/9
+Create a public IP and create vnet with public IP
+
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+provider "azurerm" {
+  features {}
+}	
+
+# Resource-2: Create Virtual Network
+resource "azurerm_virtual_network" "myvnet" {
+  name                = "myvnet-1"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+}
+
+# Resource-3: Create Subnet
+resource "azurerm_subnet" "mysubnet" {
+  name                 = "mysubnet-1"
+  resource_group_name  = azurerm_resource_group.myrg.name
+  virtual_network_name = azurerm_virtual_network.myvnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+# Resource-4: Create Public IP Address
+resource "azurerm_public_ip" "mypublicip" {
+  name                = "mypublicip-1"
+  resource_group_name = azurerm_resource_group.myrg.name
+  location            = azurerm_resource_group.myrg.location
+  allocation_method   = "Static"
+  tags = {
+    environment = "Dev"
+  }
+}
+
+# Resource-5: Create Network Interface
+resource "azurerm_network_interface" "myvm1nic" {
+  name                = "vm1-nic"
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.mysubnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.mypublicip.id 
+  }
+}
+
+
+------------------------------------------------------------
+
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Terraform Resource Behavior Introduction
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/resources
+	https://www.terraform.io/language/resources/behavior
+	
+	
+	Resources 
+		most important element 
+		resource block 
+			describes one or more infrastructure objects
+			e.g. 
+				virtual networks, 
+				compute instances, 
+				or higher-level components 
+					such as DNS records.
+
+		Meta-Arguments 
+			special arguments that can be used with every resource type
+			e.g. 
+				depends_on, 
+				count, 
+				for_each, 
+				provider, and 
+				lifecycle.
+
+		Provisioners 
+			configure post-creation actions 
+			non-declarative 
+			potentially unpredictable
+			recommendation
+				treat them as a last resort.
+
+
+Resource Behavior
+-----------------
+resource block 
+	declares 
+		infrastructure object with the given settings. 
+	Applying a Terraform configuration 
+		process of 
+			creating, 
+			updating, and 
+			destroying 
+				real infrastructure objects 
+		attempt to match actual state == desired state.
+
+How Terraform Applies a Configuration
+-------------------------------------
+	For new infrastructure object represented by a resource block
+		new object created
+		identifier of object saved in Terraform's state
+		allows to update  
+			in response to future changes. 
+	For existing resource blocks 
+		object present in the state
+		Terraform compares 
+			actual infrastructure with configuration 
+			updates the object to match the configuration.
+
+So apply will:
+	Create an infrastructure
+		which is not present
+	Destroy resources removed in configuration.
+	Update in-place resources whose arguments have changed.
+		refer command argument help.
+	Destroy and re-create resources 
+		if arguments have changed 
+			cannot be updated in-place.
+
+Accessing Resource Attributes
+-----------------------------
+Use 
+	<RESOURCE TYPE>.<NAME>.<ATTRIBUTE> 
+		to reference 
+	Mostly
+		read-only attributes 
+		e.g. resource's unique random ID.
+
+	Most providers also support data sources
+		e.g. ami
+
+Resource Dependencies
+---------------------
+Terraform can change
+	unrelated resources in parallel.
+But for dependent resources
+	follow sequential execution
+
+Most resource dependencies
+	handled automatically. 
+
+Terraform 
+	analyses expressions in resource block 
+		find references to other objects
+		creates order for 
+			creating, 
+			updating, or 
+			destroying resources. 
+	
+Some dependencies 
+	cannot be recognized implicitly 
+	For e.g., 
+		create access control policies 
+		take actions based on those policies 
+			hidden dependency between 
+				access policy and
+				resource 
+	Use meta-argument
+		depends_on 
+	or 
+		replace_triggered_by 
+			forces Terraform to replace 
+				parent resource 
+					when referenced resource or resource attribute changes
+
+Local-only Resources
+--------------------
+specialized resource types 
+	within Terraform itself
+	e.g. 
+		for generating private keys
+		self-signed TLS certificates
+		generate random ids. 
+		
+	lab already covered.	
+		
+behavior of local-only resources 
+	same as other resources
+		But: result data exists only within the Terraform state. 
+	"Destroying" local resource 
+		remove it from state, 
+		discarding its data.
+	
+	More on resources below
+	https://www.terraform.io/language/resources/syntax
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Resource Behavior: Create Resource Demo
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Understand Terraform State in detail
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/state
+	
+	State
+	-----
+	primary object for terraform to function
+	database containing the resources information 
+	When Terraform creates a remote object 
+		record the identity of that remote object 
+		against a resource instance
+		potentially 
+			update or delete that object 
+			in response to future configuration changes.
+	Terraform state file created when we first run the terraform apply
+	Terraform state file is created locally in working directory.
+	confiure the backend block 
+		in terraform block 
+			store state file remotely. 
+	Storing remotely is recommended option 
+		
+	
+		Terraform store state about 
+			managed infrastructure and 
+			configuration. 
+		used to 
+			map real world resources 
+				to configuration
+			create binding between 
+				remote real world resources
+				with config.
+		why?	
+			keep track of metadata
+				for e.g. if you delete a config?
+			improve performance.
+			
+		by default stored in 
+			"terraform.tfstate"
+				locally
+			can store remotely
+				for team 
+				
+		Prior to any operation
+			Terraform refresh 
+				update the state 
+					with the real infrastructure.
+
+https://www.terraform.io/language/state/purpose
+
+Purpose of Terraform State
+--------------------------
+	to 
+		Map to the Real World
+		manage Metadata
+		for Syncing
+	
+Mapping to the Real World
+-------------------------
+	Terraform requires some database 
+		to map Terraform config 
+			to the real world. 
+	for e.g.
+		to delete the resource
+	
+	
+	For some providers like AWS
+		could have used AWS tags. 
+			Early prototypes implementation used tags
+	problems
+		1: not all resources support tags
+		2: not all cloud providers support tags.
+
+	So Terraform uses states
+	
+	each remote object 
+		bound to only one resource instance in the configuration. 
+	
+
+Metadata
+---------
+	Terraform must also track 
+		metadata 
+			like resource dependencies.
+	While deleting resources, 
+		terraform should find
+			order of deleting
+			e.g. vm before subnet.
+		dependency can be complicated if multiple providers are present
+	
+Performance
+-----------
+	performance improvement
+		optional feature of Terraform state 
+	When running a terraform plan, 
+		Terraform must 
+			know the current state 
+				to determine the changes.
+	default behavior of Terraform: 
+		for every plan and apply, 
+		sync all resources in your state.
+	Problem with refresh
+		For each infra.
+			Very slow
+		Rate limiting can block
+	Solution
+		use 
+			-refresh=false flag and 
+				terraform plan -refresh=false or 
+				terraform apply -refresh=false.
+				Reference: https://www.terraform.io/cloud-docs/run/modes-and-options
+			-target flag 
+		cached state is treated as the record of truth.
+
+Syncing
+-------
+	
+	Remote state 
+		working in team.
+		can use remote locking 
+			avoid multiple users 
+				accidentally running Terraform at the same time
+			
+			
+
+Inspection and Modification
+---------------------------
+	direct file editing of the state is discouraged. 
+	terraform state command 
+		basic modifications of the state using the CLI.
+
+	Terraform expects a one-to-one mapping between configured resource instances and remote objects. Normally that is guaranteed by Terraform being the one to create each object and record its identity in the state, or to destroy an object and then remove the binding for it.
+
+	If you add or remove bindings in the state by other means, such as by importing externally-created objects with terraform import, or by asking Terraform to "forget" an existing object with terraform state rm, you'll then need to ensure for yourself that this one-to-one rule is followed, such as by manually deleting an object that you asked Terraform to "forget", or by re-importing it to bind it to some other resource instance.
+
+Format
+------
+	State snapshots 
+		stored in JSON format 
+	
+	terraform output command 
+		has a -json option, for obtaining either the full set of root module output values or a specific named output value from the latest state snapshot.
+	The terraform show command has a -json option for inspecting the latest state snapshot in full, and also for inspecting saved plan files which include a  of the prior state at the time the plan was made.
+	A typical way to use these in situations where Terraform is running in automation is to run them immediately after a successful terraform apply to obtain a representation of the latest state snapshot, and then store that result as an artifact associated with the automated run so that other software can potentially consume it without needing to run Terraform itself.
+	
+	
+
+
+
+
+	------------------------------------------------------------------------------------------------------	
+	Step-07: Resource Behavior: Update-In-Place, Destroy-Recreate and Destroy Demo's
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/09-Resource-Syntax-and-Behavior
+		
+	Update-In-Place	
+		In place update
+From lab/9
+	Add tags = {
+		"Name" = vilasvnet
+		"Environment" = "Dev"
+	}
+		
+	terraform validate
+	terraform plan
+		Check update in-place
+		
+	Destroy-Recreate
+		destroy and create resource
+		
+	Change 
+		name of network_interface
+	terraform validate
+	terraform plan
+	
+	https://www.terraform.io/cli/state/taint
+Forcing Re-creation of Resources
+--------------------------------
+During planning
+	default 
+		retrieves the latest state 
+			of each existing object and 
+		compares it 
+			with the current configuration, 
+		plan actions 
+			only against objects 
+		current state 
+			does not match the configuration.
+
+In some cases 
+	remote object get 
+		damaged or 
+		degraded 
+			Terraform cannot automatically detect. 
+	For e.g., 
+		if app in vm crashes 
+	We can force a replace
+		-replace=
+			
+$ terraform apply -replace=aws_instance.example
+  # aws_instance.example will be replaced, as requested
+
+The "tainted" status
+--------------------
+	Sometimes Terraform 
+		can detect the damage
+	for e.g.
+		creation of a complex object 
+			partially fails
+		e.g. provisioner fails.
+
+	Terraform marks an object in the state as "tainted". 
+	Impact:
+		next plan will force replace
+			similar to -replace we manually specify.
+
+	  # aws_instance.example is tainted, so must be replaced
+	-/+ resource "aws_instance" "example" {
+		  # ...
+		}
+
+Force Taint/Untaint
+-------------------
+If Terraform mark an object as tainted 
+	but is working correctly 
+	don't want to replace 
+	we can override Terraform
+		use terraform untaint command
+	
+We can force Terraform 
+	mark a object as tainted 
+	use 
+		deprecated: terraform taint command
+	 for
+		-replace=	
+		
+	------------------------------------------------------------------------------------------------------	
+	Step-08: Understand Terraform Desired and Current States and CleanUp
+	------------------------------------------------------------------------------------------------------
+	https://awstip.com/terraform-understanding-desired-current-state-176ffb13e213
+	
+	https://maazdba.blogspot.com/2020/09/terraform-diary-desired-state-and.html
+	
+	
+	------------------------------------------------------------------------------------------------------	
+
+Day 2
+------------------------------------------------------------------------------------------------------
+Terraform meta argument depend_on
+------------------------------------------------------------------------------------------------------
+	Step-00: All Meta-Arguments Introduction
+	------------------------------------------------------------------------------------------------------
+Resource behavior 
+	can be customized 
+	use nested lifecycle block 
+		in a resource block body:
+	
+	supported options
+		depends_on
+			manage dependencies which terraform cannot identify
+		count
+			create multiple resources
+		for_each
+			create multiple types of resources
+			can use 
+				map
+				set of string
+		provider
+			select non-default provider
+		lifecycle
+			modify the default behaviour
+
+
+	
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Introduction to Meta-Argument depends_on
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/meta-arguments/depends_on
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/10-Meta-Argument-depends_on
+	
+	depends_on 
+		meta-argument 
+		handle 
+			hidden resource or 
+			module dependencies 
+		that Terraform cannot automatically infer.
+		Available in 
+			module and 
+			resource 
+				blocks
+		Defines a list of references to 
+			other resources
+		or 
+			child modules
+		expressions are not allowed in depends_on	
+
+
+	required only when
+		depends_on
+			a resource 
+				depends on another resource
+			but	
+				doesn't access any property
+					in configuration
+
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Execute TF Commands without depends_on and understand Terraform Behavior
+	------------------------------------------------------------------------------------------------------
+terraform init
+terraform validate
+terraform plan
+terraform apply -auto-approve
+terraform destroy -auto-approve
+
+lab/10	
+# Terraform Block
+terraform {
+  required_version = ">= 1.0.0"
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = ">= 2.0" 
+    }
+    random = {
+      source = "hashicorp/random"
+      version = ">= 3.0"
+    }
+  }
+}
+
+# Provider Block
+provider "azurerm" {
+ features {}          
+}
+
+# Random String Resource
+resource "random_string" "myrandom" {
+  length = 6
+  upper = false 
+  special = false
+  number = false   
+}
+
+# Resource-1: Azure Resource Group
+resource "azurerm_resource_group" "myrg" {
+  name = "myrg-1"
+  location = "East US"
+}
+
+# Create Virtual Network
+resource "azurerm_virtual_network" "myvnet" {
+  name                = "myvnet-1"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+}
+
+# Create Subnet
+resource "azurerm_subnet" "mysubnet" {
+  name                 = "mysubnet-1"
+  resource_group_name  = azurerm_resource_group.myrg.name
+  virtual_network_name = azurerm_virtual_network.myvnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+# Create Public IP Address
+resource "azurerm_public_ip" "mypublicip" {
+  name                = "mypublicip-1"
+  resource_group_name = azurerm_resource_group.myrg.name
+  location            = azurerm_resource_group.myrg.location
+  allocation_method   = "Static"
+  domain_name_label = "app1-vm-${random_string.myrandom.id}"
+  tags = {
+    environment = "Dev"
+  }
+}
+
+# Create Network Interface
+resource "azurerm_network_interface" "myvmnic" {
+  name                = "vmnic"
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.mysubnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.mypublicip.id 
+  }
+}
+
+# Create Public IP Address
+resource "azurerm_public_ip" "mypublicip" {
+  # Add Explicit Dependency to have this resource created only after Virtual Network and Subnet Resources are created. 
+  depends_on = [
+    azurerm_virtual_network.myvnet,
+    azurerm_subnet.mysubnet
+  ]
+  name                = "mypublicip-1"
+  resource_group_name = azurerm_resource_group.myrg.name
+  location            = azurerm_resource_group.myrg.location
+  allocation_method   = "Static"
+  domain_name_label = "app1-vm-${random_string.myrandom.id}"
+  tags = {
+    environment = "Dev"
+  }
+}
+
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Execute TF Commands with depends_on and understand Terraform Behavior
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/meta-arguments/depends_on
+	
+	
+
+Processing and Planning Consequences
+------------------------------------
+depends_on 
+	instructs Terraform 
+		complete all actions on the dependency object 
+			(including Read actions) 
+		before performing actions on the object declaring the dependency. 
+	Recommendation:	
+		use it as last resort 
+		instead use
+			expression references
+		because 
+			Terraform takes conservative plans 
+				treat more values as unknown
+			replace more resources than necessary. 
+
+
+	
+Provison Azure Linux vm with file and filebase64
+------------------------------------------------------------------------------------------------------
+	Step-01: Introduction to Azure Linux VM using Terraform
+	------------------------------------------------------------------------------------------------------
+	
+	Create the below Azure Resources using Terraform
+		Azure Resource Group
+		Azure Virtual Network
+		Azure Subnet
+		Azure Public IP
+		Azure Network Interface
+		Azure Linux Virtual Machine
+		random_string Resource
+	
+	
+lab/11
+
+mkdir vm
+cd vm/
+mkdir ssh-keys
+cd ssh-ekys
+
+# Create SSH Key
+ssh-keygen \
+    -m PEM \
+    -t rsa \
+    -b 4096 \
+    -C "azureuser@myserver" \
+    -f terraform-azure.pem 
+#Important Note: Don't give a password. If you give password during generation, everytime you login to VM, need to provide passphrase.
+
+# List Files
+ls -lrt ssh-keys/
+
+# Files Generated after above command 
+Public Key: 
+	mv terraform-azure.pem.pub terraform-azure.pub
+Private Key: 
+	terraform-azure.pem
+
+# Permissions for Pem file
+chmod 400 terraform-azure.pem
+
+# Terraform Block
+terraform {
+  required_version = ">= 1.0.0"
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = ">= 2.0" 
+    }
+    random = {
+      source = "hashicorp/random"
+      version = ">= 3.0"
+    }
+  }
+}
+
+# Provider Block
+provider "azurerm" {
+ features {}          
+}
+
+# Random String Resource
+resource "random_string" "myrandom" {
+  length = 6
+  upper = false 
+  special = false
+  number = false   
+}	
+	
+# Resource-1: Azure Resource Group
+resource "azurerm_resource_group" "myrg" {
+  name = "myrg-1"
+  location = "East US"
+}
+
+
+# Create Virtual Network
+resource "azurerm_virtual_network" "myvnet" {
+  name                = "myvnet-1"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+}
+
+# Create Subnet
+resource "azurerm_subnet" "mysubnet" {
+  name                 = "mysubnet-1"
+  resource_group_name  = azurerm_resource_group.myrg.name
+  virtual_network_name = azurerm_virtual_network.myvnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+# Create Public IP Address
+resource "azurerm_public_ip" "mypublicip" {
+  name                = "mypublicip-1"
+  resource_group_name = azurerm_resource_group.myrg.name
+  location            = azurerm_resource_group.myrg.location
+  allocation_method   = "Static"
+  domain_name_label = "app1-vm-${random_string.myrandom.id}"
+  tags = {
+    environment = "Dev"
+  }
+}
+
+	
+	https://learn.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-terraform
+	https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_virtual_machine
+	
+	
+	
+	
+azurerm_linux_virtual_machine
+Manages a Linux Virtual Machine.
+
+Disclaimers
+Note
+Terraform will automatically remove the OS Disk by default - this behaviour can be configured using the features setting within the Provider block.
+
+Note
+All arguments including the administrator login and password will be stored in the raw state as plain-text. Read more about sensitive data in state.
+
+Note
+This resource does not support Unmanaged Disks. If you need to use Unmanaged Disks you can continue to use the azurerm_virtual_machine resource instead.
+
+Note
+This resource does not support attaching existing OS Disks. You can instead capture an image of the OS Disk or continue to use the azurerm_virtual_machine resource instead.
+
+Note
+In this release there's a known issue where the public_ip_address and public_ip_addresses fields may not be fully populated for Dynamic Public IP's.
+
+Example Usage
+This example provisions a basic Linux Virtual Machine on an internal network. Additional examples of how to use the azurerm_linux_virtual_machine resource can be found in the ./examples/virtual-machines/linux directory within the GitHub Repository.
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+}
+
+resource "azurerm_subnet" "example" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.example.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "example" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.example.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "example" {
+  name                = "example-machine"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  network_interface_ids = [
+    azurerm_network_interface.example.id,
+  ]
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
+  }
+}
+Argument Reference
+The following arguments are supported:
+
+admin_username - (Required) The username of the local administrator used for the Virtual Machine. Changing this forces a new resource to be created.
+
+location - (Required) The Azure location where the Linux Virtual Machine should exist. Changing this forces a new resource to be created.
+
+license_type - (Optional) Specifies the BYOL Type for this Virtual Machine. Possible values are RHEL_BYOS and SLES_BYOS.
+
+name - (Required) The name of the Linux Virtual Machine. Changing this forces a new resource to be created.
+
+network_interface_ids - (Required). A list of Network Interface IDs which should be attached to this Virtual Machine. The first Network Interface ID in this list will be the Primary Network Interface on the Virtual Machine.
+
+os_disk - (Required) A os_disk block as defined below.
+
+resource_group_name - (Required) The name of the Resource Group in which the Linux Virtual Machine should be exist. Changing this forces a new resource to be created.
+
+size - (Required) The SKU which should be used for this Virtual Machine, such as Standard_F2.
+
+additional_capabilities - (Optional) A additional_capabilities block as defined below.
+
+admin_password - (Optional) The Password which should be used for the local-administrator on this Virtual Machine. Changing this forces a new resource to be created.
+
+NOTE:
+When an admin_password is specified disable_password_authentication must be set to false. ~> NOTE: One of either admin_password or admin_ssh_key must be specified.
+
+admin_ssh_key - (Optional) One or more admin_ssh_key blocks as defined below.
+NOTE:
+One of either admin_password or admin_ssh_key must be specified.
+
+allow_extension_operations - (Optional) Should Extension Operations be allowed on this Virtual Machine?
+
+availability_set_id - (Optional) Specifies the ID of the Availability Set in which the Virtual Machine should exist. Changing this forces a new resource to be created.
+
+boot_diagnostics - (Optional) A boot_diagnostics block as defined below.
+
+capacity_reservation_group_id - (Optional) Specifies the ID of the Capacity Reservation Group which the Virtual Machine should be allocated to.
+
+NOTE:
+capacity_reservation_group_id cannot be used with availability_set_id or proximity_placement_group_id
+
+computer_name - (Optional) Specifies the Hostname which should be used for this Virtual Machine. If unspecified this defaults to the value for the name field. If the value of the name field is not a valid computer_name, then you must specify computer_name. Changing this forces a new resource to be created.
+
+custom_data - 
+	(Optional) 
+	Base64-Encoded Custom Data 
+		used for this Virtual Machine. 
+	Change  it
+		new resource will be created.
+
+dedicated_host_id - (Optional) The ID of a Dedicated Host where this machine should be run on. Conflicts with dedicated_host_group_id.
+
+dedicated_host_group_id - (Optional) The ID of a Dedicated Host Group that this Linux Virtual Machine should be run within. Conflicts with dedicated_host_id.
+
+disable_password_authentication - (Optional) Should Password Authentication be disabled on this Virtual Machine? Defaults to true. Changing this forces a new resource to be created.
+
+Note
+In general we'd recommend using SSH Keys for authentication rather than Passwords - but there's tradeoff's to each - please see this thread for more information.
+
+NOTE:
+When an admin_password is specified disable_password_authentication must be set to false.
+
+edge_zone - (Optional) Specifies the Edge Zone within the Azure Region where this Linux Virtual Machine should exist. Changing this forces a new Linux Virtual Machine to be created.
+
+encryption_at_host_enabled - (Optional) Should all of the disks (including the temp disk) attached to this Virtual Machine be encrypted by enabling Encryption at Host?
+
+eviction_policy - (Optional) Specifies what should happen when the Virtual Machine is evicted for price reasons when using a Spot instance. Possible values are Deallocate and Delete. Changing this forces a new resource to be created.
+
+NOTE:
+This can only be configured when priority is set to Spot.
+
+extensions_time_budget - (Optional) Specifies the duration allocated for all extensions to start. The time duration should be between 15 minutes and 120 minutes (inclusive) and should be specified in ISO 8601 format. Defaults to 90 minutes (PT1H30M).
+
+identity - (Optional) An identity block as defined below.
+
+patch_mode - (Optional) Specifies the mode of in-guest patching to this Linux Virtual Machine. Possible values are AutomaticByPlatform and ImageDefault. Defaults to ImageDefault. For more information on patch modes please see the product documentation.
+
+NOTE:
+If patch_mode is set to AutomaticByPlatform then provision_vm_agent must also be set to true.
+
+max_bid_price - (Optional) The maximum price you're willing to pay for this Virtual Machine, in US Dollars; which must be greater than the current spot price. If this bid price falls below the current spot price the Virtual Machine will be evicted using the eviction_policy. Defaults to -1, which means that the Virtual Machine should not be evicted for price reasons.
+NOTE:
+This can only be configured when priority is set to Spot.
+
+plan - (Optional) A plan block as defined below. Changing this forces a new resource to be created.
+
+platform_fault_domain - (Optional) Specifies the Platform Fault Domain in which this Linux Virtual Machine should be created. Defaults to -1, which means this will be automatically assigned to a fault domain that best maintains balance across the available fault domains. Changing this forces a new Linux Virtual Machine to be created.
+
+priority- (Optional) Specifies the priority of this Virtual Machine. Possible values are Regular and Spot. Defaults to Regular. Changing this forces a new resource to be created.
+
+provision_vm_agent - (Optional) Should the Azure VM Agent be provisioned on this Virtual Machine? Defaults to true. Changing this forces a new resource to be created.
+
+NOTE:
+If provision_vm_agent is set to false then allow_extension_operations must also be set to false.
+
+proximity_placement_group_id - (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
+
+secret - (Optional) One or more secret blocks as defined below.
+
+secure_boot_enabled - (Optional) Specifies whether secure boot should be enabled on the virtual machine. Changing this forces a new resource to be created.
+
+source_image_id - (Optional) The ID of the Image which this Virtual Machine should be created from. Changing this forces a new resource to be created. Possible Image ID types include Image IDs, Shared Image IDs, Shared Image Version IDs, Community Gallery Image IDs, Community Gallery Image Version IDs, Shared Gallery Image IDs and Shared Gallery Image Version IDs.
+
+NOTE:
+One of either source_image_id or source_image_reference must be set.
+
+source_image_reference - (Optional) A source_image_reference block as defined below. Changing this forces a new resource to be created.
+NOTE:
+One of either source_image_id or source_image_reference must be set.
+
+tags - (Optional) A mapping of tags which should be assigned to this Virtual Machine.
+
+termination_notification - (Optional) A termination_notification block as defined below.
+
+user_data - (Optional) The Base64-Encoded User Data which should be used for this Virtual Machine.
+
+vtpm_enabled - (Optional) Specifies whether vTPM should be enabled on the virtual machine. Changing this forces a new resource to be created.
+
+virtual_machine_scale_set_id - (Optional) Specifies the Orchestrated Virtual Machine Scale Set that this Virtual Machine should be created within. Changing this forces a new resource to be created.
+
+NOTE:
+Orchestrated Virtual Machine Scale Sets can be provisioned using the azurerm_orchestrated_virtual_machine_scale_set resource.
+
+zone - (Optional) Specifies the Availability Zones in which this Linux Virtual Machine should be located. Changing this forces a new Linux Virtual Machine to be created.
+A additional_capabilities block supports the following:
+
+ultra_ssd_enabled - (Optional) Should the capacity to enable Data Disks of the UltraSSD_LRS storage account type be supported on this Virtual Machine? Defaults to false.
+A admin_ssh_key block supports the following:
+
+public_key - (Required) The Public Key which should be used for authentication, which needs to be at least 2048-bit and in ssh-rsa format. Changing this forces a new resource to be created.
+
+username - (Required) The Username for which this Public SSH Key should be configured. Changing this forces a new resource to be created.
+
+NOTE:
+The Azure VM Agent only allows creating SSH Keys at the path /home/{username}/.ssh/authorized_keys - as such this public key will be written to the authorized keys file.
+
+A boot_diagnostics block supports the following:
+
+storage_account_uri - (Optional) The Primary/Secondary Endpoint for the Azure Storage Account which should be used to store Boot Diagnostics, including Console Output and Screenshots from the Hypervisor.
+NOTE:
+Passing a null value will utilize a Managed Storage Account to store Boot Diagnostics
+
+A certificate block supports the following:
+
+url - (Required) The Secret URL of a Key Vault Certificate.
+NOTE:
+This can be sourced from the secret_id field within the azurerm_key_vault_certificate Resource.
+
+A diff_disk_settings block supports the following:
+
+option - (Required) Specifies the Ephemeral Disk Settings for the OS Disk. At this time the only possible value is Local. Changing this forces a new resource to be created.
+
+placement - (Optional) Specifies where to store the Ephemeral Disk. Possible values are CacheDisk and ResourceDisk. Defaults to CacheDisk. Changing this forces a new resource to be created.
+
+An identity block supports the following:
+
+type - (Required) Specifies the type of Managed Service Identity that should be configured on this Linux Virtual Machine. Possible values are SystemAssigned, UserAssigned, SystemAssigned, UserAssigned (to enable both).
+
+identity_ids - (Optional) Specifies a list of User Assigned Managed Identity IDs to be assigned to this Linux Virtual Machine.
+
+NOTE:
+This is required when type is set to UserAssigned or SystemAssigned, UserAssigned.
+
+A os_disk block supports the following:
+
+caching - (Required) The Type of Caching which should be used for the Internal OS Disk. Possible values are None, ReadOnly and ReadWrite.
+
+storage_account_type - (Required) The Type of Storage Account which should back this the Internal OS Disk. Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS. Changing this forces a new resource to be created.
+
+diff_disk_settings (Optional) A diff_disk_settings block as defined above. Changing this forces a new resource to be created.
+
+NOTE:
+diff_disk_settings can only be set when caching is set to ReadOnly. More information can be found here
+
+disk_encryption_set_id - (Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk. Conflicts with secure_vm_disk_encryption_set_id.
+NOTE:
+The Disk Encryption Set must have the Reader Role Assignment scoped on the Key Vault - in addition to an Access Policy to the Key Vault
+
+disk_size_gb - (Optional) The Size of the Internal OS Disk in GB, if you wish to vary from the size used in the image this Virtual Machine is sourced from.
+NOTE:
+If specified this must be equal to or larger than the size of the Image the Virtual Machine is based on. When creating a larger disk than exists in the image you'll need to repartition the disk to use the remaining space.
+
+name - (Optional) The name which should be used for the Internal OS Disk. Changing this forces a new resource to be created.
+
+secure_vm_disk_encryption_set_id - (Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk when the Virtual Machine is a Confidential VM. Conflicts with disk_encryption_set_id. Changing this forces a new resource to be created.
+
+NOTE:
+secure_vm_disk_encryption_set_id can only be specified when security_encryption_type is set to DiskWithVMGuestState.
+
+security_encryption_type - (Optional) Encryption Type when the Virtual Machine is a Confidential VM. Possible values are VMGuestStateOnly and DiskWithVMGuestState. Changing this forces a new resource to be created.
+NOTE:
+secure_boot_enabled and vtpm_enabled must be set to true when security_encryption_type is specified.
+
+NOTE:
+encryption_at_host_enabled cannot be set to true when security_encryption_type is set to DiskWithVMGuestState.
+
+write_accelerator_enabled - (Optional) Should Write Accelerator be Enabled for this OS Disk? Defaults to false.
+NOTE:
+This requires that the storage_account_type is set to Premium_LRS and that caching is set to None.
+
+A plan block supports the following:
+
+name - (Required) Specifies the Name of the Marketplace Image this Virtual Machine should be created from. Changing this forces a new resource to be created.
+
+product - (Required) Specifies the Product of the Marketplace Image this Virtual Machine should be created from. Changing this forces a new resource to be created.
+
+publisher - (Required) Specifies the Publisher of the Marketplace Image this Virtual Machine should be created from. Changing this forces a new resource to be created.
+
+A secret block supports the following:
+
+certificate - (Required) One or more certificate blocks as defined above.
+
+key_vault_id - (Required) The ID of the Key Vault from which all Secrets should be sourced.
+
+source_image_reference supports the following:
+
+publisher - (Optional) Specifies the publisher of the image used to create the virtual machines.
+
+offer - (Optional) Specifies the offer of the image used to create the virtual machines.
+
+sku - (Optional) Specifies the SKU of the image used to create the virtual machines.
+
+version - (Optional) Specifies the version of the image used to create the virtual machines.
+
+A termination_notification block supports the following:
+
+enabled - (Required) Should the termination notification be enabled on this Virtual Machine? Defaults to false.
+
+timeout - (Optional) Length of time (in minutes, between 5 and 15) a notification to be sent to the VM on the instance metadata server till the VM gets deleted. The time duration should be specified in ISO 8601 format.
+
+NOTE:
+For more information about the termination notification, please refer to this doc.
+
+Attributes Reference
+In addition to all arguments above, the following attributes are exported:
+
+id - The ID of the Linux Virtual Machine.
+
+identity - An identity block as documented below.
+
+private_ip_address - The Primary Private IP Address assigned to this Virtual Machine.
+
+private_ip_addresses - A list of Private IP Addresses assigned to this Virtual Machine.
+
+public_ip_address - The Primary Public IP Address assigned to this Virtual Machine.
+
+public_ip_addresses - A list of the Public IP Addresses assigned to this Virtual Machine.
+
+virtual_machine_id - A 128-bit identifier which uniquely identifies this Virtual Machine.
+
+An identity block exports the following:
+
+principal_id - The Principal ID associated with this Managed Service Identity.
+
+tenant_id - The Tenant ID associated with this Managed Service Identity.
+
+Timeouts
+The timeouts block allows you to specify timeouts for certain actions:
+
+create - (Defaults to 45 minutes) Used when creating the Linux Virtual Machine.
+update - (Defaults to 45 minutes) Used when updating the Linux Virtual Machine.
+delete - (Defaults to 45 minutes) Used when deleting the Linux Virtual Machine.
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create TF Config for Azure Linux VM
+	------------------------------------------------------------------------------------------------------
+
+already covered above
+
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Review CloudInit file for custom_data and filebase64 function
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/functions/filebase64
+	https://stackoverflow.com/questions/69709119/why-do-i-get-contents-of-zip-are-not-valid-utf-8-when-using-filebase64sha256
+	
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Execute TF Commands, Verify and Clean-Up Azure All resources
+------------------------------------------------------------------------------------------------------
+Terraform meta argument with Element Function and Splat Expression
+------------------------------------------------------------------------------------------------------
+	Step-01: Introduction to Meta-Argument count
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/meta-arguments/count
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/11-02-Meta-Argument-count
+
+The count Meta-Argument
+Version note: Module support for count was added in Terraform 0.13, and previous versions can only use it with resources.
+
+Note: A given resource or module block cannot use both count and for_each.
+
+Hands-on: Try the Manage Similar Resources With Count tutorial.
+
+By default, a resource block configures one real infrastructure object. (Similarly, a module block includes a child module's contents into the configuration one time.) However, sometimes you want to manage several similar objects (like a fixed pool of compute instances) without writing a separate block for each one. Terraform has two ways to do this: count and for_each.
+
+If a resource or module block includes a count argument whose value is a whole number, Terraform will create that many instances.
+
+»Basic Syntax
+count is a meta-argument defined by the Terraform language. It can be used with modules and with every resource type.
+
+The count meta-argument accepts a whole number, and creates that many instances of the resource or module. Each instance has a distinct infrastructure object associated with it, and each is separately created, updated, or destroyed when the configuration is applied.
+
+resource "aws_instance" "server" {
+  count = 4 # create four similar EC2 instances
+
+  ami           = "ami-a1b2c3d4"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "Server ${count.index}"
+  }
+}
+
+»The count Object
+In blocks where count is set, an additional count object is available in expressions, so you can modify the configuration of each instance. This object has one attribute:
+
+count.index — The distinct index number (starting with 0) corresponding to this instance.
+»Using Expressions in count
+The count meta-argument accepts numeric expressions. However, unlike most arguments, the count value must be known before Terraform performs any remote resource actions. This means count can't refer to any resource attributes that aren't known until after a configuration is applied (such as a unique ID generated by the remote API when an object is created).
+
+»Referring to Instances
+When count is set, Terraform distinguishes between the block itself and the multiple resource or module instances associated with it. Instances are identified by an index number, starting with 0.
+
+<TYPE>.<NAME> or module.<NAME> (for example, aws_instance.server) refers to the resource block.
+<TYPE>.<NAME>[<INDEX>] or module.<NAME>[<INDEX>] (for example, aws_instance.server[0], aws_instance.server[1], etc.) refers to individual instances.
+This is different from resources and modules without count or for_each, which can be referenced without an index or key.
+
+Similarly, resources from child modules with multiple instances are prefixed with module.<NAME>[<KEY>] when displayed in plan output and elsewhere in the UI. For a module without count or for_each, the address will not contain the module index as the module's name suffices to reference the module.
+
+Note: Within nested provisioner or connection blocks, the special self object refers to the current resource instance, not the resource block as a whole.
+
+»When to Use for_each Instead of count
+If your instances are almost identical, count is appropriate. If some of their arguments need distinct values that can't be directly derived from an integer, it's safer to use for_each.
+
+Before for_each was available, it was common to derive count from the length of a list and use count.index to look up the original list value:
+
+variable "subnet_ids" {
+  type = list(string)
+}
+
+resource "aws_instance" "server" {
+  # Create one instance for each subnet
+  count = length(var.subnet_ids)
+
+  ami           = "ami-a1b2c3d4"
+  instance_type = "t2.micro"
+  subnet_id     = var.subnet_ids[count.index]
+
+  tags = {
+    Name = "Server ${count.index}"
+  }
+}
+
+
+This was fragile, because the resource instances were still identified by their index instead of the string values in the list. If an element was removed from the middle of the list, every instance after that element would see its subnet_id value change, resulting in more remote object changes than intended. Using for_each gives the same flexibility without the extra churn.
+
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Meta-Argument Count - Azure Resource Group Demo
+	------------------------------------------------------------------------------------------------------
+	
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Introduction to Meta-Argument count for Azure Linux VM
+	------------------------------------------------------------------------------------------------------
+	
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Learn Terraform Element, Length Functions and Splat Expressions
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/functions/length
+	https://www.terraform.io/language/expressions/splat
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Apply Element Function, Splat Expression to VMNIC and Linux VM
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Execute Terraform Commands, Verify 2 Linux VMs and CleanUp
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------------
+Terraform meta argument for_each with Maps and set of string
+------------------------------------------------------------------------------------------------------
+	Step-02: Meta-Argument for_each with Maps Demo
+	------------------------------------------------------------------------------------------------------
+		https://www.terraform.io/language/meta-arguments/for_each
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/12-Meta-Argument-for_each-Maps
+	------------------------------------------------------------------------------------------------------	
+	Step-03: for_each - Set of Strings Introduction and Terraform Console Command wi
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Implement for_each with set of strings
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/13-Meta-Argument-for_each-ToSet
+	------------------------------------------------------------------------------------------------------	
+	Step-05: for_each chaining Introduction and Review TF Configs
+	------------------------------------------------------------------------------------------------------
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/14-Meta-Argument-for_each-Chaining
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Implement for_each chaining
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------------
+Meta argument lifecycle create_before_destroy , Prevent Destroy and Ignore_change
+------------------------------------------------------------------------------------------------------
+
+
+resource "azurerm_resource_group" "example" {
+  # ...
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+Syntax and Arguments
+--------------------
+lifecycle block 
+	contents are meta-arguments
+	available for all resource blocks 
+	
+	arguments available "meta-argument"
+		create_before_destroy, 
+		prevent_destroy, 
+		ignore_changes
+		replace_triggered_by.
+
+create_before_destroy (bool) - 
+	For Terraform to change 
+		a resource argument 
+			that cannot be updated in-place 
+			due to remote API limitations
+		Terraform 
+			destroy the existing object 
+			then create a new replacement object.
+
+create_before_destroy 
+	change default behaviour
+	new replacement object is created first
+	prior object is destroyed after the replacement is created.
+
+	an opt-in behavior 
+		unique name 
+		so opt in wisely.
+		
+	Destroy provisioners of this resource will not run if create_before_destroy is set to true. We may address this in the future, and this GitHub issue contains more details.
+
+prevent_destroy (bool) - This meta-argument, when set to true, will cause Terraform to reject with an error any plan that would destroy the infrastructure object associated with the resource, as long as the argument remains present in the configuration.
+
+This can be used as a measure of safety against the accidental replacement of objects that may be costly to reproduce, such as database instances. However, it will make certain configuration changes impossible to apply, and will prevent the use of the terraform destroy command once such objects are created, and so this option should be used sparingly.
+
+Since this argument must be present in configuration for the protection to apply, note that this setting does not prevent the remote object from being destroyed if the resource block were removed from configuration entirely: in that case, the prevent_destroy setting is removed along with it, and so Terraform will allow the destroy operation to succeed.
+
+ignore_changes (list of attribute names) - By default, Terraform detects any difference in the current settings of a real infrastructure object and plans to update the remote object to match configuration.
+
+The ignore_changes feature is intended to be used when a resource is created with references to data that may change in the future, but should not affect said resource after its creation. In some rare cases, settings of a remote object are modified by processes outside of Terraform, which Terraform would then attempt to "fix" on the next run. In order to make Terraform share management responsibilities of a single object with a separate process, the ignore_changes meta-argument specifies resource attributes that Terraform should ignore when planning updates to the associated remote object.
+
+The arguments corresponding to the given attribute names are considered when planning a create operation, but are ignored when planning an update. The arguments are the relative address of the attributes in the resource. Map and list elements can be referenced using index notation, like tags["Name"] and list[0] respectively.
+
+resource "aws_instance" "example" {
+  # ...
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to tags, e.g. because a management agent
+      # updates these based on some ruleset managed elsewhere.
+      tags,
+    ]
+  }
+}
+
+
+Instead of a list, the special keyword all may be used to instruct Terraform to ignore all attributes, which means that Terraform can create and destroy the remote object but will never propose updates to it.
+
+Only attributes defined by the resource type can be ignored. ignore_changes cannot be applied to itself or to any other meta-arguments.
+
+replace_triggered_by (list of resource or attribute references) - Added in Terraform 1.2. Replaces the resource when any of the referenced items change. Supply a list of expressions referencing managed resources, instances, or instance attributes. When used in a resource that uses count or for_each, you can use count.index or each.key in the expression to reference specific instances of other resources that are configured with the same count or collection.
+
+References trigger replacement in the following conditions:
+
+If the reference is to a resource with multiple instances, a plan to update or replace any instance will trigger replacement.
+If the reference is to a single resource instance, a plan to update or replace that instance will trigger replacement.
+If the reference is to a single attribute of a resource instance, any change to the attribute value will trigger replacement.
+You can only reference managed resources in replace_triggered_by expressions. This lets you modify these expressions without forcing replacement.
+
+resource "aws_appautoscaling_target" "ecs_target" {
+  # ...
+  lifecycle {
+    replace_triggered_by = [
+      # Replace `aws_appautoscaling_target` each time this instance of
+      # the `aws_ecs_service` is replaced.
+      aws_ecs_service.svc.id
+    ]
+  }
+}
+
+
+Custom Condition Checks
+You can add precondition and postcondition blocks with a lifecycle block to specify assumptions and guarantees about how resources and data sources operate. The following examples creates a precondition that checks whether the AMI is properly configured.
+
+resource "aws_instance" "example" {
+  instance_type = "t2.micro"
+  ami           = "ami-abc123"
+
+  lifecycle {
+    # The AMI ID must refer to an AMI that contains an operating system
+    # for the `x86_64` architecture.
+    precondition {
+      condition     = data.aws_ami.example.architecture == "x86_64"
+      error_message = "The selected AMI must be for the x86_64 architecture."
+    }
+  }
+}
+Custom conditions can help capture assumptions, helping future maintainers understand the configuration design and intent. They also return useful information about errors earlier and in context, helping consumers more easily diagnose issues in their configurations.
+
+Refer to Custom Conditions for more details.
+
+Literal Values Only
+The lifecycle settings all affect how Terraform constructs and traverses the dependency graph. As a result, only literal values can be used because the processing happens too early for arbitrary expression evaluation.
+
+
+	Step-02: Explore default resource behavior - Delete and Recreate Resource
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Lifecycle Meta-Argument create_before_destroy demo
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/15-Meta-Argument-lifecycle-create_before_destroy
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Lifecycle Meta-Argument prevent_destroy demo
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/16-Meta-Argument-lifecycle-prevent_destroy
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Without Lifecycle Meta-Argument ignore_changes understand Terraform beh
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/17-Meta-Argument-lifecycle-ignore_changes
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Lifecycle Meta-Argument ignore_changes demo
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+
+Day 3
+------------------------------------------------------------------------------------------------------
+Terraform Input Variable
+------------------------------------------------------------------------------------------------------
+	Step-01: Define Terraform Input Variable
+	------------------------------------------------------------------------------------------------------
+	
+	Input variables let you customize aspects of Terraform modules without altering the module's own source code. This functionality allows you to share modules across different Terraform configurations, making your module composable and reusable.
+
+When you declare variables in the root module of your configuration, you can set their values using CLI options and environment variables. When you declare them in child modules, the calling module should pass values in the module block.
+
+
+variable "image_id" {
+  type = string
+}
+
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}
+
+variable "docker_ports" {
+  type = list(object({
+    internal = number
+    external = number
+    protocol = string
+  }))
+  default = [
+    {
+      internal = 8300
+      external = 8300
+      protocol = "tcp"
+    }
+  ]
+}
+
+
+The label after the variable keyword is a name for the variable, which must be unique among all variables in the same module. This name is used to assign a value to the variable from outside and to reference the variable's value from within the module.
+
+The name of a variable can be any valid identifier except the following: source, version, providers, count, for_each, lifecycle, depends_on, locals.
+
+These names are reserved for meta-arguments in module configuration blocks, and cannot be declared as variable names.
+
+»Arguments
+Terraform CLI defines the following optional arguments for variable declarations:
+
+default - A default value which then makes the variable optional.
+type - This argument specifies what value types are accepted for the variable.
+description - This specifies the input variable's documentation.
+validation - A block to define validation rules, usually in addition to type constraints.
+sensitive - Limits Terraform UI output when the variable is used in configuration.
+nullable - Specify if the variable can be null within the module.
+»Default values
+The variable declaration can also include a default argument. If present, the variable is considered to be optional and the default value will be used if no value is set when calling the module or running Terraform. The default argument requires a literal value and cannot reference other objects in the configuration.
+
+»Type Constraints
+The type argument in a variable block allows you to restrict the type of value that will be accepted as the value for a variable. If no type constraint is set then a value of any type is accepted.
+
+While type constraints are optional, we recommend specifying them; they can serve as helpful reminders for users of the module, and they allow Terraform to return a helpful error message if the wrong type is used.
+
+Type constraints are created from a mixture of type keywords and type constructors. The supported type keywords are:
+
+string
+number
+bool
+The type constructors allow you to specify complex types such as collections:
+
+list(<TYPE>)
+set(<TYPE>)
+map(<TYPE>)
+object({<ATTR NAME> = <TYPE>, ... })
+tuple([<TYPE>, ...])
+The keyword any may be used to indicate that any type is acceptable. For more information on the meaning and behavior of these different types, as well as detailed information about automatic conversion of complex types, see Type Constraints.
+
+If both the type and default arguments are specified, the given default value must be convertible to the specified type.
+
+»Input Variable Documentation
+Because the input variables of a module are part of its user interface, you can briefly describe the purpose of each variable using the optional description argument:
+
+variable "image_id" {
+  type        = string
+  description = "The id of the machine image (AMI) to use for the server."
+}
+
+
+The description should concisely explain the purpose of the variable and what kind of value is expected. This description string might be included in documentation about the module, and so it should be written from the perspective of the user of the module rather than its maintainer. For commentary for module maintainers, use comments.
+
+»Custom Validation Rules
+This feature was introduced in Terraform CLI v0.13.0.
+
+You can specify custom validation rules for a particular variable by adding a validation block within the corresponding variable block. The example below checks whether the AMI ID has the correct syntax.
+
+variable "image_id" {
+  type        = string
+  description = "The id of the machine image (AMI) to use for the server."
+
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+  }
+}
+
+
+Refer to Custom Condition Checks for more details.
+
+»Suppressing Values in CLI Output
+This feature was introduced in Terraform v0.14.0.
+
+Hands-on: Try the Protect Sensitive Input Variables tutorial.
+
+Setting a variable as sensitive prevents Terraform from showing its value in the plan or apply output, when you use that variable elsewhere in your configuration.
+
+Terraform will still record sensitive values in the state, and so anyone who can access the state data will have access to the sensitive values in cleartext. For more information, see Sensitive Data in State.
+
+Declare a variable as sensitive by setting the sensitive argument to true:
+
+variable "user_information" {
+  type = object({
+    name    = string
+    address = string
+  })
+  sensitive = true
+}
+
+resource "some_resource" "a" {
+  name    = var.user_information.name
+  address = var.user_information.address
+}
+
+
+Any expressions whose result depends on the sensitive variable will be treated as sensitive themselves, and so in the above example the two arguments of resource "some_resource" "a" will also be hidden in the plan output:
+
+Terraform will perform the following actions:
+
+  # some_resource.a will be created
+  + resource "some_resource" "a" {
+      + name    = (sensitive)
+      + address = (sensitive)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+
+In some cases where you use a sensitive variable inside a nested block, Terraform may treat the entire block as redacted. This happens for resource types where all of the blocks of a particular type are required to be unique, and so disclosing the content of one block might imply the content of a sibling block.
+
+  # some_resource.a will be updated in-place
+  ~ resource "some_resource" "a" {
+      ~ nested_block {
+          # At least one attribute in this block is (or was) sensitive,
+          # so its contents will not be displayed.
+        }
+    }
+
+
+A provider can also declare an attribute as sensitive, which will cause Terraform to hide it from regular output regardless of how you assign it a value. For more information, see Sensitive Resource Attributes.
+
+If you use a sensitive value as part of an output value then Terraform will require you to also mark the output value itself as sensitive, to confirm that you intended to export it.
+
+»Cases where Terraform may disclose a sensitive variable
+A sensitive variable is a configuration-centered concept, and values are sent to providers without any obfuscation. A provider error could disclose a value if that value is included in the error message. For example, a provider might return the following error even if "foo" is a sensitive value: "Invalid value 'foo' for field"
+
+If a resource attribute is used as, or part of, the provider-defined resource id, an apply will disclose the value. In the example below, the prefix attribute has been set to a sensitive variable, but then that value ("jae") is later disclosed as part of the resource id:
+
+  # random_pet.animal will be created
+  + resource "random_pet" "animal" {
+      + id        = (known after apply)
+      + length    = 2
+      + prefix    = (sensitive)
+      + separator = "-"
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+...
+
+random_pet.animal: Creating...
+random_pet.animal: Creation complete after 0s [id=jae-known-mongoose]
+
+
+»Disallowing Null Input Values
+This feature is available in Terraform v1.1.0 and later.
+
+The nullable argument in a variable block controls whether the module caller may assign the value null to the variable.
+
+variable "example" {
+  type     = string
+  nullable = false
+}
+
+
+The default value for nullable is true. When nullable is true, null is a valid value for the variable, and the module configuration must always account for the possibility of the variable value being null. Passing a null value as a module input argument will override any default value.
+
+Setting nullable to false ensures that the variable value will never be null within the module. If nullable is false and the variable has a default value, then Terraform uses the default when a module input argument is null.
+
+The nullable argument only controls where the direct value of the variable may be null. For variables of collection or structural types, such as lists or objects, the caller may still use null in nested elements or attributes, as long as the collection or structure itself is not null.
+
+»Using Input Variable Values
+Within the module that declared a variable, its value can be accessed from within expressions as var.<NAME>, where <NAME> matches the label given in the declaration block:
+
+Note: Input variables are created by a variable block, but you reference them as attributes on an object named var.
+
+resource "aws_instance" "example" {
+  instance_type = "t2.micro"
+  ami           = var.image_id
+}
+
+
+The value assigned to a variable can only be accessed in expressions within the module where it was declared.
+
+»Assigning Values to Root Module Variables
+When variables are declared in the root module of your configuration, they can be set in a number of ways:
+
+In a Terraform Cloud workspace.
+Individually, with the -var command line option.
+In variable definitions (.tfvars) files, either specified on the command line or automatically loaded.
+As environment variables.
+The following sections describe these options in more detail. This section does not apply to child modules, where values for input variables are instead assigned in the configuration of their parent module, as described in Modules.
+
+»Variables on the Command Line
+To specify individual variables on the command line, use the -var option when running the terraform plan and terraform apply commands:
+
+terraform apply -var="image_id=ami-abc123"
+terraform apply -var='image_id_list=["ami-abc123","ami-def456"]' -var="instance_type=t2.micro"
+terraform apply -var='image_id_map={"us-east-1":"ami-abc123","us-east-2":"ami-def456"}'
+
+
+The above examples show appropriate syntax for Unix-style shells, such as on Linux or macOS. For more information on shell quoting, including additional examples for Windows Command Prompt, see Input Variables on the Command Line.
+
+You can use the -var option multiple times in a single command to set several different variables.
+
+»Variable Definitions (.tfvars) Files
+To set lots of variables, it is more convenient to specify their values in a variable definitions file (with a filename ending in either .tfvars or .tfvars.json) and then specify that file on the command line with -var-file:
+
+terraform apply -var-file="testing.tfvars"
+
+Note: This is how Terraform Cloud passes workspace variables to Terraform.
+
+A variable definitions file uses the same basic syntax as Terraform language files, but consists only of variable name assignments:
+
+image_id = "ami-abc123"
+availability_zone_names = [
+  "us-east-1a",
+  "us-west-1c",
+]
+
+Terraform also automatically loads a number of variable definitions files if they are present:
+
+Files named exactly terraform.tfvars or terraform.tfvars.json.
+Any files with names ending in .auto.tfvars or .auto.tfvars.json.
+Files whose names end with .json are parsed instead as JSON objects, with the root object properties corresponding to variable names:
+
+{
+  "image_id": "ami-abc123",
+  "availability_zone_names": ["us-west-1a", "us-west-1c"]
+}
+
+»Environment Variables
+As a fallback for the other ways of defining variables, Terraform searches the environment of its own process for environment variables named TF_VAR_ followed by the name of a declared variable.
+
+This can be useful when running Terraform in automation, or when running a sequence of Terraform commands in succession with the same variables. For example, at a bash prompt on a Unix system:
+
+$ export TF_VAR_image_id=ami-abc123
+$ terraform plan
+...
+
+On operating systems where environment variable names are case-sensitive, Terraform matches the variable name exactly as given in configuration, and so the required environment variable name will usually have a mix of upper and lower case letters as in the above example.
+
+»Complex-typed Values
+When variable values are provided in a variable definitions file, you can use Terraform's usual syntax for literal expressions to assign complex-typed values, like lists and maps.
+
+Some special rules apply to the -var command line option and to environment variables. For convenience, Terraform defaults to interpreting -var and environment variable values as literal strings, which need only shell quoting, and no special quoting for Terraform. For example, in a Unix-style shell:
+
+$ export TF_VAR_image_id='ami-abc123'
+
+However, if a root module variable uses a type constraint to require a complex value (list, set, map, object, or tuple), Terraform will instead attempt to parse its value using the same syntax used within variable definitions files, which requires careful attention to the string escaping rules in your shell:
+
+$ export TF_VAR_availability_zone_names='["us-west-1b","us-west-1d"]'
+
+For readability, and to avoid the need to worry about shell escaping, we recommend always setting complex variable values via variable definitions files. For more information on quoting and escaping for -var arguments, see Input Variables on the Command Line.
+
+»Values for Undeclared Variables
+If you have defined a variable value, but not its corresponding variable {} definition, you may get an error or warning depending on how you have provided that value.
+
+If you provide values for undeclared variables defined as environment variables you will not get an error or warning. This is because environment variables may be declared but not used in all configurations that might be run.
+
+If you provide values for undeclared variables defined in a file you will get a warning. This is to help in cases where you have provided a variable value meant for a variable declaration, but perhaps there is a mistake in the value definition. For example, the following configuration:
+
+variable "moose" {
+  type = string
+}
+
+And the following .tfvars file:
+
+mosse = "Moose"
+
+Will cause Terraform to warn you that there is no variable declared "mosse", which can help you spot this mistake.
+
+If you use .tfvars files across multiple configurations and expect to continue to see this warning, you can use the -compact-warnings option to simplify your output.
+
+If you provide values for undeclared variables on the command line, Terraform will error. To avoid this error, either declare a variable block for the value, or remove the variable value from your Terraform call.
+
+»Variable Definition Precedence
+The above mechanisms for setting variables can be used together in any combination. If the same variable is assigned multiple values, Terraform uses the last value it finds, overriding any previous values. Note that the same variable cannot be assigned multiple values within a single source.
+
+Terraform loads variables in the following order, with later sources taking precedence over earlier ones:
+
+Environment variables
+The terraform.tfvars file, if present.
+The terraform.tfvars.json file, if present.
+Any *.auto.tfvars or *.auto.tfvars.json files, processed in lexical order of their filenames.
+Any -var and -var-file options on the command line, in the order they are provided. (This includes variables set by a Terraform Cloud workspace.)
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Terraform Input Variable Basics Demo
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Terraform Input Variables - Assign When Prompted demo
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Terraform Input Variables - CLI Argument -var
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Terraform Input Variables - CLI Argument -var by generating a TF Plan f
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Terraform Input Variables - Override with Environment Variables
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+	Step-07: Terraform Input Variables - Override with terraform.tfvars
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/22-Input-Variables-Assign-with-terraform-tfvars
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/23-Input-Variables-Assign-with-tfvars-var-file
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/24-Input-Variables-Assign-with-auto-tfvars
+	------------------------------------------------------------------------------------------------------	
+	Step-08: Terraform Input Variables - anyfilename.tfvars with -var-file argument
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-09: Terraform Input Variables - understand .auto.tfvars
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-10: Terraform Input Variables - Review TF Configs for List Item
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-11: Terraform Input Variables - Create List Variable, Verify and CleanUp
+	------------------------------------------------------------------------------------------------------
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/25-Input-Variables-Collection-Type-Lists
+	------------------------------------------------------------------------------------------------------	
+	Step-12: Terraform Input Variables - Review TF Configs for Maps Item
+	------------------------------------------------------------------------------------------------------
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/26-Input-Variables-Collection-Type-Maps
+	
+	------------------------------------------------------------------------------------------------------	
+	Step-13: Terraform Input Variables - lookup function
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-14: Terraform Input Variables - Create Map Variables, Verify and CleanUp
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-15: Terraform Functions: Length, Substring, Lower, Upper and Contains
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-16: Terraform Input Variables - Validation Rules with OR and contains 
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-17: Terraform Input Variables - Validation Rules with regex
+	------------------------------------------------------------------------------------------------------
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/27-Input-Variables-Validation-Rules
+	------------------------------------------------------------------------------------------------------	
+	Step-18: Terraform Input Variables - Sensitive Introduction
+	------------------------------------------------------------------------------------------------------
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/28-Input-Variables-Sensitive
+	------------------------------------------------------------------------------------------------------	
+	Step-19: Terraform Input Variables - Define Sensitive, bool and Number Variables
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-20: Terraform Input Variables - Create Azure MySQL Server Resources
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-21: Terraform Input Variables - Create Azure MySQL DB, Test and CleanUp
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-22: Terraform Input Variables - Structural Type Object Introduction
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/29-Input-Variables-Structural-Type-object
+	------------------------------------------------------------------------------------------------------	
+	Step-23: Terraform Input Variables - Create TF Configs of ST Object
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+	Step-24: Terraform Input Variables - Execute TF Commands, Verify and CleanUp ST
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-25: Terraform Input Variables - Create TF Configs for ST Tuple
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-26: Terraform Input Variables - Run TF Plan and Verify tuple var value repl
+	------------------------------------------------------------------------------------------------------
+		should be there
+	------------------------------------------------------------------------------------------------------	
+	Step-27: Terraform Input Variables - Introduction to Collection Type set
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/31-Input-Variables-Collection-Type-Sets
+	------------------------------------------------------------------------------------------------------	
+	Step-28: Terraform Input Variables - Review TFConfigs for CT Set
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+	Step-29: Terraform Input Variables - Execute TF Commands, Verify and CleanUp CT
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------
+Terraform Output Values
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/values/outputs
+
+	Step-00: Output Values Introduction
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Create Basic Output Values and Review TF Configs
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/32-Output-Values-Basics
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Execute TF Commands, Verify and learn about "terraform output" command
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Output Values with Sensitive flag and also "terraform output -json"
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Output Values with Meta-Argument count and Splat Expression
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Output Values with Meta-Argument for_each and For Expression - Introduc
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Create List Outputs
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-07: Create Map Outputs and use key and values functions
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+Terraform Local values
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/values/locals
+	
+Create Local Values Terraform Config
+------------------------------------------------------------------------------------------------------
+Terraform Condtional Expression
+------------------------------------------------------------------------------------------------------
+	Step-01: Terraform Conditional Expressions Introduction and Create TF Configs
+	------------------------------------------------------------------------------------------------------
+		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/36-Terraform-Conditional-Expressions
+	------------------------------------------------------------------------------------------------------	
+	AZHCTA-36-02-TFCE-Conditional-Expressions-Execute-TFCommands-Verify-CleanUp
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+	AZHCTA-36-03-TFCE-Conditional-Expressions-in-a-Resource-Demo
+	------------------------------------------------------------------------------------------------------
+		
+	------------------------------------------------------------------------------------------------------	
+
+------------------------------------------------------------------------------------------------------
+Terraform Data Source
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/data-sources
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/37-Terraform-Datasources
+
+	Step-02: Create Datasource for Resource Group Resource
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create Datasource for Virtual Network
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Create Datasource for Azure Subscription
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------------
+Terraform Remote State and Locking
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/state/locking
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/38-Terraform-Remote-State-Storage-and-Locking
+
+	Step-02: Create Azure Storage Account and Container
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create TF Backend Block with Azure Storage Account and Review TF Config
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Execute TF Commands, Verify Remote State Storage and Locking Features
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Understand Azure Storage Account TF State File Versioning and CleanUp
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+
+
+Day 4
+------------------------------------------------------------------------------------------------------
+Terraform state command
+------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	Step-01: Terraform Show Command to read Terraform Plan Files
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Terraform Show Command to read Terraform State Files
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Terraform State List and Show Commands
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Terraform State mv command
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Terraform State rm command and replace-provider command
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Terraform State Push Pull and Force-Unlock Commands
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-07: Terraform Taint and Untaint Commands
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-08: Terraform Plan and Apply - "-target" option for Resource Targeting
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Introduction to "terraform apply -refresh-only" command
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Execute TF Commands with "terraform apply -refresh-only" and Clean-Up
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+
+------------------------------------------------------------------------------------------------------
+Terraform CLi with Workspace
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/cli/workspaces
+	
+	In Terraform CLI, workspaces are separate instances of state data that can be used from the same working directory. You can use workspaces to manage multiple non-overlapping groups of resources with the same configuration.
+
+Every initialized working directory has at least one workspace. (If you haven't created other workspaces, it is a workspace named default.)
+For a given working directory, only one workspace can be selected at a time.
+Most Terraform commands (including provisioning and state manipulation commands) 
+	only interact with the currently selected workspace.
+Use the terraform workspace select command to change the currently selected workspace.
+Use the terraform workspace list, terraform workspace new, and terraform workspace delete commands to manage the available workspaces in the current working directory.
+Note: Terraform Cloud and Terraform CLI both have features called "workspaces," but they're slightly different. Terraform Cloud's workspaces behave more like completely separate working directories.
+
+»The Purpose of Workspaces
+Since most of the resources you can manage with Terraform don't include a unique name as part of their configuration, it's common to use the same Terraform configuration to provision multiple groups of similar resources.
+
+Terraform relies on state to associate resources with real-world objects, 
+	so if you run the same configuration multiple times with completely separate state data, 
+	Terraform can manage many non-overlapping groups of resources. 
+	In some cases you'll want to change variable values for these different 
+		resource collections (like when specifying differences between staging and production 
+		deployments), and in other cases you might just want many instances 
+		of a particular infrastructure pattern.
+
+The simplest way to maintain multiple instances of a configuration with completely
+ separate state data is to use multiple working directories 
+ (with different backend configurations per directory, if you aren't using the default local backend).
+
+However, this isn't always the most convenient way to handle separate states. 
+	Terraform installs a separate cache of plugins and modules for each working directory, 
+	so maintaining multiple directories can waste bandwidth and disk space. 
+	You must also update your configuration code from version control separately 
+	for each directory, reinitialize each directory separately when changing the 
+	configuration, etc.
+
+Workspaces allow you to use the same working  of your configuration and the same plugin and module caches, while still keeping separate states for each collection of resources you manage.
+
+»Interactions with Terraform Cloud Workspaces
+Terraform Cloud organizes infrastructure using workspaces, but its workspaces act more like completely separate working directories; each Terraform Cloud workspace has its own Terraform configuration, set of variable values, state data, run history, and settings.
+
+These two kinds of workspaces are different, but related. When using Terraform CLI as a frontend for Terraform Cloud, you can associate the current working directory with one or more remote workspaces. If you associate the directory with multiple workspaces (using workspace tags), you can use the terraform workspace commands to select which remote workspace to use.
+
+Refer to CLI-driven Runs in the Terraform Cloud documentation for more details about using Terraform CLI with Terraform Cloud.
+
+
+	Step-02: Review TF Configs and understand terraform.workspace variable
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create Resources in default workspace and learn commands workspace list
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Create new workspace, create resources and understand state files
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Learn to delete resources in workspaces and deleting workspaces
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Implement CLI Workspaces with Remote State Storage Backend
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+
+------------------------------------------------------------------------------------------------------
+Terraform Provisioner
+------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/resources/provisioners/syntax
+	Provisioners
+You can use provisioners to model specific actions on the local machine or on a remote machine in order to prepare servers or other infrastructure objects for service.
+
+Note: We removed the Chef, Habitat, Puppet, and Salt Masterless provisioners in Terraform v0.15.0. Information about these legacy provisioners is still available in the documentation for Terraform v1.1 (and earlier).
+
+»Provisioners are a Last Resort
+Hands-on: 
+	Try the Provision Infrastructure Deployed with Terraform tutorials to learn about more declarative ways to handle provisioning actions.
+
+Terraform includes the concept of provisioners as a measure of pragmatism, knowing that there are always certain behaviors that cannot be directly represented in Terraform's declarative model.
+
+However, they also add a considerable amount of complexity and uncertainty to Terraform usage. Firstly, Terraform cannot model the actions of provisioners as part of a plan because they can in principle take any action. Secondly, successful use of provisioners requires coordinating many more details than Terraform usage usually requires: direct network access to your servers, issuing Terraform credentials to log in, making sure that all of the necessary external software is installed, etc.
+
+The following sections describe some situations which can be solved with provisioners 
+in principle, but where better solutions are also available. 
+We do not recommend using provisioners for any of the use-cases 
+described in the following sections.
+
+Even if your specific use-case is not described in the following sections, we still recommend attempting to solve it using other techniques first, and use provisioners only if there is no other option.
+
+»Passing data into virtual machines and other compute resources
+When deploying virtual machines or other similar compute resources, we often need to pass in data about other related infrastructure that the software on that server will need to do its job.
+
+The various provisioners that interact with remote servers over SSH or WinRM can potentially be used to pass such data by logging in to the server and providing it directly, but most cloud computing platforms provide mechanisms to pass data to instances at the time of their creation such that the data is immediately available on system boot. For example:
+
+Alibaba Cloud: user_data on alicloud_instance or alicloud_launch_template.
+Amazon EC2: user_data or user_data_base64 on aws_instance, aws_launch_template, and aws_launch_configuration.
+Amazon Lightsail: user_data on aws_lightsail_instance.
+Microsoft Azure: custom_data on azurerm_virtual_machine or azurerm_virtual_machine_scale_set.
+Google Cloud Platform: metadata on google_compute_instance or google_compute_instance_group.
+Oracle Cloud Infrastructure: metadata or extended_metadata on oci_core_instance or oci_core_instance_configuration.
+VMware vSphere: Attach a virtual CDROM to vsphere_virtual_machine using the cdrom block, containing a file called user-data.txt.
+Many official Linux distribution disk images include software called cloud-init that can automatically process in various ways data passed via the means described above, allowing you to run arbitrary scripts and do basic system configuration immediately during the boot process and without the need to access the machine over SSH.
+
+Hands-on: Try the Provision Infrastructure with Cloud-Init tutorial.
+
+If you are building custom machine images, you can make use of the "user data" or "metadata" passed by the above means in whatever way makes sense to your application, by referring to your vendor's documentation on how to access the data at runtime.
+
+This approach is required if you intend to use any mechanism in your cloud provider for automatically launching and destroying servers in a group, because in that case individual servers will launch unattended while Terraform is not around to provision them.
+
+Even if you're deploying individual servers directly with Terraform, passing data this way will allow faster boot times and simplify deployment by avoiding the need for direct network access from Terraform to the new server and for remote access credentials to be provided.
+
+»Running configuration management software
+As a convenience to users who are forced to use generic operating system distribution images, Terraform includes a number of specialized provisioners for launching specific configuration management products.
+
+We strongly recommend not using these, and instead running system configuration steps during a custom image build process. For example, HashiCorp Packer offers a similar complement of configuration management provisioners and can run their installation steps during a separate build process, before creating a system disk image that you can deploy many times.
+
+Hands-on: Try the Provision Infrastructure with Packer tutorial.
+
+If you are using configuration management software that has a centralized server component, you will need to delay the registration step until the final system is booted from your custom image. To achieve that, use one of the mechanisms described above to pass the necessary information into each instance so that it can register itself with the configuration management server immediately on boot, without the need to accept commands from Terraform over SSH or WinRM.
+
+»First-class Terraform provider functionality may be available
+It is technically possible to use the local-exec provisioner to run the CLI for your target system in order to create, update, or otherwise interact with remote objects in that system.
+
+If you are trying to use a new feature of the remote system that isn't yet supported in its Terraform provider, that might be the only option. However, if there is provider support for the feature you intend to use, prefer to use that provider functionality rather than a provisioner so that Terraform can be fully aware of the object and properly manage ongoing changes to it.
+
+Even if the functionality you need is not available in a provider today, we suggest to consider local-exec usage a temporary workaround and to also open an issue in the relevant provider's repository to discuss adding first-class provider support. Provider development teams often prioritize features based on interest, so opening an issue is a way to record your interest in the feature.
+
+Provisioners are used to execute scripts on a local or remote machine as part of resource creation or destruction. Provisioners can be used to bootstrap a resource, cleanup before destroy, run configuration management, etc.
+
+»How to use Provisioners
+Note: Provisioners should only be used as a last resort. For most common situations there are better alternatives. For more information, see the sections above.
+
+If you are certain that provisioners are the best way to solve your problem after considering the advice in the sections above, you can add a provisioner block inside the resource block of a compute instance.
+
+resource "aws_instance" "web" {
+  # ...
+
+  provisioner "local-exec" {
+    command = "echo The server's IP address is ${self.private_ip}"
+  }
+}
+
+The local-exec provisioner requires no other configuration, but most other provisioners must connect to the remote system using SSH or WinRM. You must include a connection block so that Terraform knows how to communicate with the server.
+
+Terraform includes several built-in provisioners. You can also use third-party provisioners as plugins, by placing them in %APPDATA%\terraform.d\plugins, ~/.terraform.d/plugins, or the same directory where the Terraform binary is installed. However, we do not recommend using any provisioners except the built-in file, local-exec, and remote-exec provisioners.
+
+All provisioners support the when and on_failure meta-arguments, which are described below (see Destroy-Time Provisioners and Failure Behavior).
+
+»The self Object
+Expressions in provisioner blocks cannot refer to their parent resource by name. Instead, they can use the special self object.
+
+The self object represents the provisioner's parent resource, and has all of that resource's attributes. For example, use self.public_ip to reference an aws_instance's public_ip attribute.
+
+Technical note: Resource references are restricted here because references create dependencies. Referring to a resource by name within its own block would create a dependency cycle.
+
+»Suppressing Provisioner Logs in CLI Output
+The configuration for a provisioner block may use sensitive values, such as sensitive variables or sensitive output values. In this case, all log output from the provisioner is automatically suppressed to prevent the sensitive values from being displayed.
+
+»Creation-Time Provisioners
+By default, provisioners run when the resource they are defined within is created. Creation-time provisioners are only run during creation, not during updating or any other lifecycle. They are meant as a means to perform bootstrapping of a system.
+
+If a creation-time provisioner fails, the resource is marked as tainted. A tainted resource will be planned for destruction and recreation upon the next terraform apply. Terraform does this because a failed provisioner can leave a resource in a semi-configured state. Because Terraform cannot reason about what the provisioner does, the only way to ensure proper creation of a resource is to recreate it. This is tainting.
+
+You can change this behavior by setting the on_failure attribute, which is covered in detail below.
+
+»Destroy-Time Provisioners
+If when = destroy is specified, the provisioner will run when the resource it is defined within is destroyed.
+
+resource "aws_instance" "web" {
+  # ...
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "echo 'Destroy-time provisioner'"
+  }
+}
+
+Destroy provisioners are run before the resource is destroyed. If they fail, Terraform will error and rerun the provisioners again on the next terraform apply. Due to this behavior, care should be taken for destroy provisioners to be safe to run multiple times.
+
+Destroy provisioners of this resource will not run if `create_before_destroy`
+is set to `true`. We may address this in the future, and this [GitHub issue](https://github.com/hashicorp/terraform/issues/13549) contains more details.
+
+Destroy-time provisioners can only run if they remain in the configuration at the time a resource is destroyed. If a resource block with a destroy-time provisioner is removed entirely from the configuration, its provisioner configurations are removed along with it and thus the destroy provisioner won't run. To work around this, a multi-step process can be used to safely remove a resource with a destroy-time provisioner:
+
+Update the resource configuration to include count = 0.
+Apply the configuration to destroy any existing instances of the resource, including running the destroy provisioner.
+Remove the resource block entirely from configuration, along with its provisioner blocks.
+Apply again, at which point no further action should be taken since the resources were already destroyed.
+This limitation may be addressed in future versions of Terraform. For now, destroy-time provisioners must be used sparingly and with care.
+
+NOTE: A destroy-time provisioner within a resource that is tainted will not run. This includes resources that are marked tainted from a failed creation-time provisioner or tainted manually using terraform taint.
+
+»Multiple Provisioners
+Multiple provisioners can be specified within a resource. Multiple provisioners are executed in the order they're defined in the configuration file.
+
+You may also mix and match creation and destruction provisioners. Only the provisioners that are valid for a given operation will be run. Those valid provisioners will be run in the order they're defined in the configuration file.
+
+Example of multiple provisioners:
+
+resource "aws_instance" "web" {
+  # ...
+
+  provisioner "local-exec" {
+    command = "echo first"
+  }
+
+  provisioner "local-exec" {
+    command = "echo second"
+  }
+}
+
+»Failure Behavior
+By default, provisioners that fail will also cause the Terraform apply itself to fail. The on_failure setting can be used to change this. The allowed values are:
+
+continue - Ignore the error and continue with creation or destruction.
+
+fail - Raise an error and stop applying (the default behavior). If this is a creation provisioner, taint the resource.
+
+Example:
+
+resource "aws_instance" "web" {
+  # ...
+
+  provisioner "local-exec" {
+    command    = "echo The server's IP address is ${self.private_ip}"
+    on_failure = continue
+  }
+}
+
+github logo
+Edit this page
+
+
+
+	Step-01: Understand File Provisioner, Self Object and Create Connection Block
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Understand Creation-Time Provisioner and Create File Provisioners
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Execute TF Commands and Verify Files provisioned to Linux VM
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Provisioners on_failure = continue or fail verify and cleanup
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-05: Remote-exec Provisioner Demo
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-06: Local-exec Provisioner Demo
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+
+	Step-01: Understand Null and Time Resources and Create Time Resource
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create Null Resource, File and remote-exec Provisioners and Triggers
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Execute TF Commands, Verify Static Content and Understand more about null
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Understand Terraform Import and Import Resource Group
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create RG Resource by referring TFSTATE file, Verify and CleanUp
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------------
+Terraform Module
+------------------------------------------------------------------------------------------------------
+	Step-01: Understand Terraform Modules and its features
+	------------------------------------------------------------------------------------------------------
+	https://www.terraform.io/language/modules/syntax
+	
+	A module is a container for multiple resources that are used together.
+
+Every Terraform configuration has at least one module, known as its root module, which consists of the resources defined in the .tf files in the main working directory.
+
+A module can call other modules, which lets you include the child module's resources into the configuration in a concise way. Modules can also be called multiple times, either within the same configuration or in separate configurations, allowing resource configurations to be packaged and re-used.
+
+This page describes how to call one module from another. For more information about creating re-usable child modules, see Module Development.
+
+
+Calling a Child Module
+To call a module means to include the contents of that module into the configuration with specific values for its input variables. Modules are called from within other modules using module blocks:
+
+module "servers" {
+  source = "./app-cluster"
+
+  servers = 5
+}
+
+A module that includes a module block like this is the calling module of the child module.
+
+The label immediately after the module keyword is a local name, which the calling module can use to refer to this instance of the module.
+
+Within the block body (between { and }) are the arguments for the module. Module calls use the following kinds of arguments:
+
+The source argument is mandatory for all modules.
+
+The version argument is recommended for modules from a registry.
+
+Most other arguments correspond to input variables defined by the module. (The servers argument in the example above is one of these.)
+
+Terraform defines a few other meta-arguments that can be used with all modules, including for_each and depends_on.
+
+»Source
+All modules require a source argument, which is a meta-argument defined by Terraform. Its value is either the path to a local directory containing the module's configuration files, or a remote module source that Terraform should download and use. This value must be a literal string with no template sequences; arbitrary expressions are not allowed. For more information on possible values for this argument, see Module Sources.
+
+The same source address can be specified in multiple module blocks to create multiple copies of the resources defined within, possibly with different variable values.
+
+After adding, removing, or modifying module blocks, you must re-run terraform init to allow Terraform the opportunity to adjust the installed modules. By default this command will not upgrade an already-installed module; use the -upgrade option to instead upgrade to the newest available version.
+
+»Version
+When using modules installed from a module registry, we recommend explicitly constraining the acceptable version numbers to avoid unexpected or unwanted changes.
+
+Use the version argument in the module block to specify versions:
+
+module "consul" {
+  source  = "hashicorp/consul/aws"
+  version = "0.0.5"
+
+  servers = 3
+}
+The version argument accepts a version constraint string. Terraform will use the newest installed version of the module that meets the constraint; if no acceptable versions are installed, it will download the newest version that meets the constraint.
+
+Version constraints are supported only for modules installed from a module registry, such as the public Terraform Registry or Terraform Cloud's private module registry. Other module sources can provide their own versioning mechanisms within the source string itself, or might not support versions at all. In particular, modules sourced from local file paths do not support version; since they're loaded from the same source repository, they always share the same version as their caller.
+
+»Meta-arguments
+Along with source and version, Terraform defines a few more optional meta-arguments that have special meaning across all modules, described in more detail in the following pages:
+
+count - Creates multiple instances of a module from a single module block. See the count page for details.
+
+for_each - Creates multiple instances of a module from a single module block. See the for_each page for details.
+
+providers - Passes provider configurations to a child module. See the providers page for details. If not specified, the child module inherits all of the default (un-aliased) provider configurations from the calling module.
+
+depends_on - Creates explicit dependencies between the entire module and the listed targets. See the depends_on page for details.
+
+In addition to the above, the lifecycle argument is not currently used by Terraform but is reserved for planned future features.
+
+»Accessing Module Output Values
+The resources defined in a module are encapsulated, so the calling module cannot access their attributes directly. However, the child module can declare output values to selectively export certain values to be accessed by the calling module.
+
+For example, if the ./app-cluster module referenced in the example above exported an output value named instance_ids then the calling module can reference that result using the expression module.servers.instance_ids:
+
+resource "aws_elb" "example" {
+  # ...
+
+  instances = module.servers.instance_ids
+}
+
+For more information about referring to named values, see Expressions.
+
+»Transferring Resource State Into Modules
+Moving resource blocks from one module into several child modules causes Terraform to see the new location as an entirely different resource. As a result, Terraform plans to destroy all resource instances at the old address and create new instances at the new address.
+
+To preserve existing objects, you can use refactoring blocks to record the old and new addresses for each resource instance. This directs Terraform to treat existing objects at the old addresses as if they had originally been created at the corresponding new addresses.
+
+»Replacing resources within a module
+You may have an object that needs to be replaced with a new object for a reason that isn't automatically visible to Terraform, such as if a particular virtual machine is running on degraded underlying hardware. In this case, you can use the -replace=... planning option to force Terraform to propose replacing that object.
+
+If the object belongs to a resource within a nested module, specify the full path to that resource including all of the nested module steps leading to it. For example:
+
+$ terraform plan -replace=module.example.aws_instance.example
+
+The above selects a resource "aws_instance" "example" declared inside a module "example" child module declared inside your root module.
+
+Because replacing is a very disruptive action, Terraform only allows selecting individual resource instances. There is no syntax to force replacing all resource instances belonging to a particular module.
+
+
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create VNET Module and reference it in VMNIC Resource
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Execute TF Commands, Verify VNET, Subnet and Access Sample App
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Taint Child Module Resources and Clean-Up
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Understand about Child Modules and Create it
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create Root Module TF Configs
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Execute TF Commands, Verify and CleanUp Static Website created
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Understand Terraform get command
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Create Git Repo and Commit Static Website TF Module Files and Create 1.
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Publish the Module to Terraform Public Registry and Verify
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create Root Module and call public registry module newly published
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Learn Module Management in Public Registry and Module Versioning
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-01: Introduction to Terraform Private Module Registry
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create Git Repo and Publish 1.0.0 release
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Create Github Oauth Connection and Publish Private Module in TF Cloud
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Step-04: Create TF Configs, Use Source as Private Module and Execute TF Commands
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+
+Day 5
+------------------------------------------------------------------------------------------------------
+Packer
+------------------------------------------------------------------------------------------------------
+	Build automated machine images for multiple platforms from a single configuration file
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Create images in parallel
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Use tools like Chef or Puppet to do the provisioning
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Use it along with Continuous delivery tools
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Launch the instance using the image, test and verify the infrastructure along with the development
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Learn about variables and other details of the HCL file
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Learn various provisions and builders
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Understand the difference between Ansible local and remote builder
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Create a docker container image, shell local and remote builder
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Create windows AMI
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Create and test Vagrant images
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Work with post-processors and other components of Hashicorp Packer
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Code Organization with Packer
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Packer Variables, Provisioners, Post-Processors
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+	Integrations with HashiCorp and DevOps
+	------------------------------------------------------------------------------------------------------
+	------------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------------	
+
+
+Additional reference:
+	https://github.com/hashicorp/learn-terraform-apply
+	https://learn.hashicorp.com/tutorials/terraform/apply?utm_source=WEBSITE&utm_medium=WEB_IO&utm_offer=ARTICLE_PAGE&utm_content=DOCS
+
+Terraform drift management
+	https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform

@@ -1,3 +1,10 @@
+Integration of aks with keyvault.
+Execute 7 and 12 and do the below
+
+	Reference https://docs.microsoft.com/en-us/azure/aks/csi-secrets-store-driver
+	az aks enable-addons --addons azure-keyvault-secrets-provider --name 
+
+
 # make sure terraform CLI is installed
 terraform
 

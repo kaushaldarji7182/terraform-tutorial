@@ -1,3 +1,5 @@
+Reference: https://www.terraform.io/language/meta-arguments/count
+
 # make sure terraform CLI is installed
 terraform
 

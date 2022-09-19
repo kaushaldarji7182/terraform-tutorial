@@ -86,6 +86,12 @@ Terraform core commands
 	plan
 		Creates execution plan
 		Performs a refresh and determines what action to performance
+		
+		Compare .tfstate to current state 
+		compare your changes with current state and above state
+		create the plan (order of execution)
+		display all the delta to us.
+		
 	apply
 		Again executes the plan (unless we have persisted)
 		CRUD of infrastructure
@@ -260,7 +266,7 @@ An argument assigns a value to a particular name:
 	image_id = "abc123"
 
 Syntax is like 	
-	argument name =  argument's value.
+	argument name / identifier =  argument's value.
 	
 	Terraform uses the word "attribute" instead of "argument".
 	 
@@ -281,10 +287,11 @@ Syntax is like
 		Block options
 			resource
 			provider
+			terraform 
 			settings
-			input variables
-			output 
-			data sources
+			input variables - variable
+			output  - output
+			data sources - data
 			ect.
 			
 		Types of block
@@ -348,7 +355,7 @@ local_file: resource type
 		seperated by "_"
 		first: provider 
 		second: type of resource
-"vilas": resource name.
+"vilas": resource name. variable name - other syntax 
 	Logical name
 	Can be named anything.
 {Arguments}
@@ -442,7 +449,7 @@ Plugins
 -------
 	Terraform init downloads and installs plugins
 	Provider specific.
-	Installed into a <directory>/.terraform/plugins
+	Installed into a <directory>/.terraform/
 	<directory>
 		directory where terraform configuration files are present.
 		Generate terraform init is executed being here.
@@ -467,7 +474,7 @@ Configuration Directory
 	Directory can have any number of configuration files.
 	Any file with .tf extension will participate in CRUD of the infrastructure components.
 	One file may have any number of configuraiton blocks.
-	Common naming convention: main.tf
+	Common naming convention: main.tf, terraform.tfvars, providers.tf, output.tf and variables.tf
 	
 	Common other files found
 		main.tf - main configuration
@@ -475,7 +482,7 @@ Configuration Directory
 		outputs.tf - outputs from resources.
 		providers.tf - define providers
 		
-			can be .tf.json also 
+			can be .tf.json also - but commonly used.
 
 Multiple Providers
 ------------------
@@ -492,6 +499,8 @@ Multiple Providers
 	
 Further reference: https://www.youtube.com/watch?v=YcJ9IeukJL8
 
+Find 	
+az account list-locations -o table
 
 
 Core concepts/terminologies used in Terraform:
