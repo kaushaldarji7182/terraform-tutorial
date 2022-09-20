@@ -1,0 +1,28 @@
+# Terraform Init
+terraform init
+
+# Terraform Validate 
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+Observation: 
+1) 3 Resource Groups will be generated in plan
+2) Review Resource Names ResourceType.ResourceLocalName[each.key]
+3) Review Resource Group name 
+
+# Terarform Apply
+terraform apply
+Observation: 
+1) 3 Azure Resource Groups should be created
+2) Review Resource Group names Azure Management console
+
+# Terraform Destroy
+terraform destroy
+
+# Clean-Up 
+rm -rf .terraform*
+rm -rf terraform.tfstate*

@@ -1,3 +1,5 @@
+#Creating multiple instances of vm using count
+
 
 #mkdir vm
 #cd vm/
@@ -37,10 +39,15 @@ terraform {
       source = "hashicorp/azurerm"
       version = ">= 2.0" 
     }
-    random = {
+/*  
+Step 1
+Removed random section  
+	random = {
       source = "hashicorp/random"
       version = ">= 3.0"
     }
+*/	
+	
   }
 }
 
@@ -48,7 +55,9 @@ terraform {
 provider "azurerm" {
  features {}          
 }
-
+/*
+Step 2
+Remove below block
 # Random String Resource
 resource "random_string" "myrandom" {
   length = 6
@@ -56,6 +65,7 @@ resource "random_string" "myrandom" {
   special = false
   numeric = false   
 }
+*/
 
 # Resource-1: Azure Resource Group
 resource "azurerm_resource_group" "myrg" {
@@ -82,7 +92,8 @@ resource "azurerm_subnet" "mysubnet" {
 
 # Create Network Interface
 resource "azurerm_network_interface" "myvmnic" {
-  name                = "vmnic"
+  count =2 	#Step 3 - Added because we need different nic for different vm's
+  name                = "vmnic-${count.index}"	#Step 4 name should be unique
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
 
@@ -90,22 +101,28 @@ resource "azurerm_network_interface" "myvmnic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.mysubnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id = azurerm_public_ip.mypublicip.id 
+    #public_ip_address_id = azurerm_public_ip.mypublicip.id 
+	public_ip_address_id = element(azurerm_public_ip.mypublicip[*].id, count.index)
+	#Step 5. change above syntax using splat function
+	#The * above is splat function: indiates all, element is to pick a value from the same.
   }
 }
 
 # Create Public IP Address
 resource "azurerm_public_ip" "mypublicip" {
+  count = 2	#Step 6. Need multiple public ip
   # Add Explicit Dependency to have this resource created only after Virtual Network and Subnet Resources are created. 
   depends_on = [
     azurerm_virtual_network.myvnet,
     azurerm_subnet.mysubnet
   ]
-  name                = "mypublicip-1"
+  name                = "mypublicip-${count.index}"	#Step 7
   resource_group_name = azurerm_resource_group.myrg.name
   location            = azurerm_resource_group.myrg.location
   allocation_method   = "Static"
-  domain_name_label = "app1-vm-${random_string.myrandom.id}"
+  #domain_name_label = "app1-vm-${random_string.myrandom.id}"
+  domain_name_label = "app1-vm-${count.index}" 
+  #Step 8 above change
   tags = {
     environment = "Dev"
   }
@@ -114,21 +131,22 @@ resource "azurerm_public_ip" "mypublicip" {
 
 # Resource: Azure Linux Virtual Machine
 resource "azurerm_linux_virtual_machine" "mylinuxvm" {
-  name                = "mylinuxvm-1"
-  computer_name       = "devlinux-vm1" # Hostname of the VM
+  count = 2	#Step 9 
+  name                = "mylinuxvm-${count.index}"	#Step 10. This should be unique
+  computer_name       = "devlinux-${count.index}" # Hostname of the VM Step 11. should be unique
   resource_group_name = azurerm_resource_group.myrg.name
   location            = azurerm_resource_group.myrg.location
   size                = "Standard_DS1_v2"
   admin_username      = "azureuser"
-  network_interface_ids = [
-    azurerm_network_interface.myvmnic.id
-  ]
+  #Step 12
+  #network_interface_ids = [azurerm_network_interface.myvmnic.id]
+  network_interface_ids = [ element(azurerm_network_interface.myvmnic[*].id, count.index)]  
   admin_ssh_key {
     username   = "azureuser"
     public_key = file("${path.module}/ssh-keys/terraform-azure.pub")
   }
   os_disk {
-    name = "osdisk"
+    name = "osdisk${count.index}"	#Step 12
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }

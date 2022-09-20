@@ -2391,95 +2391,7 @@ Provison Azure Linux vm with file and filebase64
 	
 	
 lab/11
-
-mkdir vm
-cd vm/
-mkdir ssh-keys
-cd ssh-ekys
-
-# Create SSH Key
-ssh-keygen \
-    -m PEM \
-    -t rsa \
-    -b 4096 \
-    -C "azureuser@myserver" \
-    -f terraform-azure.pem 
-#Important Note: Don't give a password. If you give password during generation, everytime you login to VM, need to provide passphrase.
-
-# List Files
-ls -lrt ssh-keys/
-
-# Files Generated after above command 
-Public Key: 
-	mv terraform-azure.pem.pub terraform-azure.pub
-Private Key: 
-	terraform-azure.pem
-
-# Permissions for Pem file
-chmod 400 terraform-azure.pem
-
-# Terraform Block
-terraform {
-  required_version = ">= 1.0.0"
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-      version = ">= 2.0" 
-    }
-    random = {
-      source = "hashicorp/random"
-      version = ">= 3.0"
-    }
-  }
-}
-
-# Provider Block
-provider "azurerm" {
- features {}          
-}
-
-# Random String Resource
-resource "random_string" "myrandom" {
-  length = 6
-  upper = false 
-  special = false
-  number = false   
-}	
-	
-# Resource-1: Azure Resource Group
-resource "azurerm_resource_group" "myrg" {
-  name = "myrg-1"
-  location = "East US"
-}
-
-
-# Create Virtual Network
-resource "azurerm_virtual_network" "myvnet" {
-  name                = "myvnet-1"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.myrg.location
-  resource_group_name = azurerm_resource_group.myrg.name
-}
-
-# Create Subnet
-resource "azurerm_subnet" "mysubnet" {
-  name                 = "mysubnet-1"
-  resource_group_name  = azurerm_resource_group.myrg.name
-  virtual_network_name = azurerm_virtual_network.myvnet.name
-  address_prefixes     = ["10.0.2.0/24"]
-}
-
-# Create Public IP Address
-resource "azurerm_public_ip" "mypublicip" {
-  name                = "mypublicip-1"
-  resource_group_name = azurerm_resource_group.myrg.name
-  location            = azurerm_resource_group.myrg.location
-  allocation_method   = "Static"
-  domain_name_label = "app1-vm-${random_string.myrandom.id}"
-  tags = {
-    environment = "Dev"
-  }
-}
+\HSBGInfotech\Others\vilas\terraform-tutorial\azure\steps\11
 
 	
 	https://learn.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-terraform
@@ -2487,101 +2399,32 @@ resource "azurerm_public_ip" "mypublicip" {
 	
 	
 	
-	
-azurerm_linux_virtual_machine
-Manages a Linux Virtual Machine.
+Terraform will 
+	automatically remove the OS 
+		Disk by default 
+			can be configured 
 
-Disclaimers
-Note
-Terraform will automatically remove the OS Disk by default - this behaviour can be configured using the features setting within the Provider block.
 
-Note
-All arguments including the administrator login and password will be stored in the raw state as plain-text. Read more about sensitive data in state.
 
-Note
-This resource does not support Unmanaged Disks. If you need to use Unmanaged Disks you can continue to use the azurerm_virtual_machine resource instead.
-
-Note
-This resource does not support attaching existing OS Disks. You can instead capture an image of the OS Disk or continue to use the azurerm_virtual_machine resource instead.
-
-Note
-In this release there's a known issue where the public_ip_address and public_ip_addresses fields may not be fully populated for Dynamic Public IP's.
-
-Example Usage
-This example provisions a basic Linux Virtual Machine on an internal network. Additional examples of how to use the azurerm_linux_virtual_machine resource can be found in the ./examples/virtual-machines/linux directory within the GitHub Repository.
-
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
-  location = "West Europe"
-}
-
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-}
-
-resource "azurerm_subnet" "example" {
-  name                 = "internal"
-  resource_group_name  = azurerm_resource_group.example.name
-  virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = ["10.0.2.0/24"]
-}
-
-resource "azurerm_network_interface" "example" {
-  name                = "example-nic"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.example.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_linux_virtual_machine" "example" {
-  name                = "example-machine"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  size                = "Standard_F2"
-  admin_username      = "adminuser"
-  network_interface_ids = [
-    azurerm_network_interface.example.id,
-  ]
-
-  admin_ssh_key {
-    username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-}
 Argument Reference
 The following arguments are supported:
 
-admin_username - (Required) The username of the local administrator used for the Virtual Machine. Changing this forces a new resource to be created.
+Below arguments are both
+	Changing below 
+		new resource to be created.
+	(Required)
 
-location - (Required) The Azure location where the Linux Virtual Machine should exist. Changing this forces a new resource to be created.
+		admin_username - 
+		location - 
+		name 
 
-license_type - (Optional) Specifies the BYOL Type for this Virtual Machine. Possible values are RHEL_BYOS and SLES_BYOS.
+Below arguments are 
+	Required	
+		network_interface_ids
+			A list of Network Interface IDs
+			first Network Interface ID: Primary 
 
-name - (Required) The name of the Linux Virtual Machine. Changing this forces a new resource to be created.
-
-network_interface_ids - (Required). A list of Network Interface IDs which should be attached to this Virtual Machine. The first Network Interface ID in this list will be the Primary Network Interface on the Virtual Machine.
-
-os_disk - (Required) A os_disk block as defined below.
+	(Optional)
 
 resource_group_name - (Required) The name of the Resource Group in which the Linux Virtual Machine should be exist. Changing this forces a new resource to be created.
 
@@ -2854,17 +2697,54 @@ Terraform meta argument with Element Function and Splat Expression
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/11-02-Meta-Argument-count
 
 The count Meta-Argument
-Version note: Module support for count was added in Terraform 0.13, and previous versions can only use it with resources.
+	count was added in Terraform 0.13
+	a resource or module block 
+		cannot use both 
+			count and for_each.
 
-Note: A given resource or module block cannot use both count and for_each.
+	Count accepts 
+		whole number
+		numeric expressions
+	Terraform will create so many instances 
+	Each instance 
+		distinct infra. object associated with it
+		separately
+			created
+			updated
+			destroyed
+	value should be pre-defined
+	instances identified by index number starting 0
+	count.index 
+		index number starting with 0
 
-Hands-on: Try the Manage Similar Resources With Count tutorial.
+lab/12
+	Refer vilas\terraform-tutorial\azure\steps\12
+		
+		
+terraform console #Gives access to try scripts in terraform
+element(["Vilas", "Varghese", "Bangalore"], 0)
+element(["Vilas", "Varghese", "Bangalore"], 1)
+element(["Vilas", "Varghese", "Bangalore"], 2)
 
+# To get last element from list
+length(["Vilas", "Varghese", "Bangalore"])
+element(["Vilas", "Varghese", "Bangalore"], length(["Vilas", "Varghese", "Bangalore"])-1)	
+		
+
+lab/13		
+	Modify the vm create example
+	cp -r vilas\terraform-tutorial\azure\steps\11 11-count
+	Refer vilas\terraform-tutorial\azure\steps\13\
+	
+	
+
+Modify 
+-------------------
 By default, a resource block configures one real infrastructure object. (Similarly, a module block includes a child module's contents into the configuration one time.) However, sometimes you want to manage several similar objects (like a fixed pool of compute instances) without writing a separate block for each one. Terraform has two ways to do this: count and for_each.
 
 If a resource or module block includes a count argument whose value is a whole number, Terraform will create that many instances.
 
-»Basic Syntax
+Basic Syntax
 count is a meta-argument defined by the Terraform language. It can be used with modules and with every resource type.
 
 The count meta-argument accepts a whole number, and creates that many instances of the resource or module. Each instance has a distinct infrastructure object associated with it, and each is separately created, updated, or destroyed when the configuration is applied.
@@ -2880,14 +2760,14 @@ resource "aws_instance" "server" {
   }
 }
 
-»The count Object
+The count Object
 In blocks where count is set, an additional count object is available in expressions, so you can modify the configuration of each instance. This object has one attribute:
 
 count.index — The distinct index number (starting with 0) corresponding to this instance.
-»Using Expressions in count
+Using Expressions in count
 The count meta-argument accepts numeric expressions. However, unlike most arguments, the count value must be known before Terraform performs any remote resource actions. This means count can't refer to any resource attributes that aren't known until after a configuration is applied (such as a unique ID generated by the remote API when an object is created).
 
-»Referring to Instances
+Referring to Instances
 When count is set, Terraform distinguishes between the block itself and the multiple resource or module instances associated with it. Instances are identified by an index number, starting with 0.
 
 <TYPE>.<NAME> or module.<NAME> (for example, aws_instance.server) refers to the resource block.
@@ -2921,7 +2801,15 @@ resource "aws_instance" "server" {
 }
 
 
-This was fragile, because the resource instances were still identified by their index instead of the string values in the list. If an element was removed from the middle of the list, every instance after that element would see its subnet_id value change, resulting in more remote object changes than intended. Using for_each gives the same flexibility without the extra churn.
+Count was fragile
+	resource instances identified by their index 
+		instead of the string values 
+	If an element was removed from the middle 
+		subnet_id for every instance after 
+			would change, 
+		more remote object changes than intended. 
+	Solution:
+		Use for_each.
 
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Meta-Argument Count - Azure Resource Group Demo
@@ -2932,19 +2820,21 @@ This was fragile, because the resource instances were still identified by their 
 	Step-03: Introduction to Meta-Argument count for Azure Linux VM
 	------------------------------------------------------------------------------------------------------
 	
-	
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Learn Terraform Element, Length Functions and Splat Expressions
 	------------------------------------------------------------------------------------------------------
 	https://www.terraform.io/language/functions/length
 	https://www.terraform.io/language/expressions/splat
-	
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Apply Element Function, Splat Expression to VMNIC and Linux VM
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Execute Terraform Commands, Verify 2 Linux VMs and CleanUp
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 ------------------------------------------------------------------------------------------------------
 Terraform meta argument for_each with Maps and set of string
@@ -2953,20 +2843,94 @@ Terraform meta argument for_each with Maps and set of string
 	------------------------------------------------------------------------------------------------------
 		https://www.terraform.io/language/meta-arguments/for_each
 		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/12-Meta-Argument-for_each-Maps
+		
+	for_each
+		similar to count. 
+		but value can be 
+			Map
+			Set
+			N.B: In count value is a number
+		
+		create an instance for each value
+
+		each instance
+			distinct infrastructure object associated with it
+			is seperately
+				created
+				updated
+				deleted
+
+		additional each block
+			each.key
+				if Map, then key
+				if set, then key and value are same.
+				for_each=toset(["Vilas","Varghese"])
+					each.key == each.value
+					key[0] = value[0] = Vilas
+					
+			each.value
+				if Map, then value
+				for_each={
+					dev="myapp1"
+				}
+				each.key = dev
+				each.value = myapp1
+		
+lab/14		
+vilas\terraform-tutorial\azure\steps\14		
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-03: for_each - Set of Strings Introduction and Terraform Console Command wi
 	------------------------------------------------------------------------------------------------------
+	
+	toset 
+		converts its argument to a set value. 
+		does an explicit type conversion to normalize the types.
+		all elements of set should be of same type
+		mixed-typed elements 
+			converted to most general type
+		Set collections 
+			unordered 
+				ordering is lost
+			duplicate values 
+				ignored: lost
+				
+# Terraform console
+terraform console
+
+# All Strings to Strings
+toset(["Vilas", "Varghese", "Bengaluru"])
+#duplicates
+toset(["Vilas", "Varghese", "Vilas"])
+
+# Mixed Type (Strings and Numbers) - Converted to Strings 
+toset(["Vilas", "Varghese", 123, 456])
+
+# Also arranges in the order 
+	(The order provided will be gone) 
+toset([4, 100, 20, 11, 21, 7, 6, 4, 100])			
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Implement for_each with set of strings
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/13-Meta-Argument-for_each-ToSet
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/13-Meta-Argument-for_each-ToSet
+	
+	
+lab/15
+	vilas\terraform-tutorial\azure\steps\15
+
 	------------------------------------------------------------------------------------------------------	
 	Step-05: for_each chaining Introduction and Review TF Configs
 	------------------------------------------------------------------------------------------------------
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/14-Meta-Argument-for_each-Chaining
+	
+	Because a resource using for_each appears as a map of objects or set of strings when used in expressions elsewhere, you can directly use one resource as the for_each of another in situations where there is a one-to-one relationship between two sets of objects.
+	In our case, we will use the azurerm_network_interface.myvmnic resource directly in azurerm_linux_virtual_machine.mylinuxvm Resource
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Implement for_each chaining
 	------------------------------------------------------------------------------------------------------
+
+	vilas\terraform-tutorial\azure\steps\16
+
 	------------------------------------------------------------------------------------------------------	
 ------------------------------------------------------------------------------------------------------
 Meta argument lifecycle create_before_destroy , Prevent Destroy and Ignore_change
@@ -3009,21 +2973,29 @@ create_before_destroy
 
 	an opt-in behavior 
 		unique name 
+			create before destroy can fail
 		so opt in wisely.
 		
-	Destroy provisioners of this resource will not run if create_before_destroy is set to true. We may address this in the future, and this GitHub issue contains more details.
 
-prevent_destroy (bool) - This meta-argument, when set to true, will cause Terraform to reject with an error any plan that would destroy the infrastructure object associated with the resource, as long as the argument remains present in the configuration.
+prevent_destroy (bool) - 
+	Terraform will 
+		reject 
+		throw an error 
+			attempt to destroy the infrastructure object associated with the resource
+	e.g. database resource created.
+	Don't want to delete by mistake
 
-This can be used as a measure of safety against the accidental replacement of objects that may be costly to reproduce, such as database instances. However, it will make certain configuration changes impossible to apply, and will prevent the use of the terraform destroy command once such objects are created, and so this option should be used sparingly.
+ignore_changes (list of attribute names) - 
+	By default, 
+		Terraform detects configuration updates.
+		Modifies the infrastructure
 
-Since this argument must be present in configuration for the protection to apply, note that this setting does not prevent the remote object from being destroyed if the resource block were removed from configuration entirely: in that case, the prevent_destroy setting is removed along with it, and so Terraform will allow the destroy operation to succeed.
-
-ignore_changes (list of attribute names) - By default, Terraform detects any difference in the current settings of a real infrastructure object and plans to update the remote object to match configuration.
-
-The ignore_changes feature is intended to be used when a resource is created with references to data that may change in the future, but should not affect said resource after its creation. In some rare cases, settings of a remote object are modified by processes outside of Terraform, which Terraform would then attempt to "fix" on the next run. In order to make Terraform share management responsibilities of a single object with a separate process, the ignore_changes meta-argument specifies resource attributes that Terraform should ignore when planning updates to the associated remote object.
-
-The arguments corresponding to the given attribute names are considered when planning a create operation, but are ignored when planning an update. The arguments are the relative address of the attributes in the resource. Map and list elements can be referenced using index notation, like tags["Name"] and list[0] respectively.
+	if a resource can be modified by process outside Terraform
+	for such valid updates Terraform should not modify.
+	ignore_changes
+		has not effect during 
+			create and destroy operation
+		has effect only during update
 
 resource "aws_instance" "example" {
   # ...
@@ -3037,20 +3009,35 @@ resource "aws_instance" "example" {
   }
 }
 
+	ignore_changes can only ignore 
+		attributes defined by the resource 
+		cannot ignore 
+			meta-arguments 
+				including 
+					lifecycle
+					count
 
-Instead of a list, the special keyword all may be used to instruct Terraform to ignore all attributes, which means that Terraform can create and destroy the remote object but will never propose updates to it.
-
-Only attributes defined by the resource type can be ignored. ignore_changes cannot be applied to itself or to any other meta-arguments.
-
-replace_triggered_by (list of resource or attribute references) - Added in Terraform 1.2. Replaces the resource when any of the referenced items change. Supply a list of expressions referencing managed resources, instances, or instance attributes. When used in a resource that uses count or for_each, you can use count.index or each.key in the expression to reference specific instances of other resources that are configured with the same count or collection.
-
+replace_triggered_by 
+	(list of resource or attribute references) - 
+	Added in Terraform 1.2. 
+	Replaces the resource 
+		when any of the referenced items change. 
+		
+		
+		
+		
 References trigger replacement in the following conditions:
 
-If the reference is to a resource with multiple instances, a plan to update or replace any instance will trigger replacement.
-If the reference is to a single resource instance, a plan to update or replace that instance will trigger replacement.
-If the reference is to a single attribute of a resource instance, any change to the attribute value will trigger replacement.
-You can only reference managed resources in replace_triggered_by expressions. This lets you modify these expressions without forcing replacement.
-
+	If the reference is 
+		multiple instances resource
+			update or replace any instance 
+				will trigger replacement.
+		single resource instance
+			update or replace that instance will trigger replacement.
+		single attribute 
+			change to the attribute value 
+				will trigger replacement.
+	
 resource "aws_appautoscaling_target" "ecs_target" {
   # ...
   lifecycle {
@@ -3064,7 +3051,7 @@ resource "aws_appautoscaling_target" "ecs_target" {
 
 
 Custom Condition Checks
-You can add precondition and postcondition blocks with a lifecycle block to specify assumptions and guarantees about how resources and data sources operate. The following examples creates a precondition that checks whether the AMI is properly configured.
+	You can add precondition and postcondition blocks with a lifecycle block to specify assumptions and guarantees about how resources and data sources operate. The following examples creates a precondition that checks whether the AMI is properly configured.
 
 resource "aws_instance" "example" {
   instance_type = "t2.micro"
@@ -3079,12 +3066,12 @@ resource "aws_instance" "example" {
     }
   }
 }
-Custom conditions can help capture assumptions, helping future maintainers understand the configuration design and intent. They also return useful information about errors earlier and in context, helping consumers more easily diagnose issues in their configurations.
+	Custom conditions can help capture assumptions, helping future maintainers understand the configuration design and intent. They also return useful information about errors earlier and in context, helping consumers more easily diagnose issues in their configurations.
 
 Refer to Custom Conditions for more details.
 
 Literal Values Only
-The lifecycle settings all affect how Terraform constructs and traverses the dependency graph. As a result, only literal values can be used because the processing happens too early for arbitrary expression evaluation.
+	The lifecycle settings all affect how Terraform constructs and traverses the dependency graph. As a result, only literal values can be used because the processing happens too early for arbitrary expression evaluation.
 
 
 	Step-02: Explore default resource behavior - Delete and Recreate Resource
@@ -4121,3 +4108,10 @@ Additional reference:
 
 Terraform drift management
 	https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform
+	
+Oracle public cloud	
+	https://registry.terraform.io/providers/oracle/oci/latest/docs	
+oci instance	
+	https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance	
+	
+	
