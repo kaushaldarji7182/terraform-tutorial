@@ -1,0 +1,9 @@
+update name
+	terraform plan
+	watch that it is destroying before creation
+	
+modify name
+uncomment the lifecycle
+	terraform plan
+	watch that it is creating before destroying 
+	

@@ -334,10 +334,31 @@ Terraform Setting and Provider Block
 			or using at least a minimum Terraform version 
 			that has behavior expected by the configuration.
 
-		The required_version setting applies only to the version of Terraform CLI. 
-		Terraform's resource types are implemented by provider plugins, 
-		whose release cycles are independent of Terraform CLI and of each other. 
-		Use the required_providers block to manage the expected versions for each provider you use.
+		different from provider version
+
+terraform {
+  required_providers {
+    aws = {
+      version = "~> 2.13.0"
+    }
+    random = {
+      version = ">= 2.1.2"
+    }
+  }
+  required_version = "~> 0.12.29"
+
+}	
+
+
+		required_version 
+			applies only Terraform CLI version. 
+		Terraform's resource types 
+			implemented by provider plugins, 
+			release cycles are independent 
+				of Terraform CLI and 
+				of each other. 
+		Use required_providers block 
+			to manage the expected versions for each provider you use.
 		
 
 	------------------------------------------------------------------------------------------------------
@@ -385,11 +406,7 @@ Terraform Setting and Provider Block
 			which providers they require
 		Terraform will install and use them. 
 
-
-
-    Hands-on: Try the Perform CRUD Operations with Providers tutorial on HashiCorp Learn.
-
-
+N.B:
 	Values in 
 		[] 
 			called list
@@ -482,15 +499,6 @@ resource "azurerm_resource_group" "example" {
 }
 ----------------------
 
-#Vilas: Consider below if required.. Else virtual network covers it
-# Create a virtual network within the resource group
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  address_space       = ["10.0.0.0/16"]
-}
-
 Source Addresses
 ----------------
 
@@ -579,7 +587,7 @@ Version Constraints
 		Enterprise 
 			will all obey it when installing providers.
 
-		Hands-on: 
+lab: 
 			Try the Lock and Upgrade Provider Versions.
 
 Best Practices for Provider Versions
@@ -668,6 +676,7 @@ terraform {
 
 address: terraform.example.com/examplecorp/ourcloud/1.0.0
 
+Directory structure
 In 1.0.0 directory
 	an additional directory 
 		platform, 
@@ -676,43 +685,15 @@ In 1.0.0 directory
 
 v0.12-Compatible Provider Requirements
 --------------------------------------
-Explicit provider source addresses were introduced with Terraform v0.13, so the full provider requirements syntax is not supported by Terraform v0.12.
 
-However, in order to allow writing modules that are compatible with both Terraform v0.12 and v0.13, versions of Terraform between v0.12.26 and v0.13 will accept but ignore the source argument in a required_providers block.
+    Provider type names 
+		always be written in lowercase. 
+		Terraform v0.13 
+			provider source address: 
+				case-insensitive
+	
 
-Consider the following example written for Terraform v0.13:
-
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 1.0"
-    }
-  }
-}
-
-Terraform v0.12.26 will accept syntax like the above but will understand it in the same way as the following v0.12-style syntax:
-
-terraform {
-  required_providers {
-    aws = "~> 1.0"
-  }
-}
-
-In other words, Terraform v0.12.26 ignores the source argument and considers only the version argument, using the given local name as the un-namespaced provider type to install.
-
-When writing a module that is compatible with both Terraform v0.12.26 and Terraform v0.13.0 or later, you must follow the following additional rules so that both versions will select the same provider to install:
-
-    Use only providers that can be automatically installed by Terraform v0.12. Third-party providers, such as community providers in the Terraform Registry, cannot be selected by Terraform v0.12 because it does not support the hierarchical source address namespace.
-
-    Ensure that your chosen local name exactly matches the "type" portion of the source address given in the source argument, such as both being "aws" in the examples above, because Terraform v0.12 will use the local name to determine which provider plugin to download and install.
-
-    If the provider belongs to the hashicorp namespace, as with the hashicorp/aws provider shown above, omit the source argument and allow Terraform v0.13 to select the hashicorp namespace by default.
-
-    Provider type names must always be written in lowercase. Terraform v0.13 treats provider source addresses as case-insensitive, but Terraform v0.12 considers its legacy-style provider names to be case-sensitive. Using lowercase will ensure that the name is selectable by both Terraform major versions.
-
-This compatibility mechanism is provided as a temporary transitional aid only. When Terraform v0.12 detects a use of the new source argument it doesn't understand, it will emit a warning to alert the user that it is disregarding the source address given in that argument.
-
+This tutorial is covered based on Terraform v0.13 and above.	
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Terraform Apply and Destroy Commands Auto Approve Option
 	------------------------------------------------------------------------------------------------------
@@ -784,46 +765,53 @@ Apply Options
     -json - 
 		machine readable JSON UI output. 
 		implies -input=false.
-    -lock=false - Don't hold a state lock during the operation. This is dangerous if others might concurrently run commands against the same workspace.
-    -lock-timeout=DURATION - Unless locking is disabled with -lock=false, instructs Terraform to retry acquiring a lock for a period of time before returning an error. The duration syntax is a number followed by a time unit letter, such as "3s" for three seconds.
-    -no-color - Disables terminal formatting sequences in the output. Use this if you are running Terraform in a context where its output will be rendered by a system that cannot interpret terminal formatting.
-    -parallelism=n - Limit the number of concurrent operation as Terraform walks the graph. Defaults to 10.
+    -lock=false - 
+		Don't hold a state lock during the operation. 
+			dangerous 
+			others might concurrently run commands.
+    -lock-timeout=DURATION - 
+		Unless locking is disabled with -lock=false, 
+		Terraform should retry acquiring a lock 
+			return an error. 
+		-lock-timeout="3s" for three seconds.
+    -no-color - Disables terminal formatting sequences in the output
+    -parallelism=n - 
+		Limit the number of concurrent operation as Terraform walks the graph. 
+		Defaults to 10.
 
     All planning modes and planning options for terraform plan - Customize how Terraform will create the plan. Only available when you run terraform apply without a saved plan file.
+
 
 For configurations using the local backend only, terraform apply also accepts the legacy options -state, -state-out, and -backup.
 
 
 
 Command: destroy
+	destroy all remote objects 
+		managed by a particular Terraform configuration.
 
-The terraform destroy command is a convenient way to destroy all remote objects managed by a particular Terraform configuration.
 
-While you will typically not want to destroy long-lived objects in a production environment, Terraform is sometimes used to manage ephemeral infrastructure for development purposes, in which case you can use terraform destroy to conveniently clean up all of those temporary objects once you are finished with your work.
-»Usage
-
+Usage
 Usage: terraform destroy [options]
 
 This command is just a convenience alias for the following command:
-
 terraform apply -destroy
 
-For that reason, this command accepts most of the options that terraform apply accepts, although it does not accept a plan file argument and forces the selection of the "destroy" planning mode.
-
-You can also create a speculative destroy plan, to see what the effect of destroying would be, by running the following command:
-
+So this command accepts 
+	most of the options that terraform apply 
+	does not accept a plan file argument 
+	
+	
 terraform plan -destroy
-terraform destroy -auto-approve (#terraform des
+terraform destroy -auto-approve 
 
-This will run terraform plan in destroy mode, showing you the proposed destroy changes without executing them.
-
-Note: The -destroy option to terraform apply exists only in Terraform v0.15.2 and later. For earlier versions, you must use terraform destroy to get the effect of terraform apply -destroy.
-
-
+Note: The -destroy option to terraform apply 
+	exists only in Terraform v0.15.2 and later. 
+		use terraform destroy .
 
 
 	-auto-approve is not mentioned in documentation for destroy. 
-	But may work.
+	But will work.
 	
 
 
@@ -884,6 +872,7 @@ Common reasons for apply:
 	A bug in 
 		Terraform provider code
 		Terraform itself.
+		our configuration
 
 ------------------------------------------------------------------------------------------------------	
 Terraform Multiple Provider
@@ -937,7 +926,7 @@ provider "google" {
 			should list which configuration arguments it expects. 
 	Some values
 		use shell environment variables 
-		(e.g. VM instance profiles) 
+			(e.g. VM instance profiles) 
 		recommend 
 			use for credentials 
 				out of your version-controlled Terraform code.
@@ -1034,13 +1023,17 @@ resource "aws_instance" "foo" {
 
 N.B: 
 Child Modules
-	A Terraform module (usually the root module of a configuration) can call other modules to include their resources into the configuration. A module that has been called by another module is often referred to as a child module.
-
+	A Terraform module 
+		root module
+			can call other modules 
+				called child modules
+				to include their resources 
+					into the configuration. 
 To select alternate provider configurations for a child module
 	use its providers meta-argument:
 
 module "aws_vpc" {
-  source = "./aws_vpc"
+  source = "./another_aws_vpc"
   providers = {
     aws = aws.west
   }
@@ -1053,7 +1046,7 @@ module "aws_vpc" {
 		child modules 
 			obtain their provider configurations from their parents.
 	version (Deprecated)
-	-----------
+	--------------------
 	The version argument in provider configurations is deprecated. 
 	In Terraform 0.13 and later
 	always declare provider version constraints in the required_providers block. 
