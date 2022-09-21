@@ -371,7 +371,7 @@ terraform {
 				to 
 					a source address and 
 					a version constraint.
-
+	For aws
 		terraform {
 		  required_providers {
 			aws = {
@@ -381,6 +381,7 @@ terraform {
 		  }
 		}
 		
+	For azure	
 		terraform {
 		  required_providers {
 			azurerm = {
@@ -389,6 +390,21 @@ terraform {
 			}
 		  }
 		}
+
+	For multiple providers
+		terraform {
+		  required_providers {
+			aws = {
+			  version = "~> 2.13.0"
+			}
+			random = {
+			  version = ">= 2.1.2"
+			  #source is not mandatory
+			}
+		  }
+
+		  required_version = "~> 0.12.29"
+		}	
 
 		Reference: steps/1/
 		terraform init
@@ -1091,9 +1107,6 @@ resource "azurerm_resource_group" "myrg2" {
 
 
 
-
-
-	
 ------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------
 Terraform Dependency Lock File
@@ -1334,98 +1347,11 @@ resource "azurerm_virtual_network" "example" {
   location            = azurerm_resource_group.example.location
   address_space       = ["10.0.0.0/16"]
 }
-
-The following arguments are supported:
-
-features - (Required) 
-	features block 
-		can customize certain Azure Provider resources.
-	https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/features-block
-
-client_id - (Optional) 
-	The Client ID  
-	Can also be sourced from 
-		ARM_CLIENT_ID Environment Variable.
-
-environment - (Optional) 
-	The [Cloud] Environment 
-	Possible values 
-		public, 
-		usgovernment, 
-		german, 
-		and china. 
-		Defaults to public. 
-	Can be sourced from the 
-		ARM_ENVIRONMENT Environment Variable.
-
-subscription_id - (Optional) 
-	The Subscription ID which should be used. This can also be sourced from the ARM_SUBSCRIPTION_ID Environment Variable.
-
-tenant_id - (Optional) The Tenant ID should be used. This can also be sourced from the ARM_TENANT_ID Environment Variable.
-
-auxiliary_tenant_ids - (Optional) List of auxiliary Tenant IDs required for multi-tenancy and cross-tenant scenarios. This can also be sourced from the ARM_AUXILIARY_TENANT_IDS Environment Variable.
-
-When authenticating as a Service Principal using a Client Certificate, the following fields can be set:
-
-client_certificate_password - (Optional) The password associated with the Client Certificate. This can also be sourced from the ARM_CLIENT_CERTIFICATE_PASSWORD Environment Variable.
-
-client_certificate_path - (Optional) The path to the Client Certificate associated with the Service Principal which should be used. This can also be sourced from the ARM_CLIENT_CERTIFICATE_PATH Environment Variable.
-
-More information on how to configure a Service Principal using a Client Certificate can be found in this guide.
-
-When authenticating as a Service Principal using a Client Secret, the following fields can be set:
-
-client_secret - (Optional) The Client Secret which should be used. This can also be sourced from the ARM_CLIENT_SECRET Environment Variable.
-More information on how to configure a Service Principal using a Client Secret can be found in this guide.
-
-When authenticating as a Service Principal using Open ID Connect, the following fields can be set:
-
-oidc_request_token - (Optional) The bearer token for the request to the OIDC provider. This can also be sourced from the ARM_OIDC_REQUEST_TOKEN or ACTIONS_ID_TOKEN_REQUEST_TOKEN Environment Variables.
-
-oidc_request_url - (Optional) The URL for the OIDC provider from which to request an ID token. This can also be sourced from the ARM_OIDC_REQUEST_URL or ACTIONS_ID_TOKEN_REQUEST_URL Environment Variables.
-
-oidc_token - (Optional) The ID token when authenticating using OpenID Connect (OIDC). This can also be sourced from the ARM_OIDC_TOKEN environment Variable.
-
-use_oidc - (Optional) Should OIDC be used for Authentication? This can also be sourced from the ARM_USE_OIDC Environment Variable. Defaults to false.
-
-More information on how to configure a Service Principal using OpenID Connect can be found in this guide.
-
-When authenticating using Managed Service Identity, the following fields can be set:
-
-msi_endpoint - (Optional) The path to a custom endpoint for Managed Service Identity - in most circumstances, this should be detected automatically. This can also, be sourced from the ARM_MSI_ENDPOINT Environment Variable.
-
-use_msi - (Optional) Should Managed Service Identity be used for Authentication? This can also be sourced from the ARM_USE_MSI Environment Variable. Defaults to false.
-
-More information on how to configure a Service Principal using Managed Service Identity can be found in this guide.
-
-For some advanced scenarios, such as where more granular permissions are necessary - the following properties can be set:
-
-disable_terraform_partner_id - (Optional) Disable sending the Terraform Partner ID if a custom partner_id isn't specified, which allows Microsoft to better understand the usage of Terraform. The Partner ID does not give HashiCorp any direct access to usage information. This can also be sourced from the ARM_DISABLE_TERRAFORM_PARTNER_ID environment variable. Defaults to false.
-
-metadata_host - (Optional) The Hostname of the Azure Metadata Service (for example management.azure.com), used to obtain the Cloud Environment when using a Custom Azure Environment. This can also be sourced from the ARM_METADATA_HOSTNAME Environment Variable.
-
-Note:
-environment must be set to the requested environment name in the list of available environments held in the metadata_host.
-
-partner_id - (Optional) A GUID/UUID registered with Microsoft to facilitate partner resource usage attribution). This can also be sourced from the ARM_PARTNER_ID Environment Variable. Supported formats are <guid> / pid-<guid> (GUIDs registered in Partner Center) and pid-<guid>-partnercenter (for published commercial marketplace Azure apps).
-
-auxiliary_tenant_ids - (Optional) Contains a list of (up to 3) other Tenant IDs used for cross-tenant and multi-tenancy scenarios with multiple AzureRM provider definitions. The list of auxiliary_tenant_ids in a given AzureRM provider definition contains the other, remote Tenants and should not include its own subscription_id (or ARM_SUBSCRIPTION_ID Environment Variable).
-
-skip_provider_registration - (Optional) Should the AzureRM Provider skip registering the Resource Providers it supports? This can also be sourced from the ARM_SKIP_PROVIDER_REGISTRATION Environment Variable. Defaults to false.
-
-Note
-By default, Terraform will attempt to register any Resource Providers that it supports, even if they're not used in your configurations to be able to display more helpful error messages. If you're running in an environment with restricted permissions, or wish to manage Resource Provider Registration outside of Terraform you may wish to disable this flag; however, please note that the error messages returned from Azure may be confusing as a result (example: API version 2019-01-01 was not found for Microsoft.Foo).
-
-storage_use_azuread - (Optional) Should the AzureRM Provider use AzureAD to connect to the Storage Blob & Queue API's, rather than the SharedKey from the Storage Account? This can also be sourced from the ARM_STORAGE_USE_AZUREAD Environment Variable. Defaults to false.
-
-
-
-
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Create TF Config for Virtual Network
 	------------------------------------------------------------------------------------------------------
 	Manages a virtual network including any configured subnets. 
-	Each subnet can optionally be configured with a security group to be associated with the subnet.
+	Each subnet can be configured with a security group to be associated with the subnet.
 	
 lab/7
 terraform {
@@ -1647,7 +1573,8 @@ Note:
 Check if Virtual Machine sizes are supported for Accelerated Networking 
 
 Note:
-To use Accelerated Networking in an Availability Set, the Availability Set must be deployed onto an Accelerated Networking enabled cluster.
+	To use Accelerated Networking in an Availability Set, 
+	the Availability Set must be deployed onto an Accelerated Networking enabled cluster.
 
 internal_dns_name_label - 
 	(Optional) The (relative) DNS Name used for internal communications between Virtual Machines in the same Virtual Network.
@@ -2921,7 +2848,7 @@ lab/15
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Implement for_each chaining
 	------------------------------------------------------------------------------------------------------
-
+lab/16
 	vilas\terraform-tutorial\azure\steps\16
 
 	------------------------------------------------------------------------------------------------------	
@@ -3072,15 +2999,18 @@ Literal Values Only
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Lifecycle Meta-Argument create_before_destroy demo
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/15-Meta-Argument-lifecycle-create_before_destroy
+lab/17	
+	vilas\terraform-tutorial\azure\steps\17
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Lifecycle Meta-Argument prevent_destroy demo
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/16-Meta-Argument-lifecycle-prevent_destroy
+lab/18		
+		vilas\terraform-tutorial\azure\steps\18
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Without Lifecycle Meta-Argument ignore_changes understand Terraform beh
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/17-Meta-Argument-lifecycle-ignore_changes
+lab/19	
+		vilas\terraform-tutorial\azure\steps\19
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Lifecycle Meta-Argument ignore_changes demo
 	------------------------------------------------------------------------------------------------------
@@ -3097,6 +3027,37 @@ Terraform Input Variable
 	Input variables let you customize aspects of Terraform modules without altering the module's own source code. This functionality allows you to share modules across different Terraform configurations, making your module composable and reusable.
 
 When you declare variables in the root module of your configuration, you can set their values using CLI options and environment variables. When you declare them in child modules, the calling module should pass values in the module block.
+
+	Terraform supports various ways to pass input variables
+	Following are those ways
+	1. Input variables - Basics
+	2. Provide input variables when prompted 
+		during 
+			plan
+			apply
+	3. Override default variables using 
+		-var cli argument
+		environment variables (TF_var_aa)
+	4. Provide input variables using 
+		terraform.tfvars files
+	5. Input variables using structural types
+	6. Provide input variables using 
+		somename.tfvars
+			using -var-file cli 
+	7. Provide input variables using somename.auto.tfvars file
+	8. Implement complex type constructors like
+		list 
+		map 
+			in input variables
+	9. Implement custom validation rules in variables
+	10. Protect sensitive input variables
+	11. Input variables using structural type
+			tuple
+			set
+			
+	
+		
+
 
 
 variable "image_id" {
@@ -3402,64 +3363,467 @@ Any -var and -var-file options on the command line, in the order they are provid
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Terraform Input Variable Basics Demo
 	------------------------------------------------------------------------------------------------------
-		
+lab/20	
+		vilas\terraform-tutorial\azure\steps\20
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Terraform Input Variables - Assign When Prompted demo
 	------------------------------------------------------------------------------------------------------
+		Define some variables without default value
+		terraform apply 
+		terraform will prompt for those variables values
+lab/21	
+		vilas\terraform-tutorial\azure\steps\21
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Terraform Input Variables - CLI Argument -var
 	------------------------------------------------------------------------------------------------------
+lab/21-1
+	This can be done in lab/21 folder
+terraform plan -var="resoure_group_name=demorg" -var="resoure_group_location=westus" -var="virtual_network_name=demovnet" -var="subnet_name=demosubnet" 
+terraform apply -var="resoure_group_name=demorg" -var="resoure_group_location=westus" -var="virtual_network_name=demovnet" -var="subnet_name=demosubnet" 
+
+terraform plan -var="resoure_group_name=demorg" -var="resoure_group_location=westus" -var="virtual_network_name=demovnet" -var="subnet_name=demosubnet" -out tfplan
+
+terraform show tfplan
+terraform apply tfplan
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Terraform Input Variables - CLI Argument -var by generating a TF Plan f
 	------------------------------------------------------------------------------------------------------
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Terraform Input Variables - Override with Environment Variables
 	------------------------------------------------------------------------------------------------------
-		
+lab 22	
+vilas\terraform-tutorial\azure\steps\22
+convention 		
+	TF_VAR_variable=value
+windows
+	set
+linux/macOS
+	export
+
+# SET Environment Variables
+export TF_VAR_resoure_group_name=rgenv1
+export TF_VAR_resoure_group_location=westus2
+export TF_VAR_virtual_network_name=vnetenv
+export TF_VAR_subnet_name=subnetenv
+echo $TF_VAR_resoure_group_name, $TF_VAR_resoure_group_location, $TF_VAR_virtual_network_name, $TF_VAR_subnet_name
+
+
+# Initialize Terraform
+terraform init
+
+# Validate Terraform configuration files
+terraform validate
+
+# Format Terraform configuration files
+terraform fmt
+
+# Review the terraform plan
+terraform plan 
+	#check the values you see. it should be based on the values in environment
+
+terraform apply -auto-approve 
+
+# UNSET Environment Variables after demo
+unset TF_VAR_resoure_group_name
+unset TF_VAR_resoure_group_location
+unset TF_VAR_virtual_network_name
+unset TF_VAR_subnet_name
+echo $TF_VAR_resoure_group_name, $TF_VAR_resoure_group_location, $TF_VAR_virtual_network_name, $TF_VAR_subnet_name
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-07: Terraform Input Variables - Override with terraform.tfvars
+
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/22-Input-Variables-Assign-with-terraform-tfvars
+	
+lab 22-1
+copy the contents from 22.
+copy all the contents of variable
+paste it into a file called terraform.tfvars
+should be in the format 
+	key = "value"
+
+Reference 	
+vilas\terraform-tutorial\azure\steps\23
+
+	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/22-Input-Variables-Assign-with-terraform-tfvars
 		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/23-Input-Variables-Assign-with-tfvars-var-file
 		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/24-Input-Variables-Assign-with-auto-tfvars
+
+
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-08: Terraform Input Variables - anyfilename.tfvars with -var-file argument
 	------------------------------------------------------------------------------------------------------
+
+	This enables us to have env. specific variable files.
+	
+lab/22-2
+
+This can be done in reference to 23 - or modified 22
+
+vilas\terraform-tutorial\azure\steps\23
+	cp terraform.tfvars dev.tfvars
+	cp terraform.tfvars qa.tfvars
+	rm -rf terraform.tfvars
+	modify dev.tfvars 
+		include dev properties - starts with dev
+	modify qa.tfvars 
+		include qa properties - starts with qa
+	terraform plan -var-file=qa.tfvars
+	terraform plan -var-file=dev.tfvars	
 	------------------------------------------------------------------------------------------------------	
 	Step-09: Terraform Input Variables - understand .auto.tfvars
 	------------------------------------------------------------------------------------------------------
+	Create a file with extension 
+		.auto.tfvars.
+	variables inside such files will be auto loaded 
+		during terraform plan or apply
+
+lab/23
+	Reference to 23 itself
+	cp terraform.tfvars var.auto.tfvars
+	or 
+	cp dev.tfvars var.auto.tfvars
+	terraform plan
 	------------------------------------------------------------------------------------------------------	
 	Step-10: Terraform Input Variables - Review TF Configs for List Item
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
 	Step-11: Terraform Input Variables - Create List Variable, Verify and CleanUp
 	------------------------------------------------------------------------------------------------------
+	
+lab/24
+
+	
+	Use reference: 
+	vilas\terraform-tutorial\azure\steps\24
+
+	Do this from 23 with terraform.tfvars
+	cp 23 23a
+	cd 23a
+	1. Update variable.tf, add 
+	
+variable "virtual_network_address_space" {
+  description = "Virtual Network Address Space"
+  type = list(string)
+  default = ["10.0.0.0/16", "10.1.0.0/16", "10.2.0.0/16"]
+}
+	
+
+	2. terraform.tfvars
+	add 
+virtual_network_address_space = ["10.3.0.0/16", "10.4.0.0/16", "10.5.0.0/16"]
+
+	3. Modify main.tf
+	(a) modify
+	
+	# Create Virtual Network update address_space
+resource "azurerm_virtual_network" "myvnet" {
+  name                = "${var.business_unit}-${var.environment}-${var.virtual_network_name}"
+  #address_space      = ["10.0.0.0/16"]
+  address_space       = var.virtual_network_address_space
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+}
+
+	(b) update subnet update virtual_network_name 
+	# Create Subnet 
+resource "azurerm_subnet" "mysubnet" {
+  #name                 = var.subnet_name
+  name                 = "${azurerm_virtual_network.myvnet.name}-${var.subnet_name}"
+  resource_group_name  = azurerm_resource_group.myrg.name
+  virtual_network_name = azurerm_virtual_network.myvnet.name
+  address_prefixes     = ["10.3.0.0/24"]
+}
+
+
+
+Reference List values individually
+----------------------------------
+	update main.tf, update address to one of values
+	
+resource "azurerm_virtual_network" "myvnet" {
+  name                = "${var.business_unit}-${var.environment}-${var.virtual_network_name}"
+  #address_space      = ["10.0.0.0/16"]
+  #address_space       = var.virtual_network_address_space
+  address_space       = [var.virtual_network_address_space[0]]
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+}	
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/25-Input-Variables-Collection-Type-Lists
 	------------------------------------------------------------------------------------------------------	
 	Step-12: Terraform Input Variables - Review TF Configs for Maps Item
 	------------------------------------------------------------------------------------------------------
+lab/24-1	
+	helps to define a map/dictionary
+	e.g. {name = "Vilas", age = 44}.
+	
+	cp 24 24a
+	cd 24a
+
+	(a) Add couple of variables like 
+
+#Public IP SKU
+variable "public_ip_sku" {
+  description = "Azure Public IP Address SKU"
+  type = map(string)
+  default = {
+    "eastus" = "Basic"
+    "eastus2" = "Standard" 
+  }
+}
+
+#Common Tags
+variable "common_tags" {
+  description = "Common Tags for Azure Resources"
+  type = map(string)
+  default = {
+    "CLITool" = "Terraform"
+    "Tag1" = "Azure"
+  } 
+}	
+	
+	(b) Update main.tf - modify mypublicip
+	add 
+	
+	sku = var.public_ip_sku["eastus"]
+	tags = var.common_tags
+	
+	N.B: tags = var.common_tags can be added to any other resources also.
+	
+	terraform init
+	terraform plan
+		verify the output
+
+	(c) Add tags to few more resources and execute
+	terraform plan
+		verify the output
+
+
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/26-Input-Variables-Collection-Type-Maps
+	
+	N.B: 
+If the map's key 
+	starts with a number (inside a string)  
+	e.g. "1-development", 
+	use colon syntax : instead of =
+	like below
+	
+variable "my_env_names" {
+  type = map(string)
+  default = {
+    "1-development": "dev-apps"
+    "2-staging": "staging-apps"
+    "3-production": "prod-apps"
+  }
+}
 	
 	------------------------------------------------------------------------------------------------------	
 	Step-13: Terraform Input Variables - lookup function
 	------------------------------------------------------------------------------------------------------
+
+lab/24-2
+	continue from above lab
+
+	(d) 
+	terraform console
+	
+	> lookup({a="ay", b="bee"}, "a", "what?")
+	"ay"
+	> lookup({a="ay", b="bee"}, "b", "what?")
+	"bee"
+	> lookup({a="ay", b="bee"}, "c", "what?")
+	"what?"
+	
+	# Terraform lookup() Function with our map
+	lookup({"eastus"="Basic", "eastus2"="Standard"},"eastus", "Basic")
+	lookup({"eastus"="Basic", "eastus2"="Standard"},"eastus2", "Basic")
+	lookup({"eastus"="Basic", "eastus2"="Standard"},"myeast", "Basic")
+	exit
+	
+	(e)
+	Modify mypublicip in main.tf
+	comment sku and modify it with lookup as below
+	#sku = var.public_ip_sku["eastus"]
+	sku = lookup(var.public_ip_sku, var.resoure_group_location)
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-14: Terraform Input Variables - Create Map Variables, Verify and CleanUp
 	------------------------------------------------------------------------------------------------------
+	completed above
+
 	------------------------------------------------------------------------------------------------------	
 	Step-15: Terraform Functions: Length, Substring, Lower, Upper and Contains
 	------------------------------------------------------------------------------------------------------
+	Length
+		find length
+		can work with 
+			String
+			List
+			Map
+	Substring
+		works with 
+			string only
+	Lower
+		supports string only
+	Upper
+		supports string only
+	Contains
+		supports 
+			list 
+			tupule 
+			set
+
+lab/24-3
+	terraform console
+	length("hi")
+		length("hello")
+		length(["a", "b", "c"]) 
+		length({"key" = "value"}) 
+		length({"key1" = "value1", "key2" = "value2" }) 
+
+	syntax	
+		substr(string, offset, length)
+	substr("stack simplify", 1, 4)
+	substr("stack simplify", 0, 6)
+	substr("stack simplify", 0, 1)
+	substr("stack simplify", 0, 0)
+	substr("stack simplify", 0, 10)
+		
+	syntax: 
+		contains(list, value)
+	contains(["a", "b", "c"], "a")
+	contains(["a", "b", "c"], "d")
+	contains(["eastus", "eastus2"], "westus2")
+
+		
+	# Test lower() function
+	Template: lower("STRING")
+	lower("VILAS VARGHESE")
+	lower("TERRAFORM")
+
+	# Test upper() function
+	Template: lower("string")
+	upper("vilas varghese")
+	upper("terrform")
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-16: Terraform Input Variables - Validation Rules with OR and contains 
 	------------------------------------------------------------------------------------------------------
+	Values for variables can come from various sources
+	Ensure that the value a variable picks up is valid.
+		enforce validation 
+	Validation Rules has two parts
+		condition
+		error_message
+
+	condition: 
+		define expression 
+		evaluate the Input Variable. 
+		Must return 
+			true/false .
+	error_message: 
+		Defines error message 
+		displayed when condition returns false Must end with 
+			period 
+		or 
+			question mark
+
 	------------------------------------------------------------------------------------------------------	
 	Step-17: Terraform Input Variables - Validation Rules with regex
 	------------------------------------------------------------------------------------------------------
+	
+lab/24-4
+
+	Modify resoure_group_location in main.tf as 
+variable "resoure_group_location" {
+  description = "Resource Group Location"
+  type = string
+  default = "eastus"
+  validation {
+    condition  = var.resoure_group_location == "eastus" || var.resoure_group_location == "eastus2"
+    #condition = contains(["eastus", "eastus2"], lower(var.resoure_group_location))
+    error_message = "We only allow Resources to be created in eastus or eastus2 Locations."
+  }  
+}
+	
+	Modify resoure_group_location in terraform.tfvars and execute
+	terraform plan 
+		values possible
+			eastus
+			eastus2
+			westus
+			southindia
+			
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/27-Input-Variables-Validation-Rules
+
+lab/24-5
+
+Terraform regex() and can() Function
+
+	can 
+		can evaluates an expression 
+		returns a boolean value 
+			true if expression produced a result false if errors.
+
+
+# Go to Terraform Console
+terraform console
+
+# Test regex() function
+Template: regex(pattern, string)
+### TRUE CASES
+regex("india$", "westindia")
+regex("india$", "southindia")
+can(regex("india$", "westindia"))
+can(regex("india$", "southindia"))
+
+### FAILURE CASES
+regex("india$", "eastus")
+can(regex("india$", "eastus"))
+
+
+	modify resoure_group_location as 
+
+variable "resoure_group_location" {
+  description = "Resource Group Location"
+  type = string
+  default = "eastus"
+  validation {
+    condition = can(regex("india$", var.resoure_group_location))
+    error_message = "We only allow Resources to be created in westindia and southindia locations."
+  }  
+}
+
+	modify resource values in terraform.tfvars
+	execute terraform plan
 	------------------------------------------------------------------------------------------------------	
 	Step-18: Terraform Input Variables - Sensitive Introduction
 	------------------------------------------------------------------------------------------------------
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/28-Input-Variables-Sensitive
+	
+	confidential variables 
+		if used in plain text 
+			may be present in 
+				env. variables
+				command line history
+	e.g. 
+		export TF_VAR_db_username=admin TF_VAR_db_password=adifferentpassword
+
+
+	sensitive in Terraform allows us to 
+		use as usual.
+	Terraform will redact these values in command output and log files, and raise an error when it detects that they will be exposed in other ways.
+Important Note-1: Never check-in secrets.tfvars to git repositories
+Important Note-2: Terraform state file contains values for these sensitive variables terraform.tfstate. You must keep your state file secure to avoid exposing this data.
+
+
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-19: Terraform Input Variables - Define Sensitive, bool and Number Variables
 	------------------------------------------------------------------------------------------------------

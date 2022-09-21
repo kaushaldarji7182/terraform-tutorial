@@ -11,14 +11,11 @@ provider "azurerm" {
     }
   }
   alias = "provider2-westus"
-  #client_id = "XXXX"
-  #client_secret = "YYY"
-  #environment = "german"
-  #subscription_id = "JJJJ"
+
 }
 
 resource "azurerm_resource_group" "myrg1" {
-  name = "myrg-2"
+  name = "myrg-1"
   location = "West US"
     #<PROVIDER NAME>.<ALIAS NAME>
   provider = azurerm
