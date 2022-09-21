@@ -719,6 +719,8 @@ This tutorial is covered based on Terraform v0.13 and above.
 	terraform apply
 	terraform apply -auto-approve
 	terraform destroy
+	To delete a particular resource
+	terraform destroy -target RESOURCE_TYPE.NAME
 	terraform destroy -auto-approve
 
 	The terraform apply 
@@ -731,6 +733,8 @@ This tutorial is covered based on Terraform v0.13 and above.
 		creates a new execution plan = terraform plan
 		prompts to approve 
 		takes the indicated actions. 
+		
+		
 		
 Warning: If you use -auto-approve, 
 	recommend 
@@ -3817,12 +3821,22 @@ variable "resoure_group_location" {
 
 	sensitive in Terraform allows us to 
 		use as usual.
-	Terraform will redact these values in command output and log files, and raise an error when it detects that they will be exposed in other ways.
-Important Note-1: Never check-in secrets.tfvars to git repositories
-Important Note-2: Terraform state file contains values for these sensitive variables terraform.tfstate. You must keep your state file secure to avoid exposing this data.
+	Terraform will mask these values 
+		in command output and 
+		log files
+		raise an error 
+			if it detects that they will be exposed in other ways.
+	Important Note-1: 
+		Never check-in secrets.tfvars 
+			to git repositories
+	Important Note-2: 
+		Terraform state file 
+			contains values for these sensitive variables terraform.tfstate. 
+			You must keep your state file secure to avoid exposing this data.
 
 
-
+lab/25
+	
 
 	------------------------------------------------------------------------------------------------------	
 	Step-19: Terraform Input Variables - Define Sensitive, bool and Number Variables
@@ -3833,20 +3847,199 @@ Important Note-2: Terraform state file contains values for these sensitive varia
 	------------------------------------------------------------------------------------------------------	
 	Step-21: Terraform Input Variables - Create Azure MySQL DB, Test and CleanUp
 	------------------------------------------------------------------------------------------------------
+lab/25	
+	
+	25
+	
+	terraform plan -var-file="secrets.tfvars"
+	terraform apply -var-file="secrets.tfvars"
+	grep administrator_login terraform.tfstate
+	grep administrator_login_password terraform.tfstate 
+
+	connect using cloud shell
+	no ssh required
+	Find the cloud shell ip using 
+		curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
+	Go to Settings -> Connection Security -> Add Client IP (Add your Public IP) -> Click on Save
+	
+	
+	mysql --version
+	mysql -h <Azure DB Server Name> -u <user@server> -p 
+	server name: find it from azure portal
+	username and pwd is what you gave. username should be like user@server.
+	mysql -h it-dev-mydb201.mysql.database.azure.com  -u vilasadmin@it-dev-mydb201 -p
+
+	show schemas;
+
+	also check variable precidence
 	------------------------------------------------------------------------------------------------------	
 	Step-22: Terraform Input Variables - Structural Type Object Introduction
 	------------------------------------------------------------------------------------------------------
+	Structural types 
+		like structure in c
+		allow multiple values of different types 
+			to be grouped together as a single value.
+	(mandatory) requires a data schema to be defined 
+		for the Input Variables type 
+		Terraform knows what a valid value is.
+	use type= object(): 
+		A collection of values each with their own type.
+
+e.g.
+# Sample object()
+variable "os_configs" {
+  type = object({
+	location       = string
+	size           = string
+	instance_count = number
+  })
+}
+	
 		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/29-Input-Variables-Structural-Type-object
+
+lab/26
+	Enable Threat Detection Policy in Azure MySQL Database.
+	For threat_detection_policy block 
+		implement Input Variable Structural Type object()
+	
+	# 11. Azure MySQL DB Threat Detection Policy (Variable Type: Object)
+	(a)cp 25 26
+	(b) cd 26
+	(c) Update variables.tf
+	
+variable "tdpolicy" {
+    description = "Azure MySQL DB Threat Detection Policy"
+    type = object({
+        enabled = bool
+        retention_days = number
+        email_account_admins = bool
+        email_addresses = list(string)
+  })
+}
+	
+
+	(d)
+	Threat Detection Policy 
+		not supported for Basic Tier
+	Update main.tf
+	#sku_name   = "B_Gen5_2" # Basic Tier
+	sku_name 	= "GP_Gen5_2"   # General Purpose Tier
+
+	(e)
+	Add below in main.tf inside azurerm_mysql_server block
+resource "azurerm_mysql_server" "mysqlserver" {
+.
+.
+.
+.
+	threat_detection_policy {
+		enabled = true
+		retention_days = 10
+		email_account_admins = true
+		email_addresses = [ "vilas.varghese@gmail.com", "vilas_varghese@yahoo.com" ]
+	}
+}
+
+alternatively it could be as follows also...
+# With Structural Type object() defined in Variables
+  threat_detection_policy {
+    enabled = var.tdpolicy.enabled
+    retention_days = var.tdpolicy.retention_days
+    email_account_admins = var.tdpolicy.email_account_admins
+    email_addresses = var.tdpolicy.email_addresses
+}
+
+	(f)
+	Update terraform.tfvars
+# DB Variables
+db_name = "mydb101"
+db_storage_mb = 5120
+db_auto_grow_enabled = true
+tdpolicy = {
+    enabled = true
+    retention_days = 10
+    email_account_admins = true
+    email_addresses = [ "vilas.varghese@gmail.com", "vilas_varghese@yahoo.com" ]
+}
+
+
+Go to Azure MySQL Database -> it-dev-mydb101 -> Security -> Azure Defender for MySQL
+
+	(g)
+	terraform plan -var-file="secrets.tfvars"
+		#check the output
+	terraform apply -var-file="secrets.tfvars"
+	terraform destroy -var-file="secrets.tfvars"
 	------------------------------------------------------------------------------------------------------	
 	Step-23: Terraform Input Variables - Create TF Configs of ST Object
 	------------------------------------------------------------------------------------------------------
 		
+	covered above	
 	------------------------------------------------------------------------------------------------------	
 	Step-24: Terraform Input Variables - Execute TF Commands, Verify and CleanUp ST
 	------------------------------------------------------------------------------------------------------
+
+	covered above
+	refer the input from variable section.
 	------------------------------------------------------------------------------------------------------	
 	Step-25: Terraform Input Variables - Create TF Configs for ST Tuple
+
+
+
+	tuple(): 
+		A sequence of values 
+			each with their own type.
+		List of uneven elements
+
 	------------------------------------------------------------------------------------------------------
+
+
+	(a)
+	cp 25 27
+	cd 27
+
+	(b)
+Update variables.tf	
+variable "tdpolicy" {
+    description = "Azure MySQL DB Threat Detection Policy"
+    type = tuple([bool, number, bool, list(string)])
+}
+
+	(c)
+Update main.tf
+ #sku_name   = "B_Gen5_2" # Basic Tier
+ sku_name = "GP_Gen5_2"   # General Purpose Tier
+
+
+	(d)
+	Add below in main.tf inside azurerm_mysql_server block
+resource "azurerm_mysql_server" "mysqlserver" {
+.
+.
+.
+.
+	
+  threat_detection_policy {
+    enabled = var.tdpolicy[0]
+    retention_days = var.tdpolicy[1]
+    email_account_admins = var.tdpolicy[2]
+    email_addresses = var.tdpolicy[3]
+  }
+
+	(e)
+
+Update terraform.tfvars
+tdpolicy = [true, 10, true, [ "vilas.varghese@gmail.com", "vilas_varghese@yahoo.com" ]]
+
+
+
+	(f)
+	terraform plan -var-file="secrets.tfvars"
+		#check the output
+	terraform apply -var-file="secrets.tfvars"
+Go to Azure MySQL Database -> it-dev-mydb101 -> Security -> Azure Defender for MySQL
+
+	terraform destroy -var-file="secrets.tfvars"
 	------------------------------------------------------------------------------------------------------	
 	Step-26: Terraform Input Variables - Run TF Plan and Verify tuple var value repl
 	------------------------------------------------------------------------------------------------------
@@ -3858,7 +4051,22 @@ Important Note-2: Terraform state file contains values for these sensitive varia
 	------------------------------------------------------------------------------------------------------	
 	Step-28: Terraform Input Variables - Review TFConfigs for CT Set
 	------------------------------------------------------------------------------------------------------
-		
+	
+	Sets 
+		do not support element ordering
+		traversing sets 
+			can yield different order 
+				each time 
+			elements can not be accessed in a targeted way.
+		contain unique elements 
+			repeated exactly once
+			duplicate elements are ignored
+		Declaring a set 
+			similar to declaring a list
+			only difference in type:
+
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-29: Terraform Input Variables - Execute TF Commands, Verify and CleanUp CT
 	------------------------------------------------------------------------------------------------------
