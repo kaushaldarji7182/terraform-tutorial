@@ -132,6 +132,7 @@ resource "azurerm_linux_virtual_machine" "mylinuxvm" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
+  #az vm image list --publisher RedHat --all
   source_image_reference {
     publisher = "RedHat"
     offer     = "RHEL"

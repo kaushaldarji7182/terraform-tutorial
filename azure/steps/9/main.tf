@@ -40,6 +40,9 @@ resource "azurerm_public_ip" "mypublicip" {
   allocation_method   = "Static"
   tags = {
     environment = "Dev"
+	#Uncomment and run
+	frontend = true
+	
   }
 }
 

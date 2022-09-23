@@ -1996,10 +1996,19 @@ Inspection and Modification
 	terraform state command 
 		basic modifications of the state using the CLI.
 
-	Terraform expects a one-to-one mapping between configured resource instances and remote objects. Normally that is guaranteed by Terraform being the one to create each object and record its identity in the state, or to destroy an object and then remove the binding for it.
+	Terraform expects a one-to-one mapping 
+		Normally that is guaranteed by Terraform 
 
-	If you add or remove bindings in the state by other means, such as by importing externally-created objects with terraform import, or by asking Terraform to "forget" an existing object with terraform state rm, you'll then need to ensure for yourself that this one-to-one rule is followed, such as by manually deleting an object that you asked Terraform to "forget", or by re-importing it to bind it to some other resource instance.
-
+	If you add or remove bindings in the state by other means
+		e.g. import externally-created objects with terraform import
+	or	
+		ask Terraform to "forget" an existing object 
+			terraform state rm
+			
+		we have to ensure one-to-one relation maintained
+			manually manage
+			terraform import
+			
 Format
 ------
 	State snapshots 
@@ -2063,7 +2072,12 @@ In some cases
 		if app in vm crashes 
 	We can force a replace
 		-replace=
-			
+	
+lab/...
+	Update name
+	terraform apply fails
+	terraform apply -replace=azurerm_network_interface.myvm1nic
+	
 $ terraform apply -replace=aws_instance.example
   # aws_instance.example will be replaced, as requested
 
@@ -2095,7 +2109,7 @@ If Terraform mark an object as tainted
 		use terraform untaint command
 	
 We can force Terraform 
-	mark a object as tainted 
+	mark an object as tainted 
 	use 
 		deprecated: terraform taint command
 	 for
@@ -2334,9 +2348,9 @@ Argument Reference
 The following arguments are supported:
 
 Below arguments are both
-	Changing below 
-		new resource to be created.
-	(Required)
+	Change below new resource to be created.
+	and 
+		(Required)
 
 		admin_username - 
 		location - 
@@ -2739,7 +2753,7 @@ Count was fragile
 	Step-02: Meta-Argument Count - Azure Resource Group Demo
 	------------------------------------------------------------------------------------------------------
 	
-	
+	covered with count
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Introduction to Meta-Argument count for Azure Linux VM
 	------------------------------------------------------------------------------------------------------
@@ -2853,6 +2867,7 @@ lab/15
 	Step-06: Implement for_each chaining
 	------------------------------------------------------------------------------------------------------
 lab/16
+	#cp 13 16 and do this
 	vilas\terraform-tutorial\azure\steps\16
 
 	------------------------------------------------------------------------------------------------------	
@@ -3089,61 +3104,58 @@ variable "docker_ports" {
 }
 
 
-The label after the variable keyword is a name for the variable, which must be unique among all variables in the same module. This name is used to assign a value to the variable from outside and to reference the variable's value from within the module.
+The label after variable 
+	name for the variable
+	must be unique among all variables 
+		in the same module. 
+	used to assign a value.
 
-The name of a variable can be any valid identifier except the following: source, version, providers, count, for_each, lifecycle, depends_on, locals.
-
-These names are reserved for meta-arguments in module configuration blocks, and cannot be declared as variable names.
+The name of a variable can be any valid identifier 
+	except the following: 
+		source, 
+		version, 
+		providers, 
+		count, 
+		for_each, 
+		lifecycle, 
+		depends_on, 
+		locals.
 
 »Arguments
-Terraform CLI defines the following optional arguments for variable declarations:
+	optional arguments for variable declarations:
 
-default - A default value which then makes the variable optional.
-type - This argument specifies what value types are accepted for the variable.
-description - This specifies the input variable's documentation.
-validation - A block to define validation rules, usually in addition to type constraints.
-sensitive - Limits Terraform UI output when the variable is used in configuration.
-nullable - Specify if the variable can be null within the module.
-»Default values
-The variable declaration can also include a default argument. If present, the variable is considered to be optional and the default value will be used if no value is set when calling the module or running Terraform. The default argument requires a literal value and cannot reference other objects in the configuration.
-
-»Type Constraints
-The type argument in a variable block allows you to restrict the type of value that will be accepted as the value for a variable. If no type constraint is set then a value of any type is accepted.
-
-While type constraints are optional, we recommend specifying them; they can serve as helpful reminders for users of the module, and they allow Terraform to return a helpful error message if the wrong type is used.
-
-Type constraints are created from a mixture of type keywords and type constructors. The supported type keywords are:
-
-string
-number
-bool
-The type constructors allow you to specify complex types such as collections:
-
-list(<TYPE>)
-set(<TYPE>)
-map(<TYPE>)
-object({<ATTR NAME> = <TYPE>, ... })
-tuple([<TYPE>, ...])
-The keyword any may be used to indicate that any type is acceptable. For more information on the meaning and behavior of these different types, as well as detailed information about automatic conversion of complex types, see Type Constraints.
-
-If both the type and default arguments are specified, the given default value must be convertible to the specified type.
-
-»Input Variable Documentation
-Because the input variables of a module are part of its user interface, you can briefly describe the purpose of each variable using the optional description argument:
-
-variable "image_id" {
-  type        = string
-  description = "The id of the machine image (AMI) to use for the server."
-}
+		default
+			optional
+				if not specified anywhere
+					prompted
+		type - 
+			optional
+				any value can be specified
+			recommend specify
+				appropriate error
+			can be 
+				string
+				number
+				bool
+			or complex types such as collections:
+				list(<TYPE>)
+				set(<TYPE>)
+				map(<TYPE>)
+				object({<ATTR NAME> = <TYPE>, ... })
+				tuple([<TYPE>, ...])
+		description 
+			get's printed
+		validation - 
+			usually in addition to type constraints.
+		sensitive - 
+			
+		nullable - 
 
 
-The description should concisely explain the purpose of the variable and what kind of value is expected. This description string might be included in documentation about the module, and so it should be written from the perspective of the user of the module rather than its maintainer. For commentary for module maintainers, use comments.
 
-»Custom Validation Rules
-This feature was introduced in Terraform CLI v0.13.0.
 
-You can specify custom validation rules for a particular variable by adding a validation block within the corresponding variable block. The example below checks whether the AMI ID has the correct syntax.
-
+Custom Validation Rules
+-----------------------
 variable "image_id" {
   type        = string
   description = "The id of the machine image (AMI) to use for the server."
@@ -3154,19 +3166,12 @@ variable "image_id" {
   }
 }
 
+Suppressing Values in CLI Output
+----------------------------------
+introduced in Terraform v0.14.0.
 
-Refer to Custom Condition Checks for more details.
-
-»Suppressing Values in CLI Output
-This feature was introduced in Terraform v0.14.0.
-
-Hands-on: Try the Protect Sensitive Input Variables tutorial.
-
-Setting a variable as sensitive prevents Terraform from showing its value in the plan or apply output, when you use that variable elsewhere in your configuration.
-
-Terraform will still record sensitive values in the state, and so anyone who can access the state data will have access to the sensitive values in cleartext. For more information, see Sensitive Data in State.
-
-Declare a variable as sensitive by setting the sensitive argument to true:
+	sensitive 
+		prevents Terraform from showing its value 
 
 variable "user_information" {
   type = object({
@@ -3176,77 +3181,19 @@ variable "user_information" {
   sensitive = true
 }
 
-resource "some_resource" "a" {
-  name    = var.user_information.name
-  address = var.user_information.address
-}
-
-
-Any expressions whose result depends on the sensitive variable will be treated as sensitive themselves, and so in the above example the two arguments of resource "some_resource" "a" will also be hidden in the plan output:
-
-Terraform will perform the following actions:
-
-  # some_resource.a will be created
-  + resource "some_resource" "a" {
-      + name    = (sensitive)
-      + address = (sensitive)
-    }
-
-Plan: 1 to add, 0 to change, 0 to destroy.
-
-
-In some cases where you use a sensitive variable inside a nested block, Terraform may treat the entire block as redacted. This happens for resource types where all of the blocks of a particular type are required to be unique, and so disclosing the content of one block might imply the content of a sibling block.
-
-  # some_resource.a will be updated in-place
-  ~ resource "some_resource" "a" {
-      ~ nested_block {
-          # At least one attribute in this block is (or was) sensitive,
-          # so its contents will not be displayed.
-        }
-    }
-
-
-A provider can also declare an attribute as sensitive, which will cause Terraform to hide it from regular output regardless of how you assign it a value. For more information, see Sensitive Resource Attributes.
-
-If you use a sensitive value as part of an output value then Terraform will require you to also mark the output value itself as sensitive, to confirm that you intended to export it.
-
-»Cases where Terraform may disclose a sensitive variable
-A sensitive variable is a configuration-centered concept, and values are sent to providers without any obfuscation. A provider error could disclose a value if that value is included in the error message. For example, a provider might return the following error even if "foo" is a sensitive value: "Invalid value 'foo' for field"
-
-If a resource attribute is used as, or part of, the provider-defined resource id, an apply will disclose the value. In the example below, the prefix attribute has been set to a sensitive variable, but then that value ("jae") is later disclosed as part of the resource id:
-
-  # random_pet.animal will be created
-  + resource "random_pet" "animal" {
-      + id        = (known after apply)
-      + length    = 2
-      + prefix    = (sensitive)
-      + separator = "-"
-    }
-
-Plan: 1 to add, 0 to change, 0 to destroy.
-
-...
-
-random_pet.animal: Creating...
-random_pet.animal: Creation complete after 0s [id=jae-known-mongoose]
-
-
-»Disallowing Null Input Values
-This feature is available in Terraform v1.1.0 and later.
-
-The nullable argument in a variable block controls whether the module caller may assign the value null to the variable.
-
+Disallowing Null Input Values
+-----------------------------
 variable "example" {
   type     = string
   nullable = false
 }
 
 
-The default value for nullable is true. When nullable is true, null is a valid value for the variable, and the module configuration must always account for the possibility of the variable value being null. Passing a null value as a module input argument will override any default value.
+default value 
+	nullable is true. 
+	can pass null 
+		will override default
 
-Setting nullable to false ensures that the variable value will never be null within the module. If nullable is false and the variable has a default value, then Terraform uses the default when a module input argument is null.
-
-The nullable argument only controls where the direct value of the variable may be null. For variables of collection or structural types, such as lists or objects, the caller may still use null in nested elements or attributes, as long as the collection or structure itself is not null.
 
 »Using Input Variable Values
 Within the module that declared a variable, its value can be accessed from within expressions as var.<NAME>, where <NAME> matches the label given in the declaration block:
@@ -3356,13 +3303,21 @@ If you provide values for undeclared variables on the command line, Terraform wi
 »Variable Definition Precedence
 The above mechanisms for setting variables can be used together in any combination. If the same variable is assigned multiple values, Terraform uses the last value it finds, overriding any previous values. Note that the same variable cannot be assigned multiple values within a single source.
 
-Terraform loads variables in the following order, with later sources taking precedence over earlier ones:
 
-Environment variables
-The terraform.tfvars file, if present.
-The terraform.tfvars.json file, if present.
-Any *.auto.tfvars or *.auto.tfvars.json files, processed in lexical order of their filenames.
-Any -var and -var-file options on the command line, in the order they are provided. (This includes variables set by a Terraform Cloud workspace.)
+
+
+Terraform loads variables in the following order
+-------------------------
+	later sources taking precedence over earlier ones:
+
+
+	Environment variables
+	terraform.tfvars file, if present.
+	terraform.tfvars.json file, if present.
+	*.auto.tfvars or *.auto.tfvars.json files, 
+		processed in lexical order of their filenames.
+	-var and -var-file options on the command line, 
+		in the order they are provided. 
 	
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Terraform Input Variable Basics Demo
