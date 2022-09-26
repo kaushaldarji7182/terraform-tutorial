@@ -1,67 +1,36 @@
-
-#mkdir vm
-#cd vm/
-#mkdir ssh-keys
-#cd ssh-keys
-
-# Create SSH Key
-/*
-ssh-keygen \
-    -m PEM \
-    -t rsa \
-    -b 4096 \
-    -C "azureuser@myserver" \
-    -f terraform-azure.pem 
-*/
-#Important Note: Don't give a password. If you give password during generation, everytime you #login to VM, need to provide passphrase.
-
-# List Files
-#ls -lrt .
-
-# Files Generated after above command 
-#Public Key: 
-#	mv terraform-azure.pem.pub terraform-azure.pub
-#Private Key: 
-#	terraform-azure.pem
-
-# Permissions for Pem file
-#chmod 400 terraform-azure.pem
-#cd ..
-
-
-# Terraform Block
+# VM with ForEach
 terraform {
   required_version = ">= 1.0.0"
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = ">= 2.0" 
-    }
-    random = {
-      source = "hashicorp/random"
-      version = ">= 3.0"
+      version = ">= 2.0"
     }
   }
 }
 
+
+
+
+
 # Provider Block
 provider "azurerm" {
- features {}          
+features {}          
 }
 
-# Random String Resource
-resource "random_string" "myrandom" {
-  length = 6
-  upper = false 
-  special = false
-  numeric = false   
-}
+
+
+
 
 # Resource-1: Azure Resource Group
 resource "azurerm_resource_group" "myrg" {
   name = "myrg-1"
   location = "East US"
 }
+
+
+
+
 
 # Create Virtual Network
 resource "azurerm_virtual_network" "myvnet" {
@@ -70,6 +39,10 @@ resource "azurerm_virtual_network" "myvnet" {
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
 }
+
+
+
+
 
 # Create Subnet
 resource "azurerm_subnet" "mysubnet" {
@@ -80,59 +53,87 @@ resource "azurerm_subnet" "mysubnet" {
 }
 
 
+
+
+
+
 # Create Network Interface
 resource "azurerm_network_interface" "myvmnic" {
-  name                = "vmnic"
+
+
+
+for_each={ "net-1"="eastus"
+"net-2"="westus"
+}  
+name                = "vmnic${each.key}"
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
 
-  ip_configuration {
+
+
+
+
+ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.mysubnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id = azurerm_public_ip.mypublicip.id 
+    public_ip_address_id =azurerm_public_ip.mypublicip[each.key].id
   }
 }
 
+
+
+
+
 # Create Public IP Address
 resource "azurerm_public_ip" "mypublicip" {
-  # Add Explicit Dependency to have this resource created only after Virtual Network and Subnet Resources are created. 
+  # Add Explicit Dependency to have this resource created only after Virtual Network and Subnet Resources are created.
   depends_on = [
     azurerm_virtual_network.myvnet,
     azurerm_subnet.mysubnet
   ]
-  name                = "mypublicip-1"
+for_each={ "net-1"="eastus"
+  "net-2"="westus"
+  }
+
+
+
+ name                = "mypublicip-${each.value}"
   resource_group_name = azurerm_resource_group.myrg.name
   location            = azurerm_resource_group.myrg.location
-  allocation_method   = "Static"
-  #domain_name_label = "app1-vm-${random_string.myrandom.id}" - better don't give as this can can conflict with multiple students.
+  allocation_method   = "Dynamic"
   tags = {
     environment = "Dev"
   }
 }
 
 
+
+
+
+
 # Resource: Azure Linux Virtual Machine
 resource "azurerm_linux_virtual_machine" "mylinuxvm" {
-  name                = "mylinuxvm-1"
-  computer_name       = "devlinux-vm1" # Hostname of the VM
+for_each = toset(["net-1", "net-2"])
+
+
+
+ name                = "mylinuxvm${each.key}"
+  computer_name       = "devlinux-vm${each.key}" # Hostname of the VM
   resource_group_name = azurerm_resource_group.myrg.name
   location            = azurerm_resource_group.myrg.location
   size                = "Standard_DS1_v2"
   admin_username      = "azureuser"
-  network_interface_ids = [
-    azurerm_network_interface.myvmnic.id
-  ]
+  network_interface_ids = [ azurerm_network_interface.myvmnic[each.key].id ]
   admin_ssh_key {
     username   = "azureuser"
     public_key = file("${path.module}/ssh-keys/terraform-azure.pub")
   }
   os_disk {
-    name = "osdisk"
+    name = "osdisk${each.key}"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  #az vm image list --publisher RedHat --all
   source_image_reference {
     publisher = "RedHat"
     offer     = "RHEL"

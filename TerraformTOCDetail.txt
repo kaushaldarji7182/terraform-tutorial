@@ -1,5 +1,10 @@
 Day 1
 
+
+References:
+https://learn.hashicorp.com/tutorials/
+https://www.terraform.io/
+https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure
 ------------------------------------------------------------------------------------------------------
 Introduction
 ------------------------------------------------------------------------------------------------------
@@ -2775,6 +2780,7 @@ Count was fragile
 	covered above
 	------------------------------------------------------------------------------------------------------	
 ------------------------------------------------------------------------------------------------------
+
 Terraform meta argument for_each with Maps and set of string
 ------------------------------------------------------------------------------------------------------
 	Step-02: Meta-Argument for_each with Maps Demo
@@ -3043,11 +3049,24 @@ Terraform Input Variable
 	Step-01: Define Terraform Input Variable
 	------------------------------------------------------------------------------------------------------
 	
-	Input variables let you customize aspects of Terraform modules without altering the module's own source code. This functionality allows you to share modules across different Terraform configurations, making your module composable and reusable.
+	Input variables 
+		let us customize Terraform modules 
+			without altering the module's own source code
+		helps share modules across different Terraform configurations
+		make module 
+			composable and 
+			reusable.
 
-When you declare variables in the root module of your configuration, you can set their values using CLI options and environment variables. When you declare them in child modules, the calling module should pass values in the module block.
+Declare variables in the 
+	root module 
+		set values using 
+			CLI 
+			environment variables. 
+declare them 
+	child modules
+		calling module should pass values in the module block.
 
-	Terraform supports various ways to pass input variables
+Terraform supports various ways to pass input variables
 	Following are those ways
 	1. Input variables - Basics
 	2. Provide input variables when prompted 
@@ -3168,7 +3187,7 @@ variable "image_id" {
 
 Suppressing Values in CLI Output
 ----------------------------------
-introduced in Terraform v0.14.0.
+Introduced in Terraform v0.14.0.
 
 	sensitive 
 		prevents Terraform from showing its value 
@@ -3196,10 +3215,12 @@ default value
 
 
 »Using Input Variable Values
-Within the module that declared a variable, its value can be accessed from within expressions as var.<NAME>, where <NAME> matches the label given in the declaration block:
-
-Note: Input variables are created by a variable block, but you reference them as attributes on an object named var.
-
+-----------------------------
+Within the module that declared a variable
+	value can be accessed 
+		use expressions var.<NAME>
+	
+	
 resource "aws_instance" "example" {
   instance_type = "t2.micro"
   ami           = var.image_id
@@ -3307,7 +3328,7 @@ The above mechanisms for setting variables can be used together in any combinati
 
 
 Terraform loads variables in the following order
--------------------------
+------------------------------------------------
 	later sources taking precedence over earlier ones:
 
 
@@ -3316,6 +3337,7 @@ Terraform loads variables in the following order
 	terraform.tfvars.json file, if present.
 	*.auto.tfvars or *.auto.tfvars.json files, 
 		processed in lexical order of their filenames.
+			relating to vocabulary of a language
 	-var and -var-file options on the command line, 
 		in the order they are provided. 
 	
@@ -3718,8 +3740,7 @@ variable "resoure_group_location" {
 			westus
 			southindia
 			
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/27-Input-Variables-Validation-Rules
-
+	
 lab/24-5
 
 Terraform regex() and can() Function
@@ -3945,7 +3966,10 @@ Go to Azure MySQL Database -> it-dev-mydb101 -> Security -> Azure Defender for M
 		A sequence of values 
 			each with their own type.
 		List of uneven elements
-
+	
+lab/27	
+	vilas\terraform-tutorial\azure\steps\27\
+	30
 	------------------------------------------------------------------------------------------------------
 
 
@@ -4003,6 +4027,8 @@ Go to Azure MySQL Database -> it-dev-mydb101 -> Security -> Azure Defender for M
 	Step-27: Terraform Input Variables - Introduction to Collection Type set
 	------------------------------------------------------------------------------------------------------
 		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/31-Input-Variables-Collection-Type-Sets
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-28: Terraform Input Variables - Review TFConfigs for CT Set
 	------------------------------------------------------------------------------------------------------
@@ -4020,8 +4046,8 @@ Go to Azure MySQL Database -> it-dev-mydb101 -> Security -> Azure Defender for M
 			similar to declaring a list
 			only difference in type:
 
-
-
+lab/28
+	vilas\terraform-tutorial\azure\steps\28
 	------------------------------------------------------------------------------------------------------	
 	Step-29: Terraform Input Variables - Execute TF Commands, Verify and CleanUp CT
 	------------------------------------------------------------------------------------------------------
@@ -4033,50 +4059,271 @@ Terraform Output Values
 	https://www.terraform.io/language/values/outputs
 
 	Step-00: Output Values Introduction
+	Simple
+		Root module 
+			use output to print values in CLI output
+				terraform apply
+				e.g. vm: dns name, public ip.
+	Advanced
+		Child module	
+			expose [few] resource attributes
+				to a parent module
+		In remote state
+			root module o/p 
+				accessed by other modules	
+					use terraform_remote_state data source
+
+	Output's
+		documentation 
+			argument references
+			attributes references
+	output 
+		top level block in terraform
+		like variables
+		can help to access
+			argument and at
+	
+	
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
 	Step-01: Create Basic Output Values and Review TF Configs
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/32-Output-Values-Basics
+lab/29
+	vilas\terraform-tutorial\azure\steps\29
+	
+	# Terraform Output Commands
+terraform output
+terraform output resource_group_id
+terraform output virtual_network_name
+
+
+
+Suppressing Sensitive Values in Output
+--------------------------------------
+We can redact the sensitive outputs 
+	use sensitve = true 
+		in output block
+	value would be masked in terraform output/apply
+	but can see original value in terraform output
+	----------------------------------------------
+	
+	terraform output command 
+		fetch values from terraform.tfstate files
+
+Add sensitve = true for output virtual_network_name
+# 2. Output Values - Virtual Network
+output "virtual_network_name" {
+  description = "Virutal Network Name"
+  value = azurerm_virtual_network.myvnet.name 
+  sensitive = true
+}
+
+
+# Terraform Apply
+terraform apply -auto-approve
+Observation: 
+1. You should see the value as sensitive
+
+See original value: Query using terraform output
+terraform output virtual_network_name
+Observation: 
+1. You should get non-redacted original value from terraform.tfstate file
+
+Generate machine-readable output
+terraform output -json
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Execute TF Commands, Verify and learn about "terraform output" command
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Output Values with Sensitive flag and also "terraform output -json"
 	------------------------------------------------------------------------------------------------------
+	covered above
+	Another example
+lab/30
+	vilas\terraform-tutorial\azure\steps\30
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Output Values with Meta-Argument count and Splat Expression
 	------------------------------------------------------------------------------------------------------
+
+	count.index is not available in a seperate block like output
+lab/31
+	vilas\terraform-tutorial\azure\steps\31
+	33
 	------------------------------------------------------------------------------------------------------	
-	Step-05: Output Values with Meta-Argument for_each and For Expression - Introduc
+	Step-05: Output Values with Meta-Argument for_each and For Expression
 	------------------------------------------------------------------------------------------------------
+	splat can work only in list
+	for maps, 
+		use resource meta argument for_each 
+		
+lab/32		
+	vilas\terraform-tutorial\azure\steps\32
+	following also covered in this.
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Create List Outputs
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-07: Create Map Outputs and use key and values functions
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------
 Terraform Local values
 ------------------------------------------------------------------------------------------------------
 	https://www.terraform.io/language/values/locals
+
+	DRY principle
+	Local values 
+		assigns a name to an expression 
+		refer to the expression using name 
+		don't repeat expression
+		like a reference to a function
+		refer it as local.<NAME>
+		easy to understand, manage and maintain
+
+toplevel block local
+local {
+	name = "vilas"#the value here could be an expression azurerm_resourece_group.name
+	owner = "my project"
+}
+
+local {
+	#Common tags to be assigned to all resources
+	#will not automatically assign. but makes it easy
+	common_tags = {
+		name = "vilas"
+		owner = "my project"
+	}
+}
+
+
 	
 Create Local Values Terraform Config
 ------------------------------------------------------------------------------------------------------
+lab/33
+	vilas\terraform-tutorial\azure\steps\33
+	35
+
+------------------------------------------------------------------------------------------------------
+
 Terraform Condtional Expression
 ------------------------------------------------------------------------------------------------------
+
+
 	Step-01: Terraform Conditional Expressions Introduction and Create TF Configs
 	------------------------------------------------------------------------------------------------------
+	select a configuration based on condition.
+	variables doesn't support conditional expressions.
+	supported in 
+		local values 
+		resources.
 		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/36-Terraform-Conditional-Expressions
 	------------------------------------------------------------------------------------------------------	
 	AZHCTA-36-02-TFCE-Conditional-Expressions-Execute-TFCommands-Verify-CleanUp
 	------------------------------------------------------------------------------------------------------
-		
+
+
+lab/34
+
+vilas\terraform-tutorial\azure\steps\34
+Jump to step 5
+or
+
+Modify existing 
+	vilas\terraform-tutorial\azure\steps\33
+
+Reference
+# Example-1
+condition ? true_val : false_val
+# Example-2
+var.a != "" ? var.a : "default-a"
+
+
+1. Declare two more in variables.tf
+Select one based on condition
+# 6. Virtual Network Address - Dev
+variable "vnet_address_space_dev" {
+  description = "Virtual Network Address Space for Dev Environment"
+  type = list(string)
+  default = ["10.0.0.0/16"]
+}
+
+# 7. Virtual Network Address - 
+variable "vnet_address_space_all" {
+  description = "Virtual Network Address Space for All Environment except Dev"
+  type = list(string)
+  default = ["10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"]
+}
+
+2. Update local.tf - update condition  vnet_address_space = ? a : b
+
+locals {
+  # Use-case-1: Shorten the names for more readability
+  rg_name = "${var.business_unit}-${var.environment}-${var.resoure_group_name}"
+  vnet_name = "${var.business_unit}-${var.environment}-${var.virtual_network_name}"
+
+  # Use-case-2: Common tags to be assigned to all resources
+  service_name = "Demo Services"
+  owner = "Kalyan Reddy Daida"
+  common_tags = {
+    Service = local.service_name
+    Owner   = local.owner
+  }
+
+  # Use-case-3: Terraform Conditional Expressions
+  # We will learn this when we are dealing with Conditional Expressions
+  # The expressions assigned to local value names can either be simple constants or can be more complex expressions that transform or combine values from elsewhere in the module.
+  # With Equals (==)
+  vnet_address_space = (var.environment == "dev" ? var.vnet_address_space_dev : var.vnet_address_space_all)
+  # With Not Equals (!=)
+  #vnet_address_space = (var.environment != "dev" ? var.vnet_address_space_all : var.vnet_address_space_dev)
+}
+
+
+3. Update main.tf - update 
+	address_space = local.value
+	
+# in Virtual Network
+resource "azurerm_virtual_network" "myvnet" {
+  #name                = "${var.business_unit}-${var.environment}-${var.virtual_network_name}"
+  name                = local.vnet_name
+  #address_space       = ["10.0.0.0/16"]
+  address_space       = local.vnet_address_space
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+  tags = local.common_tags
+}
+
+4. Add conditional count as below in main.tf
+
+# Create Virtual Network - Conditional Expressions in a Resource Demo
+resource "azurerm_virtual_network" "myvnet2" {
+  #count = 2
+  count = var.environment == "dev" ? 1 : 5
+  name                = "${var.business_unit}-${var.environment}-${var.virtual_network_name}-${count.index}"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+  tags = local.common_tags
+}
+
+
+5. Modify variable environment in variables.tf with dev/any other value and run
+terraform plan
+#watch how many are getting created.
+
+
 	------------------------------------------------------------------------------------------------------	
 	AZHCTA-36-03-TFCE-Conditional-Expressions-in-a-Resource-Demo
 	------------------------------------------------------------------------------------------------------
 		
+			covered above
 	------------------------------------------------------------------------------------------------------	
 
 ------------------------------------------------------------------------------------------------------
@@ -4086,31 +4333,197 @@ Terraform Data Source
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/37-Terraform-Datasources
 
 	Step-02: Create Datasource for Resource Group Resource
+	
+	
+	Data sources
+		fetch or compute data
+			use it in Terraform
+			e.g. AMI 
+			
+		can access data outside Terraform
+			by 
+				cloud sources
+				another Terraform configuration (module)
+		accessed using special resource
+			called data resource
+			use data block
+		
+e.g.
+data block: top level block 
+data "azurerm_subscription" "current" {
+	
+}
+				
+		a data resource is associated to a 
+			single data source
+			datasource: 
+				determine kind of object(s)
+					reads
+					what query arguments are available
+		data resource
+			similar dependency resolution behaviour as 
+				defined or managed resources
+			use depends_on meta argument
+				reading data source delayed till update to dependencies are done.
+			use provider argument 
+				to work with a certain provider
+			use count and  for_each 
+				to execute multiple times
+			lifecycle meta arguments
+				not supported
+				but reserved for future
+		
+	
+Search for azurerm_resource_group in terraform documentation
+	find the documentation under 'data source'
+
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Create Datasource for Virtual Network
 	------------------------------------------------------------------------------------------------------
+lab/35
+	vilas\terraform-tutorial\azure\steps\35
+	37
+
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Create Datasource for Azure Subscription
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 ------------------------------------------------------------------------------------------------------
 Terraform Remote State and Locking
 ------------------------------------------------------------------------------------------------------
+	
+	Backend 
+		store 
+			state 
+		and 
+			lock (api for locking)
+	Both state and lock can be stored in 
+		azure storage account
+		aws s3 
+		
+			
+	
 	https://www.terraform.io/language/state/locking
 	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/38-Terraform-Remote-State-Storage-and-Locking
 
+On the portal 
+----------------
+1: Create Resource Group
+Go to Resource Groups -> Add
+Resource Group: terraform-storage-rg
+Region: East US
+Click on Review + Create
+Click on Create
+	
+2: Create Azure Storage Account
+Go to Storage Accounts -> Add
+Resource Group: terraform-storage-rg
+Storage Account Name: terraformstate<vilas1> (THIS NAME SHOULD BE UNIQUE ACROSS AZURE CLOUD)
+Region: East US
+Performance: Standard
+Redundancy: Geo-Redundant Storage (GRS)
+In Data Protection, check the option Enable versioning for blobs
+REST ALL leave to defaults
+Click on Review + Create
+Click on Create
+
+
+3: Create Container in Azure Storage Account
+Go to Storage Account -> terraformstate201 -> Containers -> +Container
+Name: tfstatefiles
+Public Access Level: Private (no anonymous access)
+Click on Create
+
+lab/36
+	vilas\terraform-tutorial\azure\steps\36
+	cp ../11/ssh-keys .
+	38
+	
+1.	Add remote state block in terraform block 
+	Refer provider.tf
+	# Terraform State Storage to Azure Storage Container
+  backend "azurerm" {
+    resource_group_name   = "terraform-storage-rg"
+    storage_account_name  = "terraformstate201"
+    container_name        = "tfstatefiles"
+    key                   = "terraform.tfstate"
+  } 
+
+Review all other files.
+
+terraform init
+	Observation: 
+	1. Review below message
+	2. Verify the Azure Storage Account and you should see terraform.tfstate file created
+	## Sample CLI Output
+	Initializing the backend...
+	Successfully configured the backend "azurerm"! Terraform will automatically
+	use this backend unless the backend configuration changes.
+
+terraform validate
+
+# Review the terraform plan
+terraform plan 
+	Observation:
+	1. Acquiring state lock. This may take a few moments...
+
+# Create Resources 
+terraform apply -auto-approve
+	# Verify Azure Storage Account for terraform.tfstate file
+	Observation: 
+	1. Finally at this point you should see the terraform.tfstate file in Azure Storage Account. 
+
+# Access Application
+http://<Public-IP>
+
+Destroy after completing next exercise
+
 	Step-02: Create Azure Storage Account and Container
 	------------------------------------------------------------------------------------------------------
+
+	
+
+	Check the azure cloud storage and the container there
+	
+	
+	Now uncomment tags in local.tf
+common_tags = {
+    Service = local.service_name
+    Owner   = local.owner
+    Tag = "demo-tag1"  # Uncomment during step-05
+}
+
+terraform plan 
+
+# Create Resources 
+terraform apply -auto-approve
+
+# Verify terraform.tfstate file in Azure Storage Account
+Observation: 
+1. New version of terraform.tfstate file will be created
+2. Understand about Terraform State Locking 
+3. terraform.tfsate file should be in "leased" state which means no one can apply changes using terraform to Azure Resources.
+4. Once the changes are completed "terraform apply", Lease State should be in "Available" state. 
+
+
+terraform destroy
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Create TF Backend Block with Azure Storage Account and Review TF Config
 	------------------------------------------------------------------------------------------------------
+	
+	
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Execute TF Commands, Verify Remote State Storage and Locking Features
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Understand Azure Storage Account TF State File Versioning and CleanUp
 	------------------------------------------------------------------------------------------------------
+
+
 	------------------------------------------------------------------------------------------------------	
 
 
@@ -4119,23 +4532,262 @@ Day 4
 Terraform state command
 ------------------------------------------------------------------------------------------------------
 	
+	Terraform Commands
+		terraform show
+		terraform state
+		terraform force-unlock
+		terraform taint
+		terraform untaint
+		terraform apply -target command
 	
+	
+	
+Terraform Show Command 
+	provide human-readable output from 
+		a state or 
+		plan file.
+	why show?
+		inspect a plan 
+			planned operations are expected, 
+		or 
+		inspect the current state as
+
+
 	
 	
 	Step-01: Terraform Show Command to read Terraform Plan Files
 	------------------------------------------------------------------------------------------------------
+lab/37
+	vilas\terraform-tutorial\azure\steps\37
+
+	# Initialize Terraform
+	terraform init
+
+	# Terraform Validate
+	terraform validate
+
+	# Create Plan 
+	terraform plan
+	terraform plan -out=v1plan.out
+
+	# Read the plan 
+	terraform show v1plan.out
+	terraform show  # Nothing as terraform.tfstate file not created yet
+
+	# Read the plan in json format (Unformatted / Not Readable)
+	terraform show -json v1plan.out 
+
+	# Install jq (for mac and fine tuned json output)
+	brew install jq
+	terraform show -json v1plan.out | jq	
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Terraform Show Command to read Terraform State Files
 	------------------------------------------------------------------------------------------------------
+#is below statement required?	
+terraform show 
+	will work if 
+		terraform.tfstate file is in the local folder.
+		
+# Terraform Show
+terraform show
+	we haven't executed init/apply? yet
+Observation: 
+	1. AWS provider 
+		"No State" 
+			we haven't created resources yet 
+			no state file in current working directory
+	2. For Azure Provider
+		empty response. 
+
+# Create Resources
+#terraform apply -auto-approve
+terraform apply v1plan.out
+
+# Terraform Show 
+terraform show
+Observation: It should display the state file
+
+
+
+continue without destroy
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Terraform State List and Show Commands
 	------------------------------------------------------------------------------------------------------
+	used for Inspecting Terraform State
+	terraform state list: 
+		list resources within Terraform state.
+	terraform state show: 
+		view attributes of one resource 
+			from the Terraform state.
+	
+	# List Resources from Terraform State
+	terraform state list
+
+	# Show the attributes of a single resource from Terraform State
+	terraform state show data.azurerm_resource_group.rgds
+	terraform state show data.azurerm_subscription.current
+	terraform state show azurerm_virtual_network.myvnet
+
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Terraform State mv command
 	------------------------------------------------------------------------------------------------------
+
+	Use this command to modify the name of a resource without any change in cloud.
+	
+
+This lab can be performed with 37 itself.
+	For reference check 38 - main.tf file after the commands have executed.
+	
+terraform state mv
+	To move Terraform Resources
+	move an item 
+		to destination address.
+		new state file
+			rename state file
+	N.B: Very dangerous command
+	Results unpredictable 
+		if concept are not clear 
+			understand 
+				desired state and 
+				current state.
+	Validate before using in production.
+	
+# Terraform List Resources
+terraform state list
+
+# Terraform State Move Resources to different name
+terraform state mv -dry-run azurerm_virtual_network.myvnet azurerm_virtual_network.myvnet-new
+terraform state mv azurerm_virtual_network.myvnet azurerm_virtual_network.myvnet-new
+terraform state list
+ls -lrta # To verify state file backup
+
+By default,
+	a backup of your state file is written to terraform. 
+		tfstate.backup 
+	if state file is 
+		lost 
+	or 
+		corrupted 
+			recover. 
+	
+Observation: 
+1) renamed the name of 
+	"myvnet" in state file to 
+		"myvnet-new". 
+2) terraform plan 
+	what happens in next run of terraform plan and apply?
+-----------------------------
+# WRONG APPROACH 
+-----------------------------
+# WRONG APPROACH 
+	MOVING TO TERRAFORM PLAN AND APPLY 
+		AFTER ABOVE CHANGE terraform state mv CHANGE
+# Correct Approach: 
+	UPDATE EQUIVALENT RESOURCE FIRST before next plan and apply. 
+
+# Terraform Plan
+terraform plan
+Observation: It will show "Plan: 1 to add, 0 to change, 1 to destroy."
+1 to add: New VNET will be added
+1 to destroy: Old VNET will be destroyed
+
+ # azurerm_virtual_network.myvnet will be created
+  + resource "azurerm_virtual_network" "myvnet" {
+
+ # azurerm_virtual_network.myvnet-new will be destroyed
+  - resource "azurerm_virtual_network" "myvnet-new" {
+
+
+
+DON'T DO TERRAFORM APPLY 
+-----------------------------
+	because it shows make changes. 
+	Nothing changed other than state file 
+		local naming of a resource. 
+	There should be no real cloud environment change due to this
+
+
+#Now modify the main.tf - uncomment and comment as required.
+
+Now run terraform plan 
+	should see no changes to Infra
+
+# Terraform Plan
+terraform plan
+Observation: 
+1) Message-1: 
+	No changes. Infrastructure is up-to-date
+
+# Sample Message: 
+Your configuration already matches the changes detected above. If you'd like to update the
+Terraform state to match, create and apply a refresh-only plan:
+  terraform apply -refresh-only
+
+# Terraform Apply (refresh-only)
+terraform apply -refresh-only
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Terraform State rm command and replace-provider command
 	------------------------------------------------------------------------------------------------------
+
+This commands comes under Terraform Moving Resources Section
+The terraform state rm command is used to remove items from the Terraform state.
+This command can remove single resources, single instances of a resource, entire modules, and more.
+# Terraform List Resources
+terraform state list
+
+# Remove Resources from Terraform State
+terraform state rm -dry-run azurerm_virtual_network.myvnet-new
+terraform state rm azurerm_virtual_network.myvnet-new
+Observation: 
+1) Removes it from terraform.tfstate file
+
+# Terraform Plan
+terraform plan
+Observation: It will tell you that resource is not in state file but same is present in your terraform manifests (c5-virtual-network.tf - DESIRED STATE). Do you want to re-create it?
+This will re-create new Virtual Network excluding one created earlier and running
+
+Make a  Choice
+-------------
+Choice-1: You want this resource to be running on cloud but should not be managed by terraform. Then remove its references in terraform manifests(DESIRED STATE). So that the one running in Azure cloud (current infra) this instance will be independent of terraform. 
+Choice-2: You want a new resource to be created without deleting other one (non-terraform managed resource now in current state). Run terraform plan and apply
+LIKE THIS WE NEED TO MAKE DECISIONS ON WHAT WOULD BE OUR OUTCOME OF REMOVING A RESOURCE FROM STATE.
+
+PRIMARY REASON for this is command is that respective resource need to be removed from as terraform managed. 
+
+# Run Terraform Plan (I made choice-2)
+terraform plan # NO ERROR 
+terraform apply -auto-approve # UNIQUE CONSTRAINT ERROR FOR VNET NAME
+
+# Error Message
+- YOU WILL get a unique resource name on Azure for Virtual Network under this resource group error when you run "terraform apply". 
+- Change the Terraform Manifests Virtual Network name to different one and test
+│ Error: A resource with the ID "/subscriptions/82808767-144c-4c66-a320-b30791668b0a/resourceGroups/hr-dev-myrg/providers/Microsoft.Network/virtualNetworks/hr-dev-myvnet" already exists - to be managed via Terraform this resource needs to be imported into the State. Please see the resource documentation for "azurerm_virtual_network" for more information.
+
+# Update c5-virtual-network.tf
+Before: name = local.vnet_name
+After: name = "${local.vnet_name}-2"
+
+# Update c7-datasource-virtual-network.tf
+Before: name = local.vnet_name
+After: name = "${local.vnet_name}-2"
+
+# Run Terraform Plan Again
+terraform plan
+terraform plan -out=v2plan.out
+
+# Run Terraform Apply
+terraform apply v2plan.out
+
+# Verify in Azure Portal
+1. In Azure Portal, you should see two Virtual Networks in a Resource Group
+- hr-dev-myvnet: Not managed by Terraform 
+- hr-dev-myvnet-2: Managed by Terraform
+
+
+State replace provider
+	https://www.terraform.io/cli/commands/state/replace-provider
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Terraform State Push Pull and Force-Unlock Commands
 	------------------------------------------------------------------------------------------------------
