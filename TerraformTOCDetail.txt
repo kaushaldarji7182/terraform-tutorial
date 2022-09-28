@@ -1212,8 +1212,7 @@ https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/
 	Step-04: Dependency Lock File Demo and CleanUp
 	------------------------------------------------------------------------------------------------------
 	
-https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/08-Providers-Dependency-Lock-File
-
+8
 
 Terraform configuration 
 	has two external dependency
@@ -2032,7 +2031,7 @@ Format
 	------------------------------------------------------------------------------------------------------	
 	Step-07: Resource Behavior: Update-In-Place, Destroy-Recreate and Destroy Demo's
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/09-Resource-Syntax-and-Behavior
+		9
 		
 	Update-In-Place	
 		In place update
@@ -2163,7 +2162,7 @@ Resource behavior
 	Step-01: Introduction to Meta-Argument depends_on
 	------------------------------------------------------------------------------------------------------
 	https://www.terraform.io/language/meta-arguments/depends_on
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/10-Meta-Argument-depends_on
+	10
 	
 	depends_on 
 		meta-argument 
@@ -2637,7 +2636,7 @@ Terraform meta argument with Element Function and Splat Expression
 	Step-01: Introduction to Meta-Argument count
 	------------------------------------------------------------------------------------------------------
 	https://www.terraform.io/language/meta-arguments/count
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/11-02-Meta-Argument-count
+	11-02
 
 The count Meta-Argument
 	count was added in Terraform 0.13
@@ -2786,7 +2785,7 @@ Terraform meta argument for_each with Maps and set of string
 	Step-02: Meta-Argument for_each with Maps Demo
 	------------------------------------------------------------------------------------------------------
 		https://www.terraform.io/language/meta-arguments/for_each
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/12-Meta-Argument-for_each-Maps
+		12
 		
 	for_each
 		similar to count. 
@@ -2856,7 +2855,7 @@ toset([4, 100, 20, 11, 21, 7, 6, 4, 100])
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Implement for_each with set of strings
 	------------------------------------------------------------------------------------------------------
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/13-Meta-Argument-for_each-ToSet
+	13
 	
 	
 lab/15
@@ -2865,7 +2864,7 @@ lab/15
 	------------------------------------------------------------------------------------------------------	
 	Step-05: for_each chaining Introduction and Review TF Configs
 	------------------------------------------------------------------------------------------------------
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/14-Meta-Argument-for_each-Chaining
+	14
 	
 	Because a resource using for_each appears as a map of objects or set of strings when used in expressions elsewhere, you can directly use one resource as the for_each of another in situations where there is a one-to-one relationship between two sets of objects.
 	In our case, we will use the azurerm_network_interface.myvmnic resource directly in azurerm_linux_virtual_machine.mylinuxvm Resource
@@ -3332,14 +3331,14 @@ Terraform loads variables in the following order
 	later sources taking precedence over earlier ones:
 
 
-	Environment variables
-	terraform.tfvars file, if present.
-	terraform.tfvars.json file, if present.
-	*.auto.tfvars or *.auto.tfvars.json files, 
+5	Environment variables
+4	terraform.tfvars file, if present.
+3	terraform.tfvars.json file, if present.
+2	*.auto.tfvars or *.auto.tfvars.json files, 
 		processed in lexical order of their filenames.
 			relating to vocabulary of a language
 	-var and -var-file options on the command line, 
-		in the order they are provided. 
+1		in the order they are provided. 
 	
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Terraform Input Variable Basics Demo
@@ -3353,12 +3352,14 @@ lab/20
 		terraform apply 
 		terraform will prompt for those variables values
 lab/21	
+	try removing some default values
 		vilas\terraform-tutorial\azure\steps\21
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Terraform Input Variables - CLI Argument -var
 	------------------------------------------------------------------------------------------------------
 lab/21-1
 	This can be done in lab/21 folder
+	try providing default values using -var
 terraform plan -var="resoure_group_name=demorg" -var="resoure_group_location=westus" -var="virtual_network_name=demovnet" -var="subnet_name=demosubnet" 
 terraform apply -var="resoure_group_name=demorg" -var="resoure_group_location=westus" -var="virtual_network_name=demovnet" -var="subnet_name=demosubnet" 
 
@@ -3428,11 +3429,7 @@ should be in the format
 
 Reference 	
 vilas\terraform-tutorial\azure\steps\23
-
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/22-Input-Variables-Assign-with-terraform-tfvars
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/23-Input-Variables-Assign-with-tfvars-var-file
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/24-Input-Variables-Assign-with-auto-tfvars
-
+	22/23/24
 
 	
 	------------------------------------------------------------------------------------------------------	
@@ -3465,7 +3462,8 @@ vilas\terraform-tutorial\azure\steps\23
 
 lab/23
 	Reference to 23 itself
-	cp terraform.tfvars var.auto.tfvars
+	#cp terraform.tfvars var.auto.tfvars
+	mv terraform.tfvars var.auto.tfvars
 	or 
 	cp dev.tfvars var.auto.tfvars
 	terraform plan
@@ -3477,7 +3475,7 @@ lab/23
 	------------------------------------------------------------------------------------------------------
 	
 lab/24
-
+	25
 	
 	Use reference: 
 	vilas\terraform-tutorial\azure\steps\24
@@ -3534,11 +3532,11 @@ resource "azurerm_virtual_network" "myvnet" {
   location            = azurerm_resource_group.myrg.location
   resource_group_name = azurerm_resource_group.myrg.name
 }	
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/25-Input-Variables-Collection-Type-Lists
 	------------------------------------------------------------------------------------------------------	
 	Step-12: Terraform Input Variables - Review TF Configs for Maps Item
 	------------------------------------------------------------------------------------------------------
 lab/24-1	
+	26
 	helps to define a map/dictionary
 	e.g. {name = "Vilas", age = 44}.
 	
@@ -3574,6 +3572,7 @@ variable "common_tags" {
 	tags = var.common_tags
 	
 	N.B: tags = var.common_tags can be added to any other resources also.
+	common_tags will not be auto applied. 
 	
 	terraform init
 	terraform plan
@@ -3584,7 +3583,6 @@ variable "common_tags" {
 		verify the output
 
 
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/26-Input-Variables-Collection-Type-Maps
 	
 	N.B: 
 If the map's key 
@@ -3611,7 +3609,7 @@ lab/24-2
 
 	(d) 
 	terraform console
-	
+	lookup (map, key, defaultValue) #=> equivalent to map.get(key)
 	> lookup({a="ay", b="bee"}, "a", "what?")
 	"ay"
 	> lookup({a="ay", b="bee"}, "b", "what?")
@@ -3658,7 +3656,7 @@ lab/24-2
 			list 
 			tupule 
 			set
-
+			not supported : map
 lab/24-3
 	terraform console
 	length("hi")
@@ -3669,11 +3667,11 @@ lab/24-3
 
 	syntax	
 		substr(string, offset, length)
-	substr("stack simplify", 1, 4)
-	substr("stack simplify", 0, 6)
-	substr("stack simplify", 0, 1)
-	substr("stack simplify", 0, 0)
-	substr("stack simplify", 0, 10)
+	substr("vilas varghese", 1, 4)
+	substr("vilas varghese", 0, 6)
+	substr("vilas varghese", 0, 1)
+	substr("vilas varghese", 0, 0)
+	substr("vilas varghese", 0, 10)
 		
 	syntax: 
 		contains(list, value)
@@ -3767,7 +3765,7 @@ regex("india$", "eastus")
 can(regex("india$", "eastus"))
 
 
-	modify resoure_group_location as 
+	modify resoure_group_location in variables.tf as 
 
 variable "resoure_group_location" {
   description = "Resource Group Location"
@@ -3784,7 +3782,7 @@ variable "resoure_group_location" {
 	------------------------------------------------------------------------------------------------------	
 	Step-18: Terraform Input Variables - Sensitive Introduction
 	------------------------------------------------------------------------------------------------------
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/28-Input-Variables-Sensitive
+	28
 	
 	confidential variables 
 		if used in plain text 
@@ -3825,7 +3823,7 @@ lab/25
 	------------------------------------------------------------------------------------------------------
 lab/25	
 	
-	25
+	vilas\terraform-tutorial\azure\steps\25
 	
 	terraform plan -var-file="secrets.tfvars"
 	terraform apply -var-file="secrets.tfvars"
@@ -3847,6 +3845,7 @@ lab/25
 
 	show schemas;
 
+	terraform destroy #below exercise is not compatible with this.
 	also check variable precidence
 	------------------------------------------------------------------------------------------------------	
 	Step-22: Terraform Input Variables - Structural Type Object Introduction
@@ -3871,7 +3870,7 @@ variable "os_configs" {
   })
 }
 	
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/29-Input-Variables-Structural-Type-object
+		29
 
 lab/26
 	Enable Threat Detection Policy in Azure MySQL Database.
@@ -4026,8 +4025,8 @@ Go to Azure MySQL Database -> it-dev-mydb101 -> Security -> Azure Defender for M
 	------------------------------------------------------------------------------------------------------	
 	Step-27: Terraform Input Variables - Introduction to Collection Type set
 	------------------------------------------------------------------------------------------------------
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/31-Input-Variables-Collection-Type-Sets
-
+		
+	31	
 
 	------------------------------------------------------------------------------------------------------	
 	Step-28: Terraform Input Variables - Review TFConfigs for CT Set
@@ -4096,6 +4095,7 @@ terraform output
 terraform output resource_group_id
 terraform output virtual_network_name
 
+Start from here
 
 
 Suppressing Sensitive Values in Output
@@ -4142,26 +4142,24 @@ terraform output -json
 	------------------------------------------------------------------------------------------------------
 	covered above
 	Another example
-lab/30
-	vilas\terraform-tutorial\azure\steps\30
 	
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Output Values with Meta-Argument count and Splat Expression
 	------------------------------------------------------------------------------------------------------
+	splat can work only in list
+	for maps, 
+		use resource meta argument for_each 
 
 	count.index is not available in a seperate block like output
-lab/31
+lab/30
 	vilas\terraform-tutorial\azure\steps\31
 	33
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Output Values with Meta-Argument for_each and For Expression
 	------------------------------------------------------------------------------------------------------
-	splat can work only in list
-	for maps, 
-		use resource meta argument for_each 
-		
 lab/32		
-	vilas\terraform-tutorial\azure\steps\32
+lab/31		
+	vilas\terraform-tutorial\azure\steps\31
 	following also covered in this.
 	
 	------------------------------------------------------------------------------------------------------	
@@ -4223,7 +4221,7 @@ Terraform Condtional Expression
 	supported in 
 		local values 
 		resources.
-		https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/36-Terraform-Conditional-Expressions
+	36
 	------------------------------------------------------------------------------------------------------	
 	AZHCTA-36-02-TFCE-Conditional-Expressions-Execute-TFCommands-Verify-CleanUp
 	------------------------------------------------------------------------------------------------------
@@ -4270,7 +4268,7 @@ locals {
 
   # Use-case-2: Common tags to be assigned to all resources
   service_name = "Demo Services"
-  owner = "Kalyan Reddy Daida"
+  owner = "Vilas Varghese"
   common_tags = {
     Service = local.service_name
     Owner   = local.owner
@@ -4330,7 +4328,7 @@ terraform plan
 Terraform Data Source
 ------------------------------------------------------------------------------------------------------
 	https://www.terraform.io/language/data-sources
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/37-Terraform-Datasources
+	37
 
 	Step-02: Create Datasource for Resource Group Resource
 	
@@ -4407,7 +4405,7 @@ Terraform Remote State and Locking
 			
 	
 	https://www.terraform.io/language/state/locking
-	https://github.com/stacksimplify/hashicorp-certified-terraform-associate-on-azure/tree/main/38-Terraform-Remote-State-Storage-and-Locking
+	38
 
 On the portal 
 ----------------
@@ -4540,7 +4538,16 @@ Terraform state command
 		terraform untaint
 		terraform apply -target command
 	
-	
+	state command reference
+		https://www.terraform.io/docs/cli/commands/state/index.html
+	Inspect state
+		https://www.terraform.io/docs/cli/state/inspect.html
+	State
+		https://www.terraform.io/docs/language/state/index.html
+	Manupulating state
+		https://www.terraform.io/docs/cli/state/index.html
+	Other helpful docs
+		https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform
 	
 Terraform Show Command 
 	provide human-readable output from 
@@ -4573,13 +4580,15 @@ lab/37
 	# Read the plan 
 	terraform show v1plan.out
 	terraform show  # Nothing as terraform.tfstate file not created yet
-
+	
 	# Read the plan in json format (Unformatted / Not Readable)
 	terraform show -json v1plan.out 
 
 	# Install jq (for mac and fine tuned json output)
 	brew install jq
 	terraform show -json v1plan.out | jq	
+
+	N.B: Don't execute apply
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Terraform Show Command to read Terraform State Files
 	------------------------------------------------------------------------------------------------------
@@ -4590,7 +4599,7 @@ terraform show
 		
 # Terraform Show
 terraform show
-	we haven't executed init/apply? yet
+	we haven't executed apply yet
 Observation: 
 	1. AWS provider 
 		"No State" 
@@ -4626,17 +4635,22 @@ continue without destroy
 	terraform state list
 
 	# Show the attributes of a single resource from Terraform State
-	terraform state show data.azurerm_resource_group.rgds
+	
 	terraform state show data.azurerm_subscription.current
 	terraform state show azurerm_virtual_network.myvnet
+	terraform state show azurerm_resource_group.myrg
 
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Terraform State mv command
 	------------------------------------------------------------------------------------------------------
 
+	Moving Resources
+		https://www.terraform.io/docs/cli/state/move.html
+
+
 	Use this command to modify the name of a resource without any change in cloud.
 	
-
+lab/38
 This lab can be performed with 37 itself.
 	For reference check 38 - main.tf file after the commands have executed.
 	
@@ -4681,8 +4695,7 @@ Observation:
 -----------------------------
 # WRONG APPROACH 
 -----------------------------
-# WRONG APPROACH 
-	MOVING TO TERRAFORM PLAN AND APPLY 
+	Doing TERRAFORM PLAN AND APPLY 
 		AFTER ABOVE CHANGE terraform state mv CHANGE
 # Correct Approach: 
 	UPDATE EQUIVALENT RESOURCE FIRST before next plan and apply. 
@@ -4730,10 +4743,18 @@ terraform apply -refresh-only
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Terraform State rm command and replace-provider command
 	------------------------------------------------------------------------------------------------------
+	
+	remove provider and change config. to point to a local repo. like JFrog artifactory
 
-This commands comes under Terraform Moving Resources Section
-The terraform state rm command is used to remove items from the Terraform state.
-This command can remove single resources, single instances of a resource, entire modules, and more.
+A "Terraform Moving Resources"
+ 
+terraform state rm command 
+	remove items from the Terraform state.
+	remove 
+		single resource, 
+		single instances of a resource, 
+		entire modules, and more.
+
 # Terraform List Resources
 terraform state list
 
@@ -4742,23 +4763,44 @@ terraform state rm -dry-run azurerm_virtual_network.myvnet-new
 terraform state rm azurerm_virtual_network.myvnet-new
 Observation: 
 1) Removes it from terraform.tfstate file
+	remains in cloud
+	remains in configuration
 
 # Terraform Plan
 terraform plan
-Observation: It will tell you that resource is not in state file but same is present in your terraform manifests (c5-virtual-network.tf - DESIRED STATE). Do you want to re-create it?
-This will re-create new Virtual Network excluding one created earlier and running
+Observation: 
+	resource is not in state file 
+	but 
+		present in your terraform manifests 
+		(.tf - DESIRED STATE). 
+		Do you want to re-create it?
+
+apply will 	
+	re-create new Virtual Network 
+	exclude one created earlier and running
 
 Make a  Choice
 -------------
-Choice-1: You want this resource to be running on cloud but should not be managed by terraform. Then remove its references in terraform manifests(DESIRED STATE). So that the one running in Azure cloud (current infra) this instance will be independent of terraform. 
-Choice-2: You want a new resource to be created without deleting other one (non-terraform managed resource now in current state). Run terraform plan and apply
+Choice-1: 
+	You want 
+		resource to be running on cloud 
+		but should not be managed by terraform. 
+		Then remove its references in terraform manifests(DESIRED STATE). 
+		So that the one running in Azure cloud (current infra) this instance will be independent of terraform. 
+Choice-2: 
+	You want a new resource to be created without deleting other one 
+	(non-terraform managed resource now in current state). 
+	Run terraform plan and apply
 LIKE THIS WE NEED TO MAKE DECISIONS ON WHAT WOULD BE OUR OUTCOME OF REMOVING A RESOURCE FROM STATE.
 
-PRIMARY REASON for this is command is that respective resource need to be removed from as terraform managed. 
+PRIMARY REASON for this is command 
+	respective resource need to be removed from as terraform managed
+	start using another resource created directly. 
 
 # Run Terraform Plan (I made choice-2)
 terraform plan # NO ERROR 
 terraform apply -auto-approve # UNIQUE CONSTRAINT ERROR FOR VNET NAME
+
 
 # Error Message
 - YOU WILL get a unique resource name on Azure for Virtual Network under this resource group error when you run "terraform apply". 
@@ -4785,22 +4827,295 @@ terraform apply v2plan.out
 - hr-dev-myvnet: Not managed by Terraform 
 - hr-dev-myvnet-2: Managed by Terraform
 
-
+	------------------------------------------------------------------------------------------------------	
 State replace provider
+	Theory
 	https://www.terraform.io/cli/commands/state/replace-provider
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Terraform State Push Pull and Force-Unlock Commands
 	------------------------------------------------------------------------------------------------------
+
+	
+	Force-Unlock
+		azure storage account doesn't support this feature
+		works in aws dynamo db.
+		
+		
+	A "Terraform Disaster Recovery" comman
+
+terraform state pull:
+	force a download from remote state.
+		output the state 
+	works with local state.
+
+
+terraform state push:
+	force upload local state file to remote state.
+
+# Verify if any local state files
+ls -lrta terraform.tfstate 
+
+# Terraform state pull
+terraform state pull # CLI will output the terraform state
+
+# Create new state file locally
+vi terraform.tfstate
+COPY ABOVE "terraform state pull" output to this file
+
+# Make a note of Current Remote State file last updated and Version ID (From Azure Storage Container )
+LAST MODIFIED	6/11/2021, 12:50:22 PM
+CREATION TIME	6/11/2021, 12:50:21 PM
+VERSION ID	2021-06-11T07:20:22.2334683Z
+
+# Terraform State Push
+terraform state push terraform.tfstate
+
+# Verify new State file copied in Azure Storage Container
+LAST MODIFIED	6/11/2021, 12:57:23 PM
+CREATION TIME	6/11/2021, 12:50:21 PM
+VERSION ID	2021-06-11T07:27:23.0504198Z
+
+
+-----------------------------------------
+Step-06: Terraform force-unlock command
+-----------------------------------------
+	A "Terraform Disaster Recovery" 
+	Manually unlock the state for the defined configuration.
+	will not modify 
+		infrastructure on cloud
+		my configuration.
+	
+	behavior of this lock depends on 
+		backend (if supports) being used.
+	Important Note: Local state files cannot be unlocked by another process.
+	# Manually Unlock the State
+	terraform force-unlock LOCK_ID	
+		
 	------------------------------------------------------------------------------------------------------	
 	Step-07: Terraform Taint and Untaint Commands
 	------------------------------------------------------------------------------------------------------
+
+	Disaster recovery
+		https://www.terraform.io/docs/cli/state/recover.html
+	Taint
+		https://www.terraform.io/docs/cli/state/taint.html
+
+
+	A "Terraform Forcing Re-creation" command
+	
+When a resource declaration is modified
+	Terraform attempts in-place-update  
+	(many changes 
+		destruction and re-creation, 
+		usually due to upstream API limitations).
+	
+	Sometimes such changes can be in corrupted state
+		tainted state
+
+terraform taint: 
+	marks a resource as tainted, 
+	force it 
+		destroyed and recreated on the next apply.
+		
+terraform untaint:
+	unmarks a resource as tainted, 
+	restore it as the primary instance in the state.
+	will not delete on apply
+	will not modify infrastructure
+	but modify the state file 
+		unmark a resource as tainted.
+
+# List Resources from state
+terraform state list
+
+# Taint a Resource
+terraform taint <RESOURCE_NAME_IN_TERRAFORM_LOCALLY>
+terraform taint azurerm_virtual_network.myvnet-new
+
+# Terraform Plan
+terraform plan
+Observation: 
+Message: "-/+ destroy and then create replacement"
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+# Untaint a Resource
+terraform untaint <RESOURCE_NAME_IN_TERRAFORM_LOCALLY>
+terraform untaint azurerm_virtual_network.myvnet-new
+
+# Terraform Plan
+terraform plan
+Observation: 
+Message: "No changes. Your infrastructure matches the configuration."
+
 	------------------------------------------------------------------------------------------------------	
 	Step-08: Terraform Plan and Apply - "-target" option for Resource Targeting
 	------------------------------------------------------------------------------------------------------
+	
+	-target option 
+		focus Terraform's attention on a subset of resources.
+
+Terraform Resource Targeting
+-----------------------------
+	for exceptional circumstances
+	e.g. 
+		recover from mistakes 
+	or 
+		work around Terraform limitations.
+
+recommendation
+	don't -target for routine operations
+	can lead to undetected configuration drift and 
+	confusion 
+		state of resources relates to configuration.
+
+
+Instead 
+	break large configurations 
+		into smaller configurations 
+		independently apply.
+		
+# Lets make one change
+Change-1: Add second value to address space 
+  address_space       = ["10.0.0.0/16", "10.1.0.0/16"] 
+
+Change-2: Add new Virtual Network Resource
+# Another VNET - New Resource - Enable the below at step-08
+resource "azurerm_virtual_network" "myvent9" {
+  name = "myvnet9"
+  address_space = [ "10.2.0.0/16" ]
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name  
+}
+
+
+# List Resources from state
+terraform state list
+
+# Terraform plan
+terraform plan
+Observation:
+1. Message: Plan: 1 to add, 1 to change, 0 to destroy.
+2. 1 new VNET will be created
+3. 1 change to existing VNET
+
+# Terraform Plan with -target
+terraform plan -target=azurerm_virtual_network.myvnet-new
+Observation:
+1) Message: "Plan: 0 to add, 1 to change, 0 to destroy"
+2) It is updating Change-1 because we are targeting that resource "aws_instance.my-ec2-vm-new"
+3) It is not touching the new resource which we are creating now "azurerm_virtual_network.myvent9". It will be in terraform configuration but not getting provisioned when we are using -target
+
+# Terraform Apply
+terraform apply -target=azurerm_virtual_network.myvnet-new
+	
+	
+	
+	
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-01: Introduction to "terraform apply -refresh-only" command
 	------------------------------------------------------------------------------------------------------
-	------------------------------------------------------------------------------------------------------	
+
+terraform refresh in detail
+-----------------
+	A "Terraform Inspecting State"
+	
+	
+	terraform apply -refresh-only 
+		reconcile state 
+			Terraform knows 
+				(via its state file) 
+			with the real-world infrastructure.
+		detect drift 
+			from last-known state
+			update the state file.
+		does not modify cloud infrastructure
+		modify the state file. 
+		If the state is changed
+			reflect in next plan or apply.
+	Desired State: 
+		Local Terraform Manifest 
+			(All *.tf files)
+	Current State: 
+		Real Resources present in your cloud
+
+lab/39
+	terraform init
+	terraform plan
+	terraform apply
+	
+	Add the tag directly on the portal
+	
+	"tag3" = "my-tag-3"
+	
+
+plan compares in memory
+	doens't apply 
+	
+Verify terraform.tfstate file 
+	no changes
+But it show the differences of tags.
+
+# Execute Terraform plan
+terraform plan 
+
+# Verify Terraform State File (recent timestamp)
+ls -lrta 
+
+# Review Terraform State file using terraform show command
+terraform show 
+
+# Execute terraform plan -refresh-only
+terraform plan -refresh-only
+
+# Execute terraform apply -refresh-only
+terraform apply -refresh-only
+
+# Review terraform state file
+1) terraform show
+2) A new tag will be added to Azure Resource Group 
+"tag3" = "my-tag-3"	
+
+
+Update Configuration
+-----------------
+manual changes on 
+	Azure Portal 
+	in your state file 
+		can track that change via Terraform.
+
+update your TF Configs 
+	(desired state) 
+	
+	
+Add Tag3 referencing the state file.
+uncomment tag3
+
+# Run Terraform Plan
+terraform plan
+# Resource-1: Azure Resource Group
+resource "azurerm_resource_group" "myrg" {
+  name = "myrg1"
+  location = "eastus"
+  tags = {
+    "tag1" = "my-tag-1"
+    "tag2" = "my-tag-2"
+    "tag3" = "my-tag-3"
+  }
+}
+
+# Run Terraform Plan
+terraform plan
+Observation:
+1. No changes to infrastructure
+TF Configs (Desired State) - Good
+TF State File - Good
+Azure Portal (Current State) - Good
+
+
+------------------------------------------------------------------------------------------------------	
 	Step-02: Execute TF Commands with "terraform apply -refresh-only" and Clean-Up
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
@@ -4810,53 +5125,135 @@ Terraform CLi with Workspace
 ------------------------------------------------------------------------------------------------------
 	https://www.terraform.io/cli/workspaces
 	
-	In Terraform CLI, workspaces are separate instances of state data that can be used from the same working directory. You can use workspaces to manage multiple non-overlapping groups of resources with the same configuration.
+	Terraform
+		always works in a workspace
+		starts with a single workspace 
+			called "default"
+				cannot be deleted
+		can create named workspace
+			conveniently switch between different workspace
+				switch between multiple configuration with in 
+					single backend
+		convenient to do some testing etc.
+			but comes with problems
+			
+					
+	
+	
+	In Terraform CLI, 
+		workspaces 
+			separate instances of state data 
+			can be used from the same working directory. 
+		use workspaces to manage 
+			multiple non-overlapping groups of resources 
+				with the same configuration.
 
-Every initialized working directory has at least one workspace. (If you haven't created other workspaces, it is a workspace named default.)
-For a given working directory, only one workspace can be selected at a time.
-Most Terraform commands (including provisioning and state manipulation commands) 
+Every initialized working directory 
+	has at least one workspace. 
+		workspace called default
+	(If you haven't created other workspaces, .)
+For a working directory, 
+	only one workspace can be selected at a time.
+Most Terraform commands 
+	(including provisioning and state manipulation commands) 
 	only interact with the currently selected workspace.
-Use the terraform workspace select command to change the currently selected workspace.
-Use the terraform workspace list, terraform workspace new, and terraform workspace delete commands to manage the available workspaces in the current working directory.
-Note: Terraform Cloud and Terraform CLI both have features called "workspaces," but they're slightly different. Terraform Cloud's workspaces behave more like completely separate working directories.
 
-»The Purpose of Workspaces
-Since most of the resources you can manage with Terraform don't include a unique name as part of their configuration, it's common to use the same Terraform configuration to provision multiple groups of similar resources.
+terraform workspace select 
+	select a new workspace.
+terraform workspace list
+terraform workspace new
+terraform workspace delete 
 
-Terraform relies on state to associate resources with real-world objects, 
-	so if you run the same configuration multiple times with completely separate state data, 
-	Terraform can manage many non-overlapping groups of resources. 
-	In some cases you'll want to change variable values for these different 
-		resource collections (like when specifying differences between staging and production 
-		deployments), and in other cases you might just want many instances 
-		of a particular infrastructure pattern.
 
-The simplest way to maintain multiple instances of a configuration with completely
- separate state data is to use multiple working directories 
- (with different backend configurations per directory, if you aren't using the default local backend).
 
-However, this isn't always the most convenient way to handle separate states. 
-	Terraform installs a separate cache of plugins and modules for each working directory, 
-	so maintaining multiple directories can waste bandwidth and disk space. 
-	You must also update your configuration code from version control separately 
-	for each directory, reinitialize each directory separately when changing the 
-	configuration, etc.
+Note: 
+	Terraform Cloud and Terraform CLI 
+		both have features called "workspaces," 
+		slightly different. 
+		Terraform Cloud's workspaces behave more like completely separate working directories.
 
-Workspaces allow you to use the same working  of your configuration and the same plugin and module caches, while still keeping separate states for each collection of resources you manage.
+Why Workspaces?
+-------------------------
+most of the resources 
+	don't include a unique name 
+		in configuration, 
+	can use same Terraform configuration 
+		to provision multiple groups of similar resources.
+		e.g. staging and production
+		
+Problem: 
+	Terraform uses state 
+		to associate resources 
+		with real-world objects, 
+	run the same configuration 
+		multiple times with 
+		completely separate state data
+		Terraform is in trouble
+		
+	Terraform can manage many non-overlapping groups of resources.
+	simple ways
+		use variables 
+			environment = stage, production
+		use pattern like count 
+	
+	
+	simplest solution 
+		maintain separate directory 
+			different 
+				backend configurations 
+				state configurations
+	not convenient 
+	
+	Terraform installs separate 
+		cache of plugins and 
+		modules for each working directory, 
+	so maintaining multiple directories 
+		waste bandwidth and 
+		disk space. 
+		maintaince overhead
+			update configuration code from version control separately 
+		reinitialize each directory separately 
+			when changing the 
+			configuration, etc.
 
-»Interactions with Terraform Cloud Workspaces
+	Workspaces 
+		use the same 
+			working directory 
+			plugin and 
+			module caches, 
+		keep separate states 
+			for each collection of resources you manage.
+
+
+Interactions with Terraform Cloud Workspaces (can skip)
+-------------------------------------------------------
 Terraform Cloud organizes infrastructure using workspaces, but its workspaces act more like completely separate working directories; each Terraform Cloud workspace has its own Terraform configuration, set of variable values, state data, run history, and settings.
 
 These two kinds of workspaces are different, but related. When using Terraform CLI as a frontend for Terraform Cloud, you can associate the current working directory with one or more remote workspaces. If you associate the directory with multiple workspaces (using workspace tags), you can use the terraform workspace commands to select which remote workspace to use.
 
+
 Refer to CLI-driven Runs in the Terraform Cloud documentation for more details about using Terraform CLI with Terraform Cloud.
+
+
 
 
 	Step-02: Review TF Configs and understand terraform.workspace variable
 	------------------------------------------------------------------------------------------------------
+	
+	We will 
+		use Terraform Local Backend
+		create 2 workspaces 
+			(default, dev) 
+			in addition to default workspace
+	Update our terraform manifests/configuration to support terraform workspace
+
+
+	continue from here
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Create Resources in default workspace and learn commands workspace list
 	------------------------------------------------------------------------------------------------------
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Create new workspace, create resources and understand state files
 	------------------------------------------------------------------------------------------------------

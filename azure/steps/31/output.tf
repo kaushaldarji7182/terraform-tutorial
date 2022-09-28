@@ -33,7 +33,7 @@ output "virtual_network_name_list_two_inputs" {
   #value = [for i, vnet in azurerm_virtual_network.myvnet: i ]
   value = [for env, vnet in azurerm_virtual_network.myvnet: env ]
   #env is the iterator and vnet: represents each object
-  #usage of vnet can be found below
+  #usage of vnet can be found below examples
 }
 
 # Output - For Loop One Input and Map Output with VNET ID and VNET Name
