@@ -4095,7 +4095,7 @@ terraform output
 terraform output resource_group_id
 terraform output virtual_network_name
 
-Start from here
+
 
 
 Suppressing Sensitive Values in Output
@@ -4524,7 +4524,7 @@ terraform destroy
 
 	------------------------------------------------------------------------------------------------------	
 
-
+start from here
 Day 4
 ------------------------------------------------------------------------------------------------------
 Terraform state command
@@ -5019,7 +5019,7 @@ terraform apply -target=azurerm_virtual_network.myvnet-new
 	------------------------------------------------------------------------------------------------------
 
 terraform refresh in detail
------------------
+---------------------------
 	A "Terraform Inspecting State"
 	
 	
@@ -5252,17 +5252,211 @@ Refer to CLI-driven Runs in the Terraform Cloud documentation for more details a
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Create Resources in default workspace and learn commands workspace list
 	------------------------------------------------------------------------------------------------------
+	
+lab/40	
+${terraform.workspace} - default workspace
+	available by default 
+	modified local for this.
+	
 
+# Terraform Init
+terraform init 
 
+# List Workspaces
+terraform workspace list
+
+# Output Current Workspace using show
+terraform workspace show
+
+# Terraform Plan
+terraform plan
+Observation: 
+1. The names of Resources should have "default" in them in place of environment
+2. Resource Group Name: it-default-rg
+3. Virtual Network: it-default-vnet
+4. Subnet Name: it-default-subnet
+5. Public IP Name: it-default-publicip
+6. Network Interface Name: it-default-nic
+7. Virtual Machine Name: it-default-vm
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Verify
+Verify the same in Azure Management console
+Observation: 
+1. The names of Resources should have "default" in them in place of environment
+2. Resource Group Name: it-default-rg
+3. Virtual Network: it-default-vnet
+4. Subnet Name: it-default-subnet
+5. Public IP Name: it-default-publicip
+6. Network Interface Name: it-default-nic
+7. Virtual Machine Name: it-default-vm
+
+# Access Application
+http://<public-ip-dns-name>
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Create new workspace, create resources and understand state files
 	------------------------------------------------------------------------------------------------------
+
+lab/40-1	
+	
+	
+# Create New Workspace
+terraform workspace new dev
+
+# Verify the folder
+cd terraform.tfstate.d 
+cd dev
+ls
+cd ../../
+
+
+# Create New Workspace
+terraform workspace new dev
+
+# Verify the folder
+cd terraform.tfstate.d 
+cd dev
+ls
+cd ../../
+
+# Terraform Plan
+terraform plan
+Observation:  
+1. The names of Resources should have "dev" in them in place of environment
+2. Resource Group Name: it-dev-rg
+3. Virtual Network: it-dev-vnet
+4. Subnet Name: it-dev-subnet
+5. Public IP Name: it-dev-publicip
+6. Network Interface Name: it-dev-nic
+7. Virtual Machine Name: it-dev-vm
+
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Verify Dev Workspace statefile
+cd terraform.tfstate.d/dev
+ls
+cd ../../
+Observation: You should fine "terraform.tfstate" in "current-working-directory/terraform.tfstate.d/dev" folder
+
+# Verify Resources in Azure mgmt console
+Observation:
+1. The names of Resources should have "dev" in them in place of environment
+2. Resource Group Name: it-dev-rg
+3. Virtual Network: it-dev-vnet
+4. Subnet Name: it-dev-subnet
+5. Public IP Name: it-dev-publicip
+6. Network Interface Name: it-dev-nic
+7. Virtual Machine Name: it-dev-vm
+
+# Access Application
+http://<public-ip-dns-name>	
+
+
+# Show current workspace
+terraform workspace show
+
+# List Worksapces
+terraform workspace list
+
+# Workspace select
+terraform workspace select default
+
+# Delete Resources from default workspace
+terraform destroy -auto-approve
+
+# Verify
+1) Verify in Azure Mgmt Console (all the resources should be deleted)
+
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Learn to delete resources in workspaces and deleting workspaces
 	------------------------------------------------------------------------------------------------------
+
+lab/40-2
+We cannot delete "default" workspace
+We can delete workspaces which we created (dev, qa etc)
+
+# Delete Dev Workspace
+terraform workspace delete dev
+Observation: Workspace "dev" is not empty.
+Deleting "dev" 
+	can result in dangling resources: 
+		resources exist 
+		but are no longer manageable by Terraform. 
+		Please destroy these resources first.  
+		If you want to delete this workspace anyway and risk dangling resources, 
+		use the '-force' flag.
+
+# Switch to Dev Workspace
+terraform workspace select dev
+
+# Destroy Resources
+terraform destroy -auto-approve
+
+# Delete Dev Workspace
+terraform workspace delete dev
+Observation:
+Workspace "dev" is your active workspace.
+You cannot delete the currently active workspace. Please switch
+to another workspace and try again.
+
+# Switch Workspace to default
+terraform workspace select default
+
+# Delete Dev Workspace
+terraform workspace delete dev
+Observation: Successfully delete workspace dev
+
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Implement CLI Workspaces with Remote State Storage Backend
 	------------------------------------------------------------------------------------------------------
+
+lab/40-3
+
+Add Backend block in Terraform Settings block
+# Terraform State Storage to Azure Storage Container
+  backend "azurerm" {
+    resource_group_name   = "terraform-storage-rg"
+    storage_account_name  = "terraformstate201"
+    container_name        = "tfstatefiles"
+    key                   = "cliworkspaces-terraform.tfstate"
+  }   
+
+# Terraform Init
+terraform init 
+Observation:
+1. Go to Azure Management Console -> terraform-storage-tg -> terraformstate201 -> tfstatefiles
+2. Verify file with name "cliworkspaces-terraform.tfstate"
+3. Verify file size (Approx 155B)
+
+# List Workspaces
+terraform workspace list
+
+# Output Current Workspace using show
+terraform workspace show
+
+# Create Workspaces
+terraform workspace new dev
+terraform workspace new staging
+terraform workspace new prod
+
+# Verify the workspace file names in Storage Account
+cliworkspaces-terraform.tfstate:dev
+cliworkspaces-terraform.tfstate:staging
+cliworkspaces-terraform.tfstate:prod
+
+# Delete Workspaces
+terraform workspace select default
+terraform workspace delete dev
+terraform workspace delete staging
+terraform workspace delete prod
+
+
+terraform destroy
+
 	------------------------------------------------------------------------------------------------------	
 
 ------------------------------------------------------------------------------------------------------
@@ -5429,44 +5623,758 @@ resource "aws_instance" "web" {
   }
 }
 
-github logo
-Edit this page
+
+
+
+
+Reference: 
+https://www.terraform.io/docs/language/resources/provisioners/file.html
+
+Provisioners
+	used to model actions on 
+		local machine
+	or 
+		remote machine
+			to prepare servers
+			
+	e.g. used to Pass data into vm's
+	run configuration management 
+		e.g. packer, chef, ansible
+	Recommendation: use it as the last resort
+		there can be other ways in Terraform
+	can run at 2 times 
+		creation-time
+		destroy-time
+	2 failure behaviour
+		Failure behaviour:Continue
+			Ignore Error and continue
+		Failure behaviour:Fail
+			Raise and error and stop
+			Default
+			taint resource
+			apply and destroy fails
+	
+	3 types
+		File provisioners
+		Remote provisioners
+		local-exec provisioners
+		
+	Most provisioners
+		require access to remote resources
+			via
+				SSH
+				WinRM
+			expect 
+				nested connection block
+connection {
+	type = "ssh"
+	host = self.public_ip_address
+	user = self.admin_username
+	private_key = file ("${path.module}/ssh-keys/terraform-azure.pem")
+					
+		Expression 
+		
+	File Provisioners
+		copy files or directories 
+			from the machine executing Terraform 
+				to a newly created resource
+		support both 
+			ssh and winrm
+		e.g. copy a file
+	Local exec provisioners
+		invokes a local executable
+			after a resource is created
+		invokes a process on the machine running Terraform
+			not on the resource
+		can run in 2 diff. times
+			creation time provisioners
+			destroy time provisioners
+				when = destroy
+		e.g. log creation and destroy time.		
+	Remote exec provisioners
+		invokes a script on a remote resource
+			after it is created
+		e.g. run a configuration management tool 
+			bootstrap into a cluster
+				etc.
+				
+	Null-Resources & Provisioners
+		Run provisioners not associated with a specific resource
+		treated like normal resources
+			don't do anything
+		Can configure provisioners and connectino details.
+		e.g. sleep for 10 sec.	
+				
+				
+		
 
 
 
 	Step-01: Understand File Provisioner, Self Object and Create Connection Block
 	------------------------------------------------------------------------------------------------------
+
+Create SSH Keys for Azure VM Instance if not created
+# Create Folder
+cd terraform-manifests/
+mkdir ssh-keys
+
+# Create SSH Key
+cd ssh-ekys
+ssh-keygen \
+    -m PEM \
+    -t rsa \
+    -b 4096 \
+    -C "azureuser@myserver" \
+    -f terraform-azure.pem 
+Important Note: If you give passphrase during generation, during everytime you login to VM, you also need to provide passphrase.
+
+# List Files
+ls -lrt ssh-keys/
+
+# Files Generated after above command 
+Public Key: terraform-azure.pem.pub -> Rename as terraform-azure.pub
+Private Key: terraform-azure.pem
+
+# Permissions for Pem file
+chmod 400 terraform-azure.pem
+
+
+Connection Block for provisioners uses this to connect to newly created Azure VM instance to copy files using file provisioner, execute scripts using remote-exec provisioner
+
+
+Connection Block
+----------------
+connection block 
+	inside resource block 
+		for all provisioners
+[or]
+	inside a provisioner block 
+		for that respective provisioner
+
+Self Object
+-----------
+N.B: 
+	Resource references are restricted here 
+		references create dependencies.
+		Referring to a resource by name 
+			its own block 
+				would create a dependency cycle.
+Expressions in provisioner blocks 
+	cannot refer to their parent resource 
+		by name. 
+	Instead
+		use special self object.
+self object 
+	represents the provisioner's parent resource, 
+	has all of that resource's attributes.
+  # Connection Block for Provisioners to connect to Azure Virtual Machine
+  connection {
+    type = "ssh"
+    host = self.public_ip_address # Understand what is "self"
+    user = self.admin_username
+    password = ""
+    private_key = file("${path.module}/ssh-keys/terraform-azure.pem")
+  }  
+
+
+			
+			
+
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Understand Creation-Time Provisioner and Create File Provisioners
 	------------------------------------------------------------------------------------------------------
+
+Creation-Time Provisioners:
+--------------------------
+By default
+	provisioners run 
+		when resource they are defined within is created.
+Creation-time provisioners 
+	run only during creation
+	not during update or 
+		any other lifecycle.
+	bootstrap a system.
+	creation-time provisioner fails
+		resource is marked as tainted.
+			failed provisioner 
+				can leave a resource 
+					in a semi-configured state.
+	Terraform cannot understand/control 
+		provisioner does
+			so recreate it. 
+		This is tainting.
+		on_failure attribute modifies this (to follow).
+ # File Provisioner-1: Copies the file-copy.html file to /tmp/file-copy.html
+  provisioner "file" {
+    source      = "apps/file-copy.html"
+    destination = "/tmp/file-copy.html"
+  }
+
+  # File Provisioner-2: Copies the string in content into /tmp/file.log
+  provisioner "file" {
+    content     = "VM Host Name: ${self.computer_name}" # Understand what is "self"
+    destination = "/tmp/file.log"
+  }
+
+  # File Provisioner-3: Copies the app1 folder to /tmp - FOLDER COPY
+  provisioner "file" {
+    source      = "apps/app1"
+    destination = "/tmp"
+  }
+
+  # File Provisioner-4: Copies all files and folders in apps/app2 to /tmp - CONTENTS of FOLDER WILL BE COPIED
+  provisioner "file" {
+    source      = "apps/app2/" # when "/" at the end is added - CONTENTS of FOLDER WILL BE COPIED
+    destination = "/tmp"
+  }
+
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Execute TF Commands and Verify Files provisioned to Linux VM
 	------------------------------------------------------------------------------------------------------
+	
+	
+
+lab/41
+	44
+
+Add ssh keys
+
+# Terraform Initialize
+terraform init
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Verify - Login to Azure Virtual Machine Instance
+ssh -i ssh-keys/terraform-azure.pem azureuser@IP_ADDRESSS_OF_YOUR_VM
+ssh -i ssh-keys/terraform-azure.pem azureuser@20.185.30.127
+Verify /tmp for all files copied
+cd /tmp
+ls -lrta /tmp
+
+# Clean-up
+terraform destroy -auto-approve
+rm -rf terraform.tfsate*
+Observation: 
+Q1: Why do we need to destroy and move with next steps?
+A1: 
+1. Provisioners can be created during resource creation-time or destroy-time. 
+2. With that said, we need to test failure case of a provisioner which will faill "terraform apply". 
+3. We will understand that in next few steps. 
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Provisioners on_failure = continue or fail verify and cleanup
 	------------------------------------------------------------------------------------------------------
+
+Decision making when provisioner fails (continue / fail)
+----------------------------------------------------
+default, 
+	provisioners failure
+	Terraform apply fail. 
+	use on_failure setting 
+		change this. 
+	allowed values are:
+		continue: 
+			Ignore the error 
+			continue with creation or destruction.
+		fail: (Default Behavior) 
+			Raise an error 
+			stop applying (the default behavior). 
+			If this is a creation provisioner, 
+				taint the resource.
+
+
+Lab/41-2
+	copying a file 
+		to Apache static content folder 
+		"/var/www/html" 
+		using file-provisioner
+This will fail because
+	user is: "azureuser" 
+	for Azure linux vm. 
+		don't have access to "/var/www/html/" top copy files.
+	
+	use sudo to do that.
+
+cannot copy it directly
+	but 
+		we have already copied 
+		this file in "/tmp" 
+		using file provisioner
+
+Try two scenarios
+1. No on_failure attribute 
+	(Same as on_failure = fail) - 
+	default 
+		Raise an error 
+		stop applying. 
+	If this is a creation provisioner
+		taint the resource.
+2. When on_failure = continue
+	continue creating resources
+
+Verify terraform.tfstate for "status": "tainted"
+
+
+Reference
+lab/41
+lab/41-3
+
+Modify provisioner in main.tf vm section
+	Modify destination
+	we don't have access to this folder
+
+# Test-1: Without on_failure attribute which will fail terraform apply
+ # Copies the file-copy.html file to /var/www/html/file-copy.html
+  provisioner "file" {
+    source      = "apps/file-copy.html"
+    destination = "/var/www/html/file-copy.html"
+   }
+   
+   
+   }
+# Terraform Validate
+terraform validate
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve   
+
+# Verify:  
+Verify terraform.tfstate for  "status": "tainted"
+
+## Sample Failure Log
+azurerm_linux_virtual_machine.mylinuxvm: Provisioning with 'file'...
+azurerm_linux_virtual_machine.mylinuxvm: Still creating... [3m0s elapsed]
+╷
+│ Error: file provisioner error
+│ 
+│   with azurerm_linux_virtual_machine.mylinuxvm,
+│   on c6-linux-virtual-machine.tf line 71, in resource "azurerm_linux_virtual_machine" "mylinuxvm":
+│   71:   provisioner "file" {
+│ 
+│ Upload failed: scp: /var/www/html/file-copy.html: Permission denied
+╵
+
+
+
+Continue Case
+-------------
+lab/41-4
+Uncomment on_failure = continue
+# Test-2: With on_failure = continue
+ # Copies the file-copy.html file to /var/www/html/file-copy.html
+  provisioner "file" {
+    source      = "apps/file-copy.html"
+    destination = "/var/www/html/file-copy.html"
+    on_failure  = continue 
+   }
+# Terraform Validate
+terraform validate
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Verify
+1. Login to Azure VM Instance
+ssh -i ssh-keys/terraform-azure.pem azureuser@<VM-PUBLIC-IP>
+ssh -i ssh-keys/terraform-azure.pem azureuser@20.102.55.82
+
+
+2. Verify /tmp - for all files copied
+3. Verify /var/www/html - file-copy.html should not be copied
+4. File Provisioner didn't do job of file copy but still it didn't get fail due to the fact that we used "on_failure  = continue"
+
+
+
+Theory 
+------
+	when    = destroy 
+	will get executed during desroy
+Inside a provisioner when you add this statement when = destroy it will provision this during the resource destroy time
+resource "azurerm_linux_virtual_machine" "mylinuxvm" {
+  # ...
+
+  provisioner "local-exec" {
+    when    = destroy 
+    command = "echo 'Destroy-time provisioner'"
+  }
+}
+
 	------------------------------------------------------------------------------------------------------	
 	Step-05: Remote-exec Provisioner Demo
 	------------------------------------------------------------------------------------------------------
+
+We will copy a file 
+	named file-copy.html 
+	using File Provisioner to "/tmp" directory
+Using remote-exec provisioner
+	and linux commands 
+	copy the file to Apache Webserver static content directory 
+		/var/www/html 
+		
+
+lab/42
+
+#set up ssh-keys before using it.
+		
+Add
+ # Copies the file-copy.html file to /tmp/file-copy.html
+  provisioner "file" {
+    source      = "apps/file-copy.html"
+    destination = "/tmp/file-copy.html"
+  }
+
+# Copies the file to Apache Webserver /var/www/html directory
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 120",  # Will sleep for 120 seconds to ensure Apache webserver is provisioned using custom_data
+      "sudo cp /tmp/file-copy.html /var/www/html"
+    ]
+  }
+  
+  
+  
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Local-exec Provisioner Demo
 	------------------------------------------------------------------------------------------------------
+
+	The local-exec provisioner 
+		invokes a local executable 
+		after a resource is created.
+	This invokes a process 
+		on the machine running Terraform, 
+		not on the resource.
+
+	Let's create 
+		one provisioner 
+			during creation-time. 
+				output private ip of the instance 
+				in to a file named creation-time.txt
+		another provisioner 
+			during destroy time. 
+				output destroy time 
+					with date in to a file 
+					named destroy-time.txt
+
+lab/43
+46
+
+
+
+add in main.tf
+  # local-exec provisioner (Creation-Time Provisioner - Triggered during Create Resource)
+  provisioner "local-exec" {
+    command = "echo ${azurerm_linux_virtual_machine.mylinuxvm.public_ip_address} >> creation-time.txt"
+    working_dir = "local-exec-output-files/"
+    #on_failure = continue
+  }
+
+  # local-exec provisioner - (Destroy-Time Provisioner - Triggered during Destroy Resource)
+  provisioner "local-exec" {
+    when    = destroy
+    command = "echo Destroy-time provisioner Instanace Destroyed at `date` >> destroy-time.txt"
+    working_dir = "local-exec-output-files/"
+  }  	
+	
+	
+# Terraform Initialize
+terraform init
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve	
 	------------------------------------------------------------------------------------------------------	
 
 	Step-01: Understand Null and Time Resources and Create Time Resource
 	------------------------------------------------------------------------------------------------------
+
+Null provider
+	Unusual provider
+	like random
+	need to add into terraform block.
+	https://registry.terraform.io/providers/hashicorp/null/latest/docs
+	
+Time Provider
+	used to interact with time-based resourcs
+	Provier has no configuration options
+	need to add into terraform block.
+	https://registry.terraform.io/providers/hashicorp/time/latest/docs
+	
+	
+Null Resource
+	https://www.terraform.io/docs/language/resources/provisioners/null_resource.html
+	
+Usecase: 
+	Force a resource to 
+		update based on a changed null_resource
+
+Create time_sleep resource 
+	wait for 90 seconds 
+	after Azure Linux VM Instance creation
+Create Null resource with required provisioners
+
+File Provisioner: 
+	Copy apps/app1 folder to /tmp
+Remote Exec Provisioner: 
+	Copy app1 folder from /tmp to /var/www/html
+	
+To learn 
+	null_resource
+	time_sleep resource
+	how to Force a resource 
+		to update 
+		based on a changed null_resource 
+		using timestamp function and 
+		triggers in null_resource	
+
+Following providers are updated in provider.tf
+    null = {
+      source = "hashicorp/null"
+      version = ">= 3.0.0"
+    }
+	
+    time = {
+      source = "hashicorp/time"
+      version = ">= 0.6.0"
+    }  
+
+
+
+Create Time Sleep Resource
+----------------------------------
+resource will wait for 90 seconds 
+	after VM Instance creation.
+This wait time will give VM Instance to provision 
+	the Apache Webserver and 
+	create all its relevant folders
+Primarily if we want to copy static content 
+	we need Apache webserver static folder /var/www/html
+
+# Wait for 90 seconds after creating the above Azure Virtual Machine Instance 
+resource "time_sleep" "wait_90_seconds" {
+  depends_on = [azurerm_linux_virtual_machine.mylinuxvm]
+  create_duration = "90s"
+}
+
+
+
+Create Null Resource
+-----------------
+	triggers with timestamp() function 
+		trigger for every terraform apply
+	help us to sync 
+		the static content 
+		from our local folder to 
+		VM Instnace 
+			as and when required.
+	Changes will be applied 
+		using only null_resource 
+		when terraform apply is run. 
+	when static content changes
+		how to sync those changes to VM Instance using terraform - 
+			A simple solution.
+	
+
+Added the below
+# Terraform NULL RESOURCE
+# Sync App1 Static Content to Webserver using Provisioners
+resource "null_resource" "sync_app1_static" {
+  depends_on = [ time_sleep.wait_90_seconds ]
+  triggers = {
+    always-update =  timestamp()
+  }
+
+  # Connection Block for Provisioners to connect to Azure VM Instance
+  connection {
+    type = "ssh"
+    host = azurerm_linux_virtual_machine.mylinuxvm.public_ip_address 
+    user = azurerm_linux_virtual_machine.mylinuxvm.admin_username
+    private_key = file("${path.module}/ssh-keys/terraform-azure.pem")
+  }  
+
+ # Copies the app1 folder to /tmp
+  provisioner "file" {
+    source      = "apps/app1"
+    destination = "/tmp"
+  }
+
+# Copies the /tmp/app1 folder to Apache Webserver /var/www/html directory
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp -r /tmp/app1 /var/www/html"
+    ]
+  }
+}
+
+
+lab/44
+Add ssh-keys
+
+# Terraform Initialize
+terraform init
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Verify
+ssh -i ssh-keys/terraform-azure.pem azureuser@<PUBLIC-IP>
+ls -lrt /tmp
+ls -lrt /tmp/app1
+ls -lrt /var/www/html
+ls -lrt /var/www/html/app1
+http://<public-ip>/app1/app1-file1.html
+http://<public-ip>/app1/app1-file2.html
+
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Create Null Resource, File and remote-exec Provisioners and Triggers
 	------------------------------------------------------------------------------------------------------
+
+	Create a new file named app1-file3.html
+	Also updated app1-file1.html with some additional info
+	file3.html, file1.html
+	
+	
+terraform plan
+Observation: You should see changes for "null_resource.sync_app1_static" because trigger will have new timestamp when you fired the terraform plan command
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Verify
+ssh -i ssh-keys/terraform-azure.pem azureuser@<PUBLIC-IP>
+ls -lrt /tmp
+ls -lrt /tmp/app1
+ls -lrt /var/www/html
+ls -lrt /var/www/html/app1
+http://<public-ip>/app1/app1-file1.html
+http://<public-ip>/app1/app1-file3.html
+
+
+terraform destroy
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Execute TF Commands, Verify Static Content and Understand more about null
 	------------------------------------------------------------------------------------------------------
+
+	already covered
 	------------------------------------------------------------------------------------------------------	
 	Step-01: Understand Terraform Import and Import Resource Group
 	------------------------------------------------------------------------------------------------------
+
+Terraform can import existing infrastructure.
+Bring directly provisioned resources 
+	under Terraform management.
+	Great way to 
+		slowly transition infrastructure to Terraform
+	or 
+		confident that Terraform can manage resources tomorrow 
+			for features which are not supported today.
+			
+
+continue from here
+
+
+ Create Azure Resource Group using Azure Mgmt Console
+Login to Azure Portal Management Console
+Go to -> Resource Groups -> Create
+Resource Group: myrg1
+Region: East US
+Click on Review + create
+Click on Create
+Step-03: Create Basic Terraform Configuration
+c1-versions.tf
+c2-resource-group.tf
+Create a base Azure Resource Group resource
+# Create Azure Resource Group Resource - Basic Version to get Terraform Resource Type and Resource Local Name we are going to use in Terraform
+# Resource Group
+resource "azurerm_resource_group" "myrg" {
+
+
+# Terraform Initialize
+terraform init
+
+# Terraform Import Command for Azure Resource Group
+terraform import azurerm_resource_group.example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example
+terraform import azurerm_resource_group.example /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP_NAME>
+terraform import azurerm_resource_group.myrg /subscriptions/82808767-144c-4c66-a320-b30791668b0a/resourceGroups/myrg1
+
+Observation:
+1) terraform.tfstate file will be created locally in Terraform working directory
+2) Review information about imported instance configuration in terraform.tfstate
+
+# List Resources from Terraform State
+terraform state list
+
+
+Building local c2-resource-group.tf
+By referring terraform.tfstate file and parallely running terraform plan command make changes to your terraform configuration c2-resource-group.tf till you get the message No changes. Infrastructure is up-to-date for terraform plan output
+# Resource Group
+resource "azurerm_resource_group" "myrg" {
+  name = "myrg1"
+  location = "eastus"
+}
+
+
+
+ Modify Resource Group from Terraform
+You have created this Azure Resource Group manually and now you made it as terraform managed
+Modify this resource group by adding new tags
+# Resource Group
+resource "azurerm_resource_group" "myrg" {
+  name = "myrg1"
+  location = "eastus"
+  tags = {
+    "Tag1" = "My-tag-1"
+  }
+}
+
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve
+Observation:
+1) Azure Resource Group on Azure Cloud should have the recently added tags. 
+
+
+
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Create RG Resource by referring TFSTATE file, Verify and CleanUp
 	------------------------------------------------------------------------------------------------------
+
+	covered above
 	------------------------------------------------------------------------------------------------------	
 ------------------------------------------------------------------------------------------------------
 Terraform Module
@@ -5572,22 +6480,339 @@ The above selects a resource "aws_instance" "example" declared inside a module "
 Because replacing is a very disruptive action, Terraform only allows selecting individual resource instances. There is no syntax to force replacing all resource instances belonging to a particular module.
 
 
+
+
+Modules 
+	containters for multiple resources
+		managed and used together
+	collection of .tf/.tf.json/tfvars files 
+		kept together in a directory
+	main way to package and reuse
+		resource configuration in Terraform
+	
+	
+Terraform configuration 
+	has atleast one module
+	known as root module
+	consists of resources defined in 
+		.tf files 
+		in main working directory.
+	configurations (usually root module)
+		call other modules 
+		to include their resources
+			into the configuration
+Child module
+	module called/executed by another module
+	can be called multiple times
+		within same configuration
+	multiple configurations can use same child module
+From local filesystem
+	Terraform can load modules
+		from a public/private registry
+	can publish modules for others to use 
+		can use modules published by others
+	e.g. https://registry.terraform.io/modules/Azure/vnet/azurerm/latest
+	
+	
+	
+lab/45
+
+Define a Child Module
+----------------------
+N.B:
+	Module Source (Mandatory): 
+		Use Terraform Registry to begin with
+	Module Version (Optional): 
+		Recommended to use module version	
+	
+	We willuse the previous example 
+		remove 
+			Virtual Network and 
+			Subnet Terraform 
+		use 
+			Virtual Network Public Registry module.
+	
+	Refer code in 
+	https://registry.terraform.io/modules/Azure/vnet/azurerm/latest
+	
+# Create Virtual Network and Subnets using Terraform Public Registry Module
+
+Add below into the main.tf
+
+module "vnet" {
+  source              = "Azure/vnet/azurerm"
+  version = "2.5.0"
+  vnet_name = local.vnet_name
+  resource_group_name = azurerm_resource_group.myrg.name
+  address_space       = ["10.0.0.0/16"]
+  subnet_prefixes     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  subnet_names        = ["subnet1", "subnet2", "subnet3"]
+
+  subnet_service_endpoints = {
+    subnet2 = ["Microsoft.Storage", "Microsoft.Sql"],
+    subnet3 = ["Microsoft.AzureActiveDirectory"]
+  }
+  tags = {
+    environment = "dev"
+    costcenter  = "it"
+  }
+  depends_on = [azurerm_resource_group.myrg]
+}	
+	
+Modify azurerm_network_interface
+	use module.vnet...
+	
+# Create Network Interface
+resource "azurerm_network_interface" "myvmnic" {
+  name                = local.nic_name
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+
+  ip_configuration {
+    name                          = "internal"
+    #subnet_id                     = azurerm_subnet.mysubnet.id    
+    subnet_id                     = module.vnet.vnet_subnets[0]
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.mypublicip.id 
+  }
+  tags = local.common_tags
+}
+
+
+Define Virtual Network Module Outputs
+# Output Values - Virtual Network
+output "virtual_network_name" {
+  description = "Virutal Network Name"
+  #value = azurerm_virtual_network.myvnet.name 
+  value = module.vnet.vnet_name
+}
+output "virtual_network_id" {
+  description = "Virutal Network ID"
+  value = module.vnet.vnet_id
+}
+output "virtual_network_subnets" {
+  description = "Virutal Network Subnets"
+  value = module.vnet.vnet_subnets
+}
+output "virtual_network_location" {
+  description = "Virutal Network Location"
+  value = module.vnet.vnet_location
+}
+output "virtual_network_address_space" {
+  description = "Virutal Network Address Space"
+  value = module.vnet.vnet_address_space
+}	
+(no other change required)
+
+lab/45
+
+add ssh keys
+
+# Terraform Init
+terraform init
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-apporve
+
+# Verify 
+1) Verify in Azure Portal console , all the resources should be created.
+http://<Public-IP-VM>
+http://<Public-IP-VM>/app1
+http://<Public-IP-VM>/app1/metadata.html
+
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Create VNET Module and reference it in VMNIC Resource
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Execute TF Commands, Verify VNET, Subnet and Access Sample App
 	------------------------------------------------------------------------------------------------------
+	covered above
 	------------------------------------------------------------------------------------------------------	
 	Step-04: Taint Child Module Resources and Clean-Up
 	------------------------------------------------------------------------------------------------------
+	
+Tainting Resources in a Module
+------------------------------
+taint command 
+	use to taint specific resources within a module
+V N.B: 
+	Not possible to taint an entire module. 
+	Instead, 
+		each resource within the module must be tainted separately.
+# List Resources from State
+terraform state list
+
+# Taint a Resource
+terraform taint <RESOURCE-NAME>
+terraform taint module.vnet.azurerm_subnet.subnet[2]
+
+# Terraform Plan
+terraform plan
+Observation: 
+1. Subnet2 will be destroyed and re-created
+
+# Terraform Apply
+terraform apply -auto-approve
+
+
+Clean-Up Resources & local working directory
+# Terraform Destroy
+terraform destroy -auto-approve
+
+# Delete Terraform files 
+rm -rf .terraform*
+rm -rf terraform.tfstate*
+
+
+Meta-Arguments for Modules
+--------------------------
+Meta-Argument concepts 
+	same as how we learned during Resources section.
+
+		count
+		for_each
+		providers
+		depends_on
+		lifecycle
+
+Meta arguments		
+	https://www.terraform.io/docs/language/modules/syntax.html#meta-arguments
+	
+Module sources	
+	https://www.terraform.io/docs/language/modules/sources.html
 	------------------------------------------------------------------------------------------------------	
 	Step-01: Understand about Child Modules and Create it
 	------------------------------------------------------------------------------------------------------
+
+lab/46
+50
+
+End Goal: 
+	Build a Terraform Local Module
+
+Create a Terraform module
+Use local Terraform modules in your configuration
+Configure modules with variables
+Use module outputs
+We are going to write a local re-usable module for the following usecase.
+Usecase: Hosting a static website using Azure Storage Account
+Create a Azure Storage Account
+Enable Static webstite option
+Upload Static Content and test
+For steps, 1 and 2 we are going to create a re-usable module in Terraform
+How are we going to do this?
+We are going to do this in 3 sections
+Section-1 - Full Manual: Create Static Website on Azure Storage Account using Azure Portal Management Console and host static content and test
+Section-2 - Terraform Resources: Automate section-1 using Terraform Resources
+Section-3 - Terraform Modules: Create a re-usable module for hosting static website by referencing section-2 terraform configuration files.
+
+
+
+Hosting a Static Website with Azure Storage Account
+
+Step1
+Create Azure Storage Account
+	Login to Azure Portal Console
+	Go to Storage Accounts -> Create
+	Resource Group: myrg-sw-1
+	Storage account name: <name>staticwebsitek123 (Should be unique across Azure)
+	Region: East US
+	Performance: Standard
+	Redundancy: LRS
+	Rest all leave to defaults
+	Click on Review + Create
+	Click on Create
+
+Step 2
+Enable Static Website
+	Goto Storage Account -> staticwebsitek123 -> Data Management -> Static Website
+	Click on Enabled
+	Index document name: index.html
+	Error document path: error.html
+
+Step 3: Upload Static Content
+Goto Storage Account -> <name>staticwebsite -> Data Storage -> Containers -> $web
+Upload Static files from static-content folder
+	index.html
+	error.html
+
+Step 4: Access Static Website
+Goto Storage Account -> <name>staticwebsite -> Data Management -> Static Website
+	Get the endpoint name Primary endpoint
+	# Primary Endpoint
+	https://<name>staticwebsite.z13.web.core.windows.net/
+
+Conclusion
+We have used multiple manual steps to host a static website on Azure Storage Account
+Now all the above manual steps automate using Terraform in next step
+
+
+Do the same using Terraform
+----------------------------
+
+Create Terraform Configuration to Host a Static Website on Azure
+
+We are going to host a static website on Azure Storage Account using general terraform configuration files
+
+Below will be the naming convention for Terraform Configs
+	provider.tf
+	main.tf
+	variables.tf
+	outputs.tf
+	terraform.tfvars
+
+
+
+# Terraform Initialize
+terraform init
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Upload Static Content
+1. Go to Storage Accounts -> <name>staticwebsite -> Containers -> $web
+2. Upload files from folder "static-content"
+
+# Verify 
+1. Azure Storage Account created
+2. Static Website Setting enabled
+3. Verify the Static Content Upload Successful
+4. Access Static Website: Goto Storage Account -> <name>staticwebsitek -> Data Management -> Static Website
+5. Get the endpoint name `Primary endpoint`
+https://<name>staticwebsitek.z13.web.core.windows.net/
+
+
+
+# Terraform Destroy
+terraform destroy -auto-approve
+
+# Delete Terraform files 
+rm -rf .terraform*
+rm -rf terraform.tfstate*
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Create Root Module TF Configs
 	------------------------------------------------------------------------------------------------------
-	------------------------------------------------------------------------------------------------------	
+
+Continue from here 51	------------------------------------------------------------------------------------------------------	
 	Step-03: Execute TF Commands, Verify and CleanUp Static Website created
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
