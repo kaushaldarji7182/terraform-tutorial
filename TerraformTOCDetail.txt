@@ -5671,8 +5671,7 @@ connection {
 	host = self.public_ip_address
 	user = self.admin_username
 	private_key = file ("${path.module}/ssh-keys/terraform-azure.pem")
-					
-		Expression 
+}					
 		
 	File Provisioners
 		copy files or directories 
@@ -5705,8 +5704,7 @@ connection {
 		Can configure provisioners and connectino details.
 		e.g. sleep for 10 sec.	
 				
-				
-		
+
 
 
 
@@ -5739,7 +5737,11 @@ Private Key: terraform-azure.pem
 chmod 400 terraform-azure.pem
 
 
-Connection Block for provisioners uses this to connect to newly created Azure VM instance to copy files using file provisioner, execute scripts using remote-exec provisioner
+Connection Block 
+	for provisioners 
+		connect to newly created Azure VM instance 
+			copy files using file provisioner
+				execute scripts using remote-exec provisioner
 
 
 Connection Block
@@ -5777,7 +5779,6 @@ self object
   }  
 
 
-lab: Above is similar to what we have been doing from beginning.
 
 			
 			
