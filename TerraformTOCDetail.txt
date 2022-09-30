@@ -5944,10 +5944,10 @@ Modify provisioner in main.tf vm section
     source      = "apps/file-copy.html"
     destination = "/var/www/html/file-copy.html"
    }
-   
-   
-   }
+
+
 # Terraform Validate
+terraform destroy # update may not succeed
 terraform validate
 
 # Terraform Plan
@@ -6094,7 +6094,7 @@ add in main.tf
     when    = destroy
     command = "echo Destroy-time provisioner Instanace Destroyed at `date` >> destroy-time.txt"
     working_dir = "local-exec-output-files/"
-  }  	
+  }
 	
 	
 # Terraform Initialize
@@ -6123,7 +6123,7 @@ Null provider
 	https://registry.terraform.io/providers/hashicorp/null/latest/docs
 	
 Time Provider
-	used to interact with time-based resourcs
+	used to interact with time-based resources
 	Provier has no configuration options
 	need to add into terraform block.
 	https://registry.terraform.io/providers/hashicorp/time/latest/docs
@@ -6211,10 +6211,11 @@ Following providers are updated in provider.tf
 # Sync App1 Static Content to Webserver using Provisioners
 resource "null_resource" "sync_app1_static" {
   depends_on = [ time_sleep.wait_90_seconds ]
+#id will be associated with timestamp. Any change. Null resource will be recreated.
   triggers = {
     always-update =  timestamp()
   }
-
+}
   # Connection Block for Provisioners to connect to Azure VM Instance
   connection {
     type = "ssh"
@@ -6265,7 +6266,14 @@ ls -lrt /var/www/html/app1
 http://<public-ip>/app1/app1-file1.html
 http://<public-ip>/app1/app1-file2.html
 
-	------------------------------------------------------------------------------------------------------	
+
+Modify app1
+add a file and modify a file
+re-run 
+	terraform plan 
+	terraform apply
+	
+------------------------------------------------------------------------------------------------------	
 	Step-02: Create Null Resource, File and remote-exec Provisioners and Triggers
 	------------------------------------------------------------------------------------------------------
 
