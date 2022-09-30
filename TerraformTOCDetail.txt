@@ -6723,7 +6723,7 @@ Module sources
 	Step-01: Understand about Child Modules and Create it
 	------------------------------------------------------------------------------------------------------
 
-lab/46
+lab/46 (Not lab)
 
 
 End Goal: 
