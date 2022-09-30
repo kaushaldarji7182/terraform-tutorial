@@ -6547,7 +6547,7 @@ https://registry.terraform.io/
 lab/45
 
 Define a Child Module
-----------------------
+---------------------
 N.B:
 	Module Source (Mandatory): 
 		Use Terraform Registry to begin with
@@ -6724,7 +6724,7 @@ Module sources
 	------------------------------------------------------------------------------------------------------
 
 lab/46
-50
+
 
 End Goal: 
 	Build a Terraform Local Module
@@ -6764,7 +6764,7 @@ Create Azure Storage Account
 	Login to Azure Portal Console
 	Go to Storage Accounts -> Create
 	Resource Group: myrg-sw-1
-	Storage account name: <name>staticwebsitek123 (Should be unique across Azure)
+	Storage account name: <name>staticwebsitek (Should be unique across Azure)
 	Region: East US
 	Performance: Standard
 	Redundancy: LRS
@@ -6774,7 +6774,7 @@ Create Azure Storage Account
 
 Step 2
 Enable Static Website
-	Goto Storage Account -> staticwebsitek123 -> Data Management -> Static Website
+	Goto Storage Account -> <name>staticwebsitek -> Data Management -> Static Website
 	Click on Enabled
 	Index document name: index.html
 	Error document path: error.html
@@ -7025,9 +7025,9 @@ terraform apply -auto-approve
 1. Azure Storage Account created
 2. Static Website Setting enabled
 3. Verify the Static Content Upload Successful
-4. Access Static Website: Goto Storage Account -> staticwebsitek123 -> Data Management -> Static Website
+4. Access Static Website: Goto Storage Account -> <name>staticwebsitek -> Data Management -> Static Website
 5. Get the endpoint name `Primary endpoint`
-https://staticwebsitek123.z13.web.core.windows.net/
+https://<name>staticwebsitek.z13.web.core.windows.net/
 Step-08: Destroy and Clean-Up
 # Terraform Destroy
 terraform destroy -auto-approve
