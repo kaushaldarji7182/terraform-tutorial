@@ -9,6 +9,7 @@ resource "time_sleep" "wait_90_seconds" {
 # Sync App1 Static Content to Webserver using Provisioners
 resource "null_resource" "sync_app1_static" {
   depends_on = [time_sleep.wait_90_seconds]
+  #Watches timestamp change in any file and runs this 
   triggers = {
     always-update = timestamp()
   }

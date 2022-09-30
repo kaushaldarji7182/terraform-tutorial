@@ -6267,11 +6267,6 @@ http://<public-ip>/app1/app1-file1.html
 http://<public-ip>/app1/app1-file2.html
 
 
-Modify app1
-add a file and modify a file
-re-run 
-	terraform plan 
-	terraform apply
 	
 ------------------------------------------------------------------------------------------------------	
 	Step-02: Create Null Resource, File and remote-exec Provisioners and Triggers
@@ -6331,7 +6326,7 @@ Step 1
 Create Azure Resource Group using Azure Mgmt Console
 Login to Azure Portal Management Console
 Go to -> Resource Groups -> Create
-Resource Group: myrg1
+Resource Group: <name>rg1
 Region: East US
 Click on Review + create
 Click on Create
