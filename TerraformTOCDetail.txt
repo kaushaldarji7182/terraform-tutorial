@@ -4524,7 +4524,6 @@ terraform destroy
 
 	------------------------------------------------------------------------------------------------------	
 
-start from here
 Day 4
 ------------------------------------------------------------------------------------------------------
 Terraform state command
@@ -4592,10 +4591,6 @@ lab/37
 	------------------------------------------------------------------------------------------------------	
 	Step-02: Terraform Show Command to read Terraform State Files
 	------------------------------------------------------------------------------------------------------
-#is below statement required?	
-terraform show 
-	will work if 
-		terraform.tfstate file is in the local folder.
 		
 # Terraform Show
 terraform show
@@ -4791,7 +4786,7 @@ Choice-2:
 	You want a new resource to be created without deleting other one 
 	(non-terraform managed resource now in current state). 
 	Run terraform plan and apply
-LIKE THIS WE NEED TO MAKE DECISIONS ON WHAT WOULD BE OUR OUTCOME OF REMOVING A RESOURCE FROM STATE.
+	any other reason?
 
 PRIMARY REASON for this is command 
 	respective resource need to be removed from as terraform managed
@@ -4832,7 +4827,7 @@ State replace provider
 	Theory
 	https://www.terraform.io/cli/commands/state/replace-provider
 
-
+	used to point to a local jfrog/nexus
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Terraform State Push Pull and Force-Unlock Commands
 	------------------------------------------------------------------------------------------------------
@@ -4843,12 +4838,13 @@ State replace provider
 		works in aws dynamo db.
 		
 		
-	A "Terraform Disaster Recovery" comman
+Setup for remote state in azure storage 
+	A "Terraform Disaster Recovery" command
 
 terraform state pull:
-	force a download from remote state.
-		output the state 
-	works with local state.
+	copy paste the content to local.
+		file: terraform.tfstate 
+			remote name may be different
 
 
 terraform state push:
@@ -4869,7 +4865,10 @@ LAST MODIFIED	6/11/2021, 12:50:22 PM
 CREATION TIME	6/11/2021, 12:50:21 PM
 VERSION ID	2021-06-11T07:20:22.2334683Z
 
+#N.B: This command is not working. This is not a critical feature.
+#It is better avoid learning in reality.
 # Terraform State Push
+terraform state push # watch the command output.
 terraform state push terraform.tfstate
 
 # Verify new State file copied in Azure Storage Container
@@ -5056,7 +5055,7 @@ plan compares in memory
 	
 Verify terraform.tfstate file 
 	no changes
-But it show the differences of tags.
+But it shows the differences of tags.
 
 # Execute Terraform plan
 terraform plan 
@@ -5069,10 +5068,16 @@ terraform show
 
 # Execute terraform plan -refresh-only
 terraform plan -refresh-only
+	open state file and check
+	#similar to plan will not update
+terraform plan
 
 # Execute terraform apply -refresh-only
-terraform apply -refresh-only
-
+terraform apply -refresh-only#state file is modified
+	open state file and check
+terraform plan
+	configurations are still not updated
+	
 # Review terraform state file
 1) terraform show
 2) A new tag will be added to Azure Resource Group 
@@ -5185,9 +5190,10 @@ Problem:
 	Terraform uses state 
 		to associate resources 
 		with real-world objects, 
-	run the same configuration 
+	if you run the same configuration 
 		multiple times with 
 		completely separate state data
+		e.g. resouce group: (1) rg1 (2) rg2 (3) rg3
 		Terraform is in trouble
 		
 	Terraform can manage many non-overlapping groups of resources.
@@ -5195,7 +5201,6 @@ Problem:
 		use variables 
 			environment = stage, production
 		use pattern like count 
-	
 	
 	simplest solution 
 		maintain separate directory 
@@ -5224,6 +5229,11 @@ Problem:
 		keep separate states 
 			for each collection of resources you manage.
 
+N.B.:
+	Terraform workspace 
+		terraform cli 
+	completely different from 
+		terraform cloud
 
 Interactions with Terraform Cloud Workspaces (can skip)
 -------------------------------------------------------
@@ -5248,7 +5258,7 @@ Refer to CLI-driven Runs in the Terraform Cloud documentation for more details a
 	Update our terraform manifests/configuration to support terraform workspace
 
 
-	continue from here
+	
 	------------------------------------------------------------------------------------------------------	
 	Step-03: Create Resources in default workspace and learn commands workspace list
 	------------------------------------------------------------------------------------------------------
@@ -5311,16 +5321,6 @@ cd dev
 ls
 cd ../../
 
-
-# Create New Workspace
-terraform workspace new dev
-
-# Verify the folder
-cd terraform.tfstate.d 
-cd dev
-ls
-cd ../../
-
 # Terraform Plan
 terraform plan
 Observation:  
@@ -5366,7 +5366,7 @@ terraform workspace list
 terraform workspace select default
 
 # Delete Resources from default workspace
-terraform destroy -auto-approve
+#don't do - terraform destroy -auto-approve
 
 # Verify
 1) Verify in Azure Mgmt Console (all the resources should be deleted)
@@ -5413,7 +5413,7 @@ Observation: Successfully delete workspace dev
 	------------------------------------------------------------------------------------------------------	
 	Step-06: Implement CLI Workspaces with Remote State Storage Backend
 	------------------------------------------------------------------------------------------------------
-
+Start from here
 lab/40-3
 
 Add Backend block in Terraform Settings block
@@ -5630,7 +5630,7 @@ resource "aws_instance" "web" {
 Reference: 
 https://www.terraform.io/docs/language/resources/provisioners/file.html
 
-Provisioners
+Provisioner
 	used to model actions on 
 		local machine
 	or 
@@ -5777,6 +5777,8 @@ self object
   }  
 
 
+lab: Above is similar to what we have been doing from beginning.
+
 			
 			
 
@@ -5838,6 +5840,8 @@ lab/41
 	44
 
 Add ssh keys
+
+
 
 # Terraform Initialize
 terraform init
@@ -6149,17 +6153,7 @@ To learn
 		based on a changed null_resource 
 		using timestamp function and 
 		triggers in null_resource	
-
-Following providers are updated in provider.tf
-    null = {
-      source = "hashicorp/null"
-      version = ">= 3.0.0"
-    }
-	
-    time = {
-      source = "hashicorp/time"
-      version = ">= 0.6.0"
-    }  
+ 
 
 
 
@@ -6197,8 +6191,21 @@ Create Null Resource
 		how to sync those changes to VM Instance using terraform - 
 			A simple solution.
 	
-
+lab/44
 Added the below
+
+
+Following providers are updated in provider.tf
+    null = {
+      source = "hashicorp/null"
+      version = ">= 3.0.0"
+    }
+	
+    time = {
+      source = "hashicorp/time"
+      version = ">= 0.6.0"
+    } 
+	
 # Terraform NULL RESOURCE
 # Sync App1 Static Content to Webserver using Provisioners
 resource "null_resource" "sync_app1_static" {
@@ -6230,7 +6237,7 @@ resource "null_resource" "sync_app1_static" {
 }
 
 
-lab/44
+
 Add ssh-keys
 
 # Terraform Initialize
@@ -6300,21 +6307,29 @@ Bring directly provisioned resources
 	or 
 		confident that Terraform can manage resources tomorrow 
 			for features which are not supported today.
-			
+	
+N.B:
+	import to state file only 
+	configurations are not updated.
+	
+	
+
 
 continue from here
 
-
- Create Azure Resource Group using Azure Mgmt Console
+lab/47
+Step 1
+Create Azure Resource Group using Azure Mgmt Console
 Login to Azure Portal Management Console
 Go to -> Resource Groups -> Create
 Resource Group: myrg1
 Region: East US
 Click on Review + create
 Click on Create
-Step-03: Create Basic Terraform Configuration
-c1-versions.tf
-c2-resource-group.tf
+
+Step 2: Create Basic Terraform Configuration
+provider.tf
+main.tf
 Create a base Azure Resource Group resource
 # Create Azure Resource Group Resource - Basic Version to get Terraform Resource Type and Resource Local Name we are going to use in Terraform
 # Resource Group
@@ -6325,6 +6340,12 @@ resource "azurerm_resource_group" "myrg" {
 terraform init
 
 # Terraform Import Command for Azure Resource Group
+
+To get the below string for any object.
+Go to the resource
+	top right there is a json view link.
+	Click on the same and we would get the below string 
+
 terraform import azurerm_resource_group.example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example
 terraform import azurerm_resource_group.example /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP_NAME>
 terraform import azurerm_resource_group.myrg /subscriptions/82808767-144c-4c66-a320-b30791668b0a/resourceGroups/myrg1
@@ -6336,6 +6357,7 @@ Observation:
 # List Resources from Terraform State
 terraform state list
 
+terraform plan
 
 Building local c2-resource-group.tf
 By referring terraform.tfstate file and parallely running terraform plan command make changes to your terraform configuration c2-resource-group.tf till you get the message No changes. Infrastructure is up-to-date for terraform plan output
@@ -6514,6 +6536,9 @@ From local filesystem
 	e.g. https://registry.terraform.io/modules/Azure/vnet/azurerm/latest
 	
 	
+https://registry.terraform.io/
+	There is a completely seperate doc. for modules
+	There we see the documentation for accessing modules
 	
 lab/45
 
@@ -6525,7 +6550,7 @@ N.B:
 	Module Version (Optional): 
 		Recommended to use module version	
 	
-	We willuse the previous example 
+	We will use the previous example 
 		remove 
 			Virtual Network and 
 			Subnet Terraform 
@@ -6540,7 +6565,7 @@ N.B:
 Add below into the main.tf
 
 module "vnet" {
-  source              = "Azure/vnet/azurerm"
+  source  = "Azure/vnet/azurerm"
   version = "2.5.0"
   vnet_name = local.vnet_name
   resource_group_name = azurerm_resource_group.myrg.name
@@ -6718,8 +6743,18 @@ Section-3 - Terraform Modules: Create a re-usable module for hosting static webs
 
 
 
-Hosting a Static Website with Azure Storage Account
+	------------------------------------------------------------------------------------------------------	
+	Step-02: Create Root Module TF Configs
+	------------------------------------------------------------------------------------------------------
 
+	------------------------------------------------------------------------------------------------------	
+	Step-03: Execute TF Commands, Verify and CleanUp Static Website created
+	------------------------------------------------------------------------------------------------------
+
+
+Hosting a Static Website with Azure Storage Account
+lab/48
+50
 Step1
 Create Azure Storage Account
 	Login to Azure Portal Console
@@ -6809,16 +6844,210 @@ terraform destroy -auto-approve
 rm -rf .terraform*
 rm -rf terraform.tfstate*
 	------------------------------------------------------------------------------------------------------	
-	Step-02: Create Root Module TF Configs
-	------------------------------------------------------------------------------------------------------
-
-Continue from here 51	------------------------------------------------------------------------------------------------------	
-	Step-03: Execute TF Commands, Verify and CleanUp Static Website created
-	------------------------------------------------------------------------------------------------------
-	------------------------------------------------------------------------------------------------------	
 	Step-04: Understand Terraform get command
 	------------------------------------------------------------------------------------------------------
-	------------------------------------------------------------------------------------------------------	
+
+	terraform init 
+		download 
+			providers 
+				[from terraform registry] 
+			modules present in local modules folder 
+				in terraform working directory.
+	we initialized using 
+		terraform init and 
+		created module configs
+			we can 
+				"terraform get" 
+					to download the same.
+	
+	When we add new 
+		module to a configuration
+	Terraform must install the module before it can be used.
+
+terraform get and terraform init commands 
+	will install and 
+	update modules.
+The terraform init command 
+	initialize backends and 
+	install plugins.
+# Delete modules in .terraform folder
+ls -lrt .terraform/modules
+rm -rf .terraform/modules
+ls -lrt .terraform/modules
+
+# Terraform Get
+terraform get
+ls -lrt .terraform/modules
+
+
+
+Introduction
+	We will build 
+		Terraform local module 
+			to host a static website 
+			on Azure Storage Account.
+		understand how to call 
+			Local Re-usable module 
+				in to a Root Module.
+		how the local module variables becomes the arguments inside a module block when it is called in Root Module c3-static-webiste.tf
+	We will understand how we define the output values for a local module in a Root module c4-outputs.tf
+
+Terraform Comamnd terraform get
+-------------------------------
+differences between 
+	terraform init and 
+	terraform get
+
+Step 2: Create Module Folder Structure
+Aim:
+	create modules folder 
+	create a module named 
+		azure-static-website
+	copy required files from previous section for this respective module 	
+	terraform-manifests.
+		48/*
+Terraform Working Directory: 
+	49/*
+		modules
+		Module-1: azure-static-website
+		main.tf
+		variables.tf
+		outputs.tf
+		README.md
+		LICENSE
+Inside modules/azure-static-website, 
+	copy following files from 48
+		main.tf
+		variables.tf
+		outputs.tf
+		versions.tf
+
+Step 3: Root Module: 
+	provider.tf
+Call Module from Terraform Work Directory
+Create Terraform Configuration in Root Module 
+	by calling the newly created module
+		c1-versions.tf
+		c2-variables.tf
+		c3-static-website.tf
+		c4-outputs.tf
+
+# Terraform Block
+terraform {
+  required_version = ">= 1.0.0"
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = ">= 2.0" 
+    }    
+  }
+}
+
+# Provider Block
+provider "azurerm" {
+ features {}          
+}
+
+Step-04: c2-variables.tf
+Place holder file, if you want you can define variables.
+For now focus is on Calling the Local Terraform Module in to Root Module so we are not going to complicate the stuff here.
+We will leave this placeholder file
+Step-05: c3-static-website.tf
+Arguments for this module are going to be the variables defined in variables.tf of local module
+# Call our Custom Terraform Module which we built earlier
+module "azure_static_website" {
+  source = "./modules/azure-static-website"  # Mandatory
+
+  # Resource Group
+  location = "eastus"
+  resource_group_name = "myrg1"
+
+  # Storage Account
+  storage_account_name = "staticwebsite"
+  storage_account_tier = "Standard"
+  storage_account_replication_type = "LRS"
+  storage_account_kind = "StorageV2"
+  static_website_index_document = "index.html"
+  static_website_error_404_document = "error.html"
+}
+Step-06: c4-outputs.tf
+Understand how we are going to reference the output values from a local module
+The output names defined in local module outputs.tf will be the values in this c4-outputs.tf
+# Output variable definitions
+output "root_resource_group_id" {
+  description = "resource group id"
+  value       = module.azure_static_website.resource_group_id
+}
+output "root_resource_group_name" {
+  description = "The name of the resource group"
+  value       = module.azure_static_website.resource_group_name
+}
+output "root_resource_group_location" {
+  description = "resource group location"
+  value       = module.azure_static_website.resource_group_location
+}
+output "root_storage_account_id" {
+  description = "storage account id"
+  value       = module.azure_static_website.storage_account_id
+}
+output "root_storage_account_name" {
+  description = "storage account name"
+  value       = module.azure_static_website.storage_account_name
+}
+Step-07: Execute Terraform Commands
+# Terraform Initialize
+terraform init
+Observation: 
+1. Verify ".terraform", you will find "modules" folder in addition to "providers" folder
+2. Verify inside ".terraform/modules" folder too.
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-approve
+
+# Upload Static Content
+1. Go to Storage Accounts -> staticwebsitexxxxxx -> Containers -> $web
+2. Upload files from folder "static-content"
+
+# Verify 
+1. Azure Storage Account created
+2. Static Website Setting enabled
+3. Verify the Static Content Upload Successful
+4. Access Static Website: Goto Storage Account -> staticwebsitek123 -> Data Management -> Static Website
+5. Get the endpoint name `Primary endpoint`
+https://staticwebsitek123.z13.web.core.windows.net/
+Step-08: Destroy and Clean-Up
+# Terraform Destroy
+terraform destroy -auto-approve
+
+# Delete Terraform files 
+rm -rf .terraform*
+rm -rf terraform.tfstate*
+Step-09: Understand terraform get command
+We have used terraform init to download providers from terraform registry and at the same time to download modules present in local modules folder in terraform working directory.
+Assuming we already have initialized using terraform init and later we have created module configs, we can terraform get to download the same.
+Whenever you add a new module to a configuration, Terraform must install the module before it can be used.
+Both the terraform get and terraform init commands will install and update modules.
+The terraform init command will also initialize backends and install plugins.
+# Delete modules in .terraform folder
+ls -lrt .terraform/modules
+rm -rf .terraform/modules
+ls -lrt .terraform/modules
+
+# Terraform Get
+terraform get
+ls -lrt .terraform/modules
+
+
+51 end	------------------------------------------------------------------------------------------------------	
 	Step-01: Create Git Repo and Commit Static Website TF Module Files and Create 1.
 	------------------------------------------------------------------------------------------------------
 	------------------------------------------------------------------------------------------------------	
