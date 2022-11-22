@@ -1,0 +1,104 @@
+Good references
+i have 
+https://www.udemy.com/course/terraform-on-aws-with-sre-iac-devops-real-world-demos/
+i don't have
+https://www.udemy.com/course/advanced-terraform-aws-eks-vpc-devops-iac-best-practices/
+
+
+imp. link
+https://developer.hashicorp.com/terraform/language/syntax/configuration
+
+
+
+Advanced Terraform Training Content -
+
+
+
+
+●	Introduction to 
+○	Infrastructure as Code
+■	Configuration management 
+■	Infrastructure provisioning
+●	Install Terraform
+○	Install and configure AWS cli on 
+■	Windows
+■	Linux
+■	Mac
+
+●	Terraform Core Concepts Review
+●	Terraform Top level Blocks
+○	Syntax of top-level blocks
+○	Important Top-level blocks
+■	Resources
+■	Providers
+■	Data Sources
+■	Variables and Outputs
+■	Modules
+●	Terraform Settings, Providers and Resources
+●	Terraform input variables, Data sources and Output values
+●	Terraform loop, Meta Arguments, Splat Operators and functions
+●	CLI
+○	The CLI and all available sub-commands
+■	https://acloudguru.com/blog/engineering/the-ultimate-terraform-cheatsheet
+○	 State and its importance (as well as fragility)
+■	https://developer.hashicorp.com/terraform/language/state
+
+●	Designing More Complex Terraform Projects and Modules 
+○	Approaches to Modularization 
+■	Single-project, multi-module scenarios
+■	 Multi-project related infrastructure, single and hybrid cloud or platform
+■	 Root module decomposition
+●	Working with new and legacy monolithic projects alike approaches to thoughtful Terraform project organization
+
+●	Developing and Managing More Complex Terraform Projects and Modules 
+○	Comprehensive best practices
+○	 Module versions
+○	 Share and focus on DRY
+○	 Complex provider scenarios across projects and modules
+○	 Introduce Terraform Null Label and its utility
+
+●	An Introduction to Make + Makefile 
+○	Automate repetitive tasks in Terraform projects using a reliable, standard Linux tool
+
+●	Advanced Terraform tool and CLI understanding 
+○	Understand state and the state file
+○	 State migration, management in complex scenarios
+○	 Terraform import approaches in complex scenarios
+○	 Approach mistakes and messes 
+■	Drift that’s gotten out of hand
+■	 Corrupted or irreparable state
+■	 Know what can’t be fixed
+■	 Proactively ensure that you don’t end up in this position with Terraform
+
+●	HCL Advanced Topics 
+○	Advanced configuration language expression features: 
+■	Re-usability approaches
+■	Loops, meta-arguments
+■	For expressions
+■	Types in the context of expressions
+
+●	Hardening Security for Terraform 
+○	Shift left Terraform security, defense in depth
+○	 State files and security
+○	 Manage credentials and secrets: least privilege, rotation, protection
+○	 Where and how security can break down in Terraform workflows
+
+●	Reliability of Infrastructure and Testing 
+○	What automated and manual testing frameworks and methods are available currently? 
+■	The current state of affairs leaves a lot to be desired, e.g. terratest
+○	 Drift and mitigate unexpected consequences in realistic scenarios
+○	 Developer responsibility vs automated testing, git hooks for validation, terraform-pre-commit, etc.
+
+●	Automating Terraform, Terraform in Pipelines 
+○	Terraform with Spinnaker
+○	 Use automated delivery pipelines to improve quality assurance, stability, and reliability of infrastructure and Terraform deployments
+○	 Terraform and GitOps: approaches to adopting GitOps in Terraform workflows
+○	 Terraform Cloud and Enterprise overview, a look at how these offerings improve Terraform workflows and what other tools/processes exist to serve the same need: custom CI/CD pipelines for Terraform, tools like Atlantis, etc.
+
+●	Complex AWS infrastructure with Terraform 
+○	Case studies and real interactive examples
+●	Import, Taint, Maps, List Variable Types
+●	Introduction to Terragrunt
+
+
+

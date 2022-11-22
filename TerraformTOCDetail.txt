@@ -5650,7 +5650,7 @@ Provisioner
 			Ignore Error and continue
 		Failure behaviour:Fail
 			Raise and error and stop
-			Default
+				Default
 			taint resource
 			apply and destroy fails
 	
@@ -6098,6 +6098,7 @@ add in main.tf
 	
 	
 # Terraform Initialize
+mkdir local-exec-output-files
 terraform init
 
 # Terraform Validate
@@ -6511,7 +6512,7 @@ Because replacing is a very disruptive action, Terraform only allows selecting i
 Modules 
 	containters for multiple resources
 		managed and used together
-	collection of .tf/.tf.json/tfvars files 
+	collection of .tf/.tf.json files 
 		kept together in a directory
 	main way to package and reuse
 		resource configuration in Terraform
@@ -6871,6 +6872,8 @@ rm -rf terraform.tfstate*
 terraform get and terraform init commands 
 	will install and 
 	update modules.
+	use it when you have modified the child module 
+		want to refresh it in parent module
 The terraform init command 
 	initialize backends and 
 	install plugins.
