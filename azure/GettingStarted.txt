@@ -11,6 +11,10 @@ install az
 	az login 
 	check back in console
 	
+	az account list 
+	az account list -o table
+	az account set --subscription="subscription id from previous command"
+	
 	Find all important files in C:\Users\vilas\.azure
 	important files	
 		accessTokens.json
