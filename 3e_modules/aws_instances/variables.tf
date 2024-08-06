@@ -1,5 +1,5 @@
 variable "amis" {
-  type = "map"
+  type = map
   default = {
     us-east-1 = "ami-66506c1c"
     us-west-1 = "ami-07585467"
