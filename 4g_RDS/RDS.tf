@@ -35,7 +35,7 @@ module "db" {
 
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
   name     = "demodb"
-  username = "user"
+  username = "root"
   password = "YourPwdShouldBeLongAndSecure!"
   port     = "3306"
 
