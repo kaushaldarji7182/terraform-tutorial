@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "backend" {
-  availability_zone      = "${var.us-east-zones[count.index]}"
+  availability_zone      = "${var.us-east-zones[0]}"
   ami                    = "ami-66506c1c"
   instance_type          = "t2.micro"
   key_name               = "${var.key_name}"
@@ -15,6 +15,7 @@ resource "aws_instance" "backend" {
     inline = ["echo Successfully connected"]
 
     connection {
+	  host		  = self.public_ip
       user        = "ubuntu"
       type        = "ssh"
       private_key = "${file(var.pvt_key)}"
@@ -35,5 +36,5 @@ resource "null_resource" "ansible-main" {
     command = "ansible-playbook -e sshKey=${var.pvt_key} -i '${aws_instance.backend.public_ip},' ./ansible/setup-backend.yaml -v"
   }
 
-  depends_on = ["aws_instance.backend"]
+  depends_on = [aws_instance.backend]
 }

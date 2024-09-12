@@ -1,0 +1,1824 @@
+Detailed Content
+1. Terraform Basics
+-------------------------------------------------------------------------------------------------------
+Infrastructure as Code (IaC) 
+	Process of 
+		managing and 
+		provisioning 
+			the complete IT infrastructure 
+	(comprises both 
+		physical and 
+		virtual 
+			machines) 
+		using machine-readable definition files. 
+	Automate environment provisioning process.
+	Ease maintenance of the environment.
+	Manage the source code of it in SCM.
+
+
+Challenges with Infrastructure as Code :
+	Need to learn to code
+	Don’t know the change impact.
+	Need to revert the change
+	Can’t track changes
+	Can’t automate a resource
+	Multiple environments for infrastructure
+	Terraform has been created to solve these challenges.
+
+
+Terraform introduction	
+----------------------
+What is Terraform?
+	Open-source infrastructure as Code 
+	Developed by HashiCorp. 
+	Used to 
+		define and 
+		provision the 
+			complete infrastructure 
+	Declarative language.
+
+	Infrastructure provisioning tool 
+	Cloud infrastructure setup as codes. 
+	Similar to tools like CloudFormation
+		However provider independent.
+	
+	
+Adv. of Terraform
+	Does infrastructure provisioning
+	Supports 
+		multiple providers such as 
+			AWS, 
+			Azure, 
+			GCP, 
+			DigitalOcean and 
+			many more
+		Easily portable to any other provider
+	Uses easy to understand language, 
+		HCL (HashiCorp configuration language)
+	Provide 
+		immutable infrastructure 
+			where configuration changes smoothly
+	
+Immutable infrastructure
+------------------------
+Terraform provides immutable infrastructure 
+	by ensuring that 
+		any changes to the desired state of your infrastructure are 
+			applied in a 
+				consistent, 
+				predictable 
+					manner. 
+	i.e.
+		Terraform will plan the required steps 
+			to achieve the 
+				desired state and 
+				then execute those steps.
+
+Here's how Terraform achieves immutability and smooth configuration changes:
+
+State Management:
+
+	Terraform maintains a state file 
+		records the current configuration 
+			of your infrastructure. 
+		This state file 
+			track the resources 
+				created and 
+				their corresponding attributes.
+	make changes to your Terraform configuration, 
+		Terraform compares 
+			desired state (defined in your configuration) 
+		with 
+			current state (stored in the state file). 
+		It then determines the necessary actions to reconcile the two states.
+Infrastructure as Code (IaC):
+
+	Terraform treats 
+		infrastructure as code
+		i.e. 
+			desired state of your infrastructure 
+				defined in a declarative configuration file. 
+		version control your infrastructure, 
+			easy to track changes and 
+			collaborate with others.
+	By using IaC, 
+		easily recreate your infrastructure from scratch, 
+		ensure 
+			consistency and 
+			reproducibility.
+Resource Provisioning and Destruction:
+
+	Terraform provisions resources by 
+		creating them 
+			based on the desired state 
+				defined in your configuration. 
+		It uses the provider's API to 
+			interact with the 
+			underlying infrastructure.
+	To update resource, 
+		Terraform will destroy 
+			existing resource and 
+			create a new one with the desired configuration. 
+		Ensures 
+			resource are always in the desired state.
+	Terraform can destroy resources, 
+		freeing up resources and preventing unnecessary costs.
+Change Planning and Execution:
+
+	Before applying any changes to your infrastructure, 
+		Terraform 
+			creates a plan 
+			outlines the steps required to achieve the desired state. 
+		This plan 
+			shows you the resources that will be 
+				created, 
+				updated, or 
+				destroyed.
+	You can review the plan to 
+		ensure that the 
+			changes are as expected and then 
+				apply them using the apply command.
+Drift Detection:
+
+	Terraform can detect drift
+		occurs when the actual state of your infrastructure 
+			deviates from the desired state. 
+		This can happen due to manual changes or external factors.
+	By detecting drift, 
+		Terraform can help you identify and correct inconsistencies in your infrastructure.
+
+	To detect
+		Take a back up of state file 
+		do terraform refresh
+		compare between old and new state file 
+
+
+	terraform plan: 
+		This command 
+			creates a plan 
+				that outlines 
+					steps required to 
+						reconcile 
+							desired state 
+						with 
+							actual state. 
+			If there are any drifts
+				plan will show the 
+					necessary actions to correct them.
+	terraform refresh: 
+		This command updates the state file 
+			with the latest information from the provider. 
+		This is useful 
+			if you have made 
+				manual changes to your infrastructure 
+				or 
+					if the provider's state has been updated.
+	
+		
+		
+	terraform apply: 
+		This command applies the changes outlined in the 
+			plan, 
+			including correcting any drifts.
+
+Additional Features:
+
+	Terraform provides additional features such as 
+		modules, 
+		variables, and 
+		outputs 
+			to 
+				help you manage 
+					complex infrastructure and 
+			share reusable components.
+			
+			
+	These features 
+		make it easier to 
+			organize your Terraform configuration and 
+			promote code reusability.
+
+
+References: D:\PraiseTheLord\HSBGInfotech\DevOps\Terraform\TerraformTOC.txt
+
+The Core Terraform Workflow
+The core Terraform workflow has three steps:
+    Write - Author infrastructure as code.
+    Plan - Preview changes before applying.
+    Apply - Provision reproducible infrastructure.
+
+Vilas: Copied from my notes
+------------------------------------------------------------------------------------------------------
+
+https://www.terraform.io/language
+Terraform Language
+	main purpose 
+		declare resources
+			represent infrastructure objects. 
+	
+	All other language features 
+		make the definition of resources more flexible and convenient.
+
+A Terraform configuration 
+	complete document in Terraform language 
+	Tells Terraform 
+		how to manage a given collection of infrastructure. 
+	Can consist of multiple files and directories.
+
+Syntax of the Terraform language 
+	simple
+
+resource "aws_vpc" "main" {
+  cidr_block = var.base_cidr_block
+}
+
+<BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK LABEL>" {
+  # Block body
+  <IDENTIFIER> = <EXPRESSION> # Argument
+}
+e.g. 
+resource "azurerm_resource_group" "myrg" { # Resource BLOCK
+  name = "myrg-1" # Argument
+  location = "East US" # Argument 
+}
+
+Blocks 
+------
+	Most of Terraform's features 
+		controlled by top-level blocks in a configuration file.
+		
+	containers for other content 
+	represent configuration of an object
+		e.g. resource. 
+	have a block type
+	
+	can have 
+		zero or more labels
+	a body 
+		contains (number of) arguments 
+		nested blocks. 
+	
+
+
+
+Arguments 
+---------
+	assign a value to a name. 
+	They appear within blocks.
+	can be 
+		required or 
+		optional
+	Meta-Arguments 
+		change a resource type's behavior 
+			e.g.: 
+				count, 
+				for_each
+
+
+Expressions 
+-----------
+	represent a value
+	either 
+		literally or 
+		by referencing and combining other values. 
+	Appear as values for arguments, or within other expressions.
+	format:
+		resource_type.resource_name.attribute_name
+	 
+The Terraform language 
+----------------------
+	declarative
+		Describing an intended goal 
+		Not steps to reach that goal. 
+	The ordering of 
+		blocks and 
+		files 
+			not significant; 
+			
+	Considers 
+		implicit and 
+		explicit relationships 
+			between resources when determining an order of operations.
+
+Files and Directories
+---------------------
+	Files containing Terraform 
+		called configuration files.
+
+	Configuration (Module) Directory
+	-----------------------
+		Directory 
+			can have any number of configuration files.
+		Any file with .tf extension 
+			will participate in CRUD of the infrastructure components.
+		One file 
+			any number of configuraiton blocks.
+		
+		Common other files found
+			main.tf - main configuration
+			variables.tf - variables delclaration
+			outputs.tf - outputs from resources.
+			providers.tf - define providers
+			
+				can be .tf.json also - but commonly used.
+		
+	File Extension
+	--------------
+		Code in Terraform language 
+			Stored in simple text files 
+			.tf file extension. 
+			or JSON-based variant - .tf.json file extension.
+
+	Text Encoding
+	-------------
+		Configuration files 
+			must always use 
+				UTF-8 encoding while accessing files, and by convention usually use Unix-style line endings (LF) rather than Windows-style line endings (CRLF), though both are accepted.
+
+	Directories and Modules
+	-----------------------
+		
+		A module 
+			collection of .tf and/or .tf.json files 
+			kept together in a directory.
+		
+		Similar to function definitions in traditional languages
+		
+		A Terraform module 
+			consists of the top-level configuration files in a directory; 
+			nested directories 
+				treated as completely separate modules
+				not automatically included in the configuration.
+
+		Terraform evaluates 
+			all configuration files in a module
+			treat the entire module as a single document. 
+		Separating blocks into different files 
+			purely for the convenience 
+			no effect on the module's behavior.
+
+	A Terraform module 
+		can use module calls 
+		explicitly include other modules into the configuration. 
+		Child modules can come from 
+			nested directories, or 
+			anywhere else on disk or 
+			external sources 
+				e.g. Terraform Registry.
+
+The Root Module
+---------------
+	Terraform 
+		always runs in the context of a single root module. 
+		A complete Terraform configuration 
+			has a root module 
+			tree of child modules 
+			(modules called by the root module
+			modules called by those modules, etc.).
+
+	root module 
+		working directory where Terraform command is invoked. 
+
+
+-------------------------------------------------------------------------------------------------------
+
+1.1 Introduction to Terraform and Infrastructure as Code (IaC)
+-------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------
+1.2 Installing Terraform and Setting Up Environment
+-------------------------------------------------------------------------------------------------------
+
+
+https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+
+install aws cli 
+	https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+-------------------------------------------------------------------------------------------------------
+1.3 Writing and Executing Simple Terraform Configurations
+-------------------------------------------------------------------------------------------------------
+my ec2 instance 
+	terraform plan 
+	terraform apply 
+	terraform destroy 
+	
+
+-------------------------------------------------------------------------------------------------------
+1.4 Understanding Terraform Modules, State, Lock
+-------------------------------------------------------------------------------------------------------
+
+
+
+
+Modules 
+	containters for multiple resources
+		managed and used together
+	collection of .tf/.tf.json files 
+		kept together in a directory
+	main way to package and reuse
+		resource configuration in Terraform
+	
+	
+Terraform configuration 
+	has atleast one module
+	known as root module
+	consists of resources defined in 
+		.tf files 
+		in main working directory.
+	configurations (usually root module)
+		call other modules 
+		to include their resources
+			into the configuration
+Child module
+	module called/executed by another module
+	can be called multiple times
+		within same configuration
+	multiple configurations can use same child module
+From local filesystem
+	Terraform can load modules
+		from a public/private registry
+	can publish modules for others to use 
+		can use modules published by others
+	e.g. https://registry.terraform.io/modules/Azure/vnet/azurerm/latest
+	
+	
+https://registry.terraform.io/
+	There is a completely seperate doc. for modules
+	There we see the documentation for accessing modules
+	
+lab/1
+
+Define a Child Module
+---------------------
+N.B:
+	Module Source (Mandatory): 
+		Use Terraform Registry to begin with
+	Module Version (Optional): 
+		Recommended to use module version	
+	
+	We will use the previous example 
+		remove 
+			Virtual Network and 
+			Subnet Terraform 
+		use 
+			Virtual Network Public Registry module.
+	
+	Refer code in 
+	https://registry.terraform.io/modules/Azure/vnet/azurerm/latest
+	
+# Create Virtual Network and Subnets using Terraform Public Registry Module
+
+Add below into the main.tf
+module "vpc" {
+  source  = "terraform-aws-modules/vpc"
+  version = "~> 3.0"
+
+  name           = local.vpc_name
+  cidr_block     = "10.0.0.0/16"
+  tags = {
+    environment = "dev"
+    costcenter = "it"
+  }
+
+  # Optional Arguments (replace with appropriate values)
+  availability_zones = ["us-east-1a", "us-east-1b"]
+  internet_gateway  = true
+  public_subnets     = [
+    { cidr_block = "10.0.1.0/24", availability_zone = "us-east-1a" },
+    { cidr_block = "10.0.2.0/24", availability_zone = "us-east-1b" },
+  ]
+  private_subnets    = [
+    { cidr_block = "10.0.3.0/24", availability_zone = "us-east-1a" },
+  ]
+}
+
+
+resource "aws_network_interface" "myvmnic" {
+  name                 = local.nic_name
+  subnet_id            = module.vpc.public_subnets[0].id  # Assuming the first public subnet
+  private_ip_address_allocation = "Dynamic"
+  security_groups = [aws_security_group.my_security_group.id]  # Replace with your security group ID
+
+  # Optional Arguments
+  associate_public_ip_address = true  # Assign a public IP address (if needed)
+  description                = "Network Interface for My VM"
+  tags                       = local.common_tags
+}
+
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+
+output "public_subnet_ids" {
+  value = module.vpc.public_subnets[*].id
+}
+
+# Optional Outputs (if using private subnets)
+output "private_subnet_ids" {
+  value = module.vpc.private_subnets[*].id
+}
+---------------
+
+(no other change required)
+
+lab/2
+
+add ssh keys
+
+# Terraform Init
+terraform init
+
+# Terraform Validate
+terraform validate
+
+# Terraform Format
+terraform fmt
+
+# Terraform Plan
+terraform plan
+
+# Terraform Apply
+terraform apply -auto-apporve
+
+
+
+
+	A module 
+		container for multiple resources 
+			that are used together.
+
+Every Terraform configuration 
+	has at least one module
+		called root module
+	consists of the resources defined in the .tf files in the main working directory.
+
+A module can call other modules
+	can include 
+		child module's resources into the configuration in a concise way. 
+	Modules 
+		can be called multiple times, 
+		either within the 
+			same configuration 
+			or 
+			in separate configurations, 
+			allowing resource configurations to be packaged and re-used.
+
+This page describes 
+	how to call one module from another. 
+	For more information about creating re-usable child modules, see Module Development.
+
+
+Calling a Child Module
+To call a module means 
+	to include the contents of that module 
+		into the configuration with 
+			specific values for its input variables. 
+	Modules are called from within other modules using module blocks:
+
+module "servers" {
+  source = "./app-cluster"
+
+  servers = 5
+}
+
+A module that includes a module block like this is the calling module of the child module.
+
+
+
+The label immediately after the module keyword is a local name, which the calling module can use to refer to this instance of the module.
+
+Below can be skipped
+--------------------
+
+Within the block body (between { and }) are the arguments for the module. Module calls use the following kinds of arguments:
+
+The source argument is mandatory for all modules.
+
+The version argument is recommended for modules from a registry.
+
+Most other arguments correspond to input variables defined by the module. (The servers argument in the example above is one of these.)
+
+Terraform defines a few other meta-arguments that can be used with all modules, including for_each and depends_on.
+
+»Source
+All modules require a source argument, which is a meta-argument defined by Terraform. Its value is either the path to a local directory containing the module's configuration files, or a remote module source that Terraform should download and use. This value must be a literal string with no template sequences; arbitrary expressions are not allowed. For more information on possible values for this argument, see Module Sources.
+
+The same source address can be specified in multiple module blocks to create multiple copies of the resources defined within, possibly with different variable values.
+
+After adding, removing, or modifying module blocks, you must re-run terraform init to allow Terraform the opportunity to adjust the installed modules. By default this command will not upgrade an already-installed module; use the -upgrade option to instead upgrade to the newest available version.
+
+»Version
+When using modules installed from a module registry, we recommend explicitly constraining the acceptable version numbers to avoid unexpected or unwanted changes.
+
+Use the version argument in the module block to specify versions:
+
+module "consul" {
+  source  = "hashicorp/consul/aws"
+  version = "0.0.5"
+
+  servers = 3
+}
+The version argument accepts a version constraint string. Terraform will use the newest installed version of the module that meets the constraint; if no acceptable versions are installed, it will download the newest version that meets the constraint.
+
+Version constraints are supported only for modules installed from a module registry, such as the public Terraform Registry or Terraform Cloud's private module registry. Other module sources can provide their own versioning mechanisms within the source string itself, or might not support versions at all. In particular, modules sourced from local file paths do not support version; since they're loaded from the same source repository, they always share the same version as their caller.
+
+»Meta-arguments
+Along with source and version, Terraform defines a few more optional meta-arguments that have special meaning across all modules, described in more detail in the following pages:
+
+count - Creates multiple instances of a module from a single module block. See the count page for details.
+
+for_each - Creates multiple instances of a module from a single module block. See the for_each page for details.
+
+providers - Passes provider configurations to a child module. See the providers page for details. If not specified, the child module inherits all of the default (un-aliased) provider configurations from the calling module.
+
+depends_on - Creates explicit dependencies between the entire module and the listed targets. See the depends_on page for details.
+
+In addition to the above, the lifecycle argument is not currently used by Terraform but is reserved for planned future features.
+
+»Accessing Module Output Values
+The resources defined in a module are encapsulated, so the calling module cannot access their attributes directly. However, the child module can declare output values to selectively export certain values to be accessed by the calling module.
+
+For example, if the ./app-cluster module referenced in the example above exported an output value named instance_ids then the calling module can reference that result using the expression module.servers.instance_ids:
+
+resource "aws_elb" "example" {
+  # ...
+
+  instances = module.servers.instance_ids
+}
+
+For more information about referring to named values, see Expressions.
+
+»Transferring Resource State Into Modules
+Moving resource blocks from one module into several child modules causes Terraform to see the new location as an entirely different resource. As a result, Terraform plans to destroy all resource instances at the old address and create new instances at the new address.
+
+To preserve existing objects, you can use refactoring blocks to record the old and new addresses for each resource instance. This directs Terraform to treat existing objects at the old addresses as if they had originally been created at the corresponding new addresses.
+
+»Replacing resources within a module
+You may have an object that needs to be replaced with a new object for a reason that isn't automatically visible to Terraform, such as if a particular virtual machine is running on degraded underlying hardware. In this case, you can use the -replace=... planning option to force Terraform to propose replacing that object.
+
+If the object belongs to a resource within a nested module, specify the full path to that resource including all of the nested module steps leading to it. For example:
+
+$ terraform plan -replace=module.example.aws_instance.example
+
+The above selects a resource "aws_instance" "example" declared inside a module "example" child module declared inside your root module.
+
+Because replacing is a very disruptive action, Terraform only allows selecting individual resource instances. There is no syntax to force replacing all resource instances belonging to a particular module.
+
+
+
+state file 
+https://aws.amazon.com/blogs/devops/best-practices-for-managing-terraform-state-files-in-aws-ci-cd-pipeline/
+
+
+https://www.youtube.com/watch?v=o04xfWEouKM
+-------------------------------------------------------------------------------------------------------
+2. AWS Infrastructure with Terraform
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+2.1 Overview of AWS Provider in Terraform
+-------------------------------------------------------------------------------------------------------
+
+Terraform AWS provider 
+	enables you to 
+		manage your Amazon Web Services (AWS) infrastructure 
+			using Terraform's declarative configuration language. 
+	Provides 
+		comprehensive set of 
+			resources and 
+			data sources 
+		allow you to 
+			create, 
+			modify, and 
+			delete 
+				various AWS resources
+	such as 
+		EC2 instances, 
+		S3 buckets, 
+		VPCs, 
+		IAM roles etc.
+
+Key Features of Terraform AWS Provider:
+
+	Resource Management: 
+		Create, 
+		modify, and 
+		delete 
+			a wide range of 
+				AWS resources, 
+					including:
+						Compute resources 
+							(EC2 instances, Auto Scaling groups)
+						Networking resources 
+							(VPCs, subnets, security groups)
+						Storage resources 
+							(S3 buckets, EBS volumes)
+						Databases 
+							(RDS instances, DynamoDB tables)
+						Identity and access management 
+							(IAM roles, policies)
+	Configuration Management: 
+		Define the desired state 
+			of your AWS infrastructure 
+		Terraform will 
+			automatically  
+				create, 
+				modify, and 
+				delete resources 
+					to achieve the desired state.
+	State Management: 
+		Terraform 
+			maintains a state file 
+			records the current configuration 
+				of your AWS infrastructure. 
+		Can track the resources 
+			that have been created and 
+			their corresponding attributes.
+	Change Planning: 
+		Before applying any changes to your AWS infrastructure, 
+			Terraform creates a plan 
+				outlines the steps required 
+					to achieve the desired state. 
+			So we can  
+				review the changes and 
+				ensure that they are as expected.
+	Drift Detection: 
+		Terraform can detect drift
+			when 
+				actual state of your AWS infrastructure 
+					deviates from the 
+					desired state. 
+			This can happen due to manual changes or external factors.
+	Modules: 
+		Terraform modules 
+			allow you to create 
+				reusable components that 
+					can be used in 
+						multiple configurations. 
+		Organize code and 
+		promote code reusability.
+	Providers: 
+		Terraform supports multiple providers
+			including 
+				AWS, 
+				GCP, 
+				Azure etc. 
+		This allows you to manage 
+			infrastructure 
+				across different cloud platforms 
+					using a consistent approach.
+Benefits of Using Terraform AWS Provider:
+
+	Infrastructure as Code (IaC): 
+		Terraform treats infrastructure as code
+			easier to 
+			version control, 
+			collaborate on, and 
+			automate your infrastructure management.
+	Consistency and Reproducibility: 
+		Terraform ensures 
+			AWS infrastructure is 
+				always in the 
+					desired state, 
+						regardless of manual changes or external factors.
+	Efficiency and Automation: 
+		Terraform can automate 
+			many of the tasks 
+				involved in managing 
+					AWS infrastructure, 
+					saving you time and effort.
+	Scalability: 
+		Terraform can handle 
+			large and 
+			complex 
+				AWS infrastructures, 
+			making it suitable for organizations of all sizes.
+	Community Support: 
+		Terraform has a 
+			large and 
+			active community 
+				that provides 
+					support, 
+					resources, and 
+					best practices.
+	By using the Terraform AWS provider, you can effectively manage your AWS infrastructure, improve your productivity, and reduce the risk of errors.
+-------------------------------------------------------------------------------------------------------
+2.2 Configuring AWS Provider in Terraform
+-------------------------------------------------------------------------------------------------------
+To use the AWS provider in your Terraform configurations, you'll need to provide the necessary credentials and region information.
+
+Basic Configuration
+Here's a basic example of how to configure the AWS provider in your Terraform configuration file:
+
+Terraform
+	provider "aws" {
+	  region = "us-east-1"
+	  access_key = "YOUR_ACCESS_KEY"
+	  secret_key = "YOUR_SECRET_KEY"
+	}
+Use code with caution.
+
+Replace YOUR_ACCESS_KEY and YOUR_SECRET_KEY with your actual AWS access key ID and secret access key.
+
+Alternative Configuration Methods
+Environment Variables:
+
+You can set the AWS credentials and region in environment variables:
+
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_DEFAULT_REGION
+Shared Credentials File:
+
+Terraform can also read credentials from a shared credentials file. By default, it looks for this file in the following locations:
+
+~/.aws/credentials (on Unix-like systems)
+%USERPROFILE%\.aws\credentials (on Windows)
+Instance Profile:
+
+If you're running Terraform on an EC2 instance with an IAM instance profile, Terraform can automatically assume the role associated with that profile.
+
+Additional Configuration Options
+The AWS provider supports many additional configuration options. Here are some common ones:
+
+profile: Specifies the profile name to use from the shared credentials file.
+assume_role: Allows you to assume a different role for the provider.
+token: Provides a security token for temporary credentials.
+shared_credentials_file: Specifies a custom location for the shared credentials file.
+Example with Assume Role
+Terraform
+provider "aws" {
+  region = "us-east-1"
+  assume_role {
+    role_arn = "arn:aws:iam::123456789012:role/MyRole"
+    session_name = "terraform"
+  }
+}
+Use code with caution.
+
+Note: For security best practices, it's generally recommended to use IAM roles or environment variables to provide credentials to Terraform. Avoid storing credentials directly in your configuration files.
+
+By following these steps, you can successfully configure the AWS provider in Terraform and start managing your AWS infrastructure using Terraform's declarative language.
+
+
+
+
+
+
+
+
+
+
+-----------------
+Ways to Define the AWS Provider and Pass Keys in Terraform
+There are several methods to define the AWS provider in your Terraform configuration and provide it with the necessary credentials. Here are the most common approaches:
+
+1. Direct Configuration
+In the Configuration File:
+Terraform
+provider "aws" {
+  region = "us-east-1"
+  access_key = "YOUR_ACCESS_KEY"
+  secret_key = "YOUR_SECRET_KEY"
+}
+Use code with caution.
+
+Pros: Simple and straightforward.
+Cons: Storing credentials directly in the configuration file can be a security risk.
+
+2. Environment Variables
+Set the following environment variables:
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_DEFAULT_REGION
+In the Configuration File:
+Terraform
+provider "aws" {}
+Use code with caution.
+
+Pros: More secure than storing credentials directly in the configuration file.
+Cons: Requires setting environment variables, which might not be ideal for all use cases.
+
+3. Shared Credentials File
+Create a shared credentials file in your home directory:
+On Unix-like systems: ~/.aws/credentials
+On Windows: %USERPROFILE%\.aws\credentials
+Format:
+[default]
+aws_access_key_id = "YOUR_ACCESS_KEY"
+aws_secret_access_key = "YOUR_SECRET_KEY"
+region = "us-east-1"
+In the Configuration File:
+Terraform
+provider "aws" {}
+Use code with caution.
+
+Pros: Convenient for multiple users or projects.
+Cons: Requires managing a separate credentials file.
+
+4. Instance Profile
+If you're running Terraform on an EC2 instance with an IAM instance profile, Terraform can automatically assume the role associated with that profile.
+In the Configuration File:
+Terraform
+provider "aws" {}
+Use code with caution.
+
+Pros: Highly secure and convenient for EC2-based infrastructure.
+Cons: Limited to EC2 instances with IAM instance profiles.
+
+5. Assume Role
+Manually assume a role using the AWS CLI or SDK, and then provide the temporary credentials to Terraform.
+In the Configuration File:
+Terraform
+provider "aws" {
+  assume_role {
+    role_arn = "arn:aws:iam::123456789012:role/MyRole"
+    session_name = "terraform"
+  }
+}
+Use code with caution.
+
+Pros: Provides fine-grained access control and temporary credentials.
+Cons: Requires additional configuration and management.
+Choosing the Right Method:
+
+
+The best method for you depends on your specific use case, security requirements, and preferences. Consider factors like the number of users, the sensitivity of the credentials, and the environment where Terraform will be executed.
+
+Security Considerations:
+
+Avoid storing credentials directly in configuration files. Use environment variables or shared credentials files for better security.
+Consider using IAM instance profiles or assume role for EC2-based infrastructure.
+Regularly rotate your AWS credentials.
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+2.3 Creating AWS Resources - EC2 Instances, VPC, Subnets
+-------------------------------------------------------------------------------------------------------
+D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\2i_Excercise2
+
+
+-------------------------------------------------------------------------------------------------------
+2.4 Terraform Meta Argument depends_on in AWS Configurations
+-------------------------------------------------------------------------------------------------------
+
+D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\2d_Resources
+-------------------------------------------------------------------------------------------------------
+2.5 Real use case of shell scripting
+-------------------------------------------------------------------------------------------------------
+
+Shell scripting is a fundamental technique in Linux and Unix environments that involves writing scripts to automate repetitive tasks, control the execution of programs, and interact with the operating system.
+
+Use Cases:
+
+System Administration:
+
+	Configuration management: 
+		Automate 
+			deployment and 
+			configuration of systems, 
+		ensuring 
+			consistency and 
+			reducing human error.
+	Cron job scheduling: 
+		Schedule tasks to 
+			run automatically at 
+				specific intervals or times.
+	Backup and restoration: 
+		Create scripts to automate backups of critical data and restore it in case of failures.
+	Log analysis: 
+		Parse and analyze system logs to identify issues and trends.
+Software Development:
+
+	Build automation: Create scripts to automate the compilation, testing, and packaging of software projects.
+	Deployment automation: Deploy applications to different environments (development, testing, production) using scripts.
+	Version control management: Integrate shell scripts with version control systems like Git to automate tasks like committing changes and merging branches.
+Data Processing:
+
+	File manipulation: Automate tasks like renaming, copying, moving, and deleting files based on specific criteria.
+	Text processing: Extract, modify, and analyze text data using tools like sed, awk, and grep.
+	Data extraction: Extract data from various sources (e.g., CSV files, databases) for further analysis or processing.
+Custom Tools:
+
+	Create utility scripts: Develop custom tools to perform specific tasks that are not available in the operating system or third-party applications.
+	Enhance existing tools: Extend the functionality of existing tools by writing scripts to automate or customize their usage.
+Example: Creating a Backup Script
+
+Here's a simple shell script that creates a daily backup of a directory:
+
+Bash
+#!/bin/bash
+
+# Set the source and destination directories
+source_dir="/path/to/source/directory"
+dest_dir="/path/to/backup/directory"
+
+# Create a timestamp for the backup file
+timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+
+# Create the backup file
+tar -czf "$dest_dir/backup_$timestamp.tar.gz" "$source_dir"
+
+# Check if the backup was successful
+if [ $? -eq 0 ]; then
+  echo "Backup created successfully."
+else
+  echo "Error creating backup."
+fi
+Use code with caution.
+
+This script:
+
+	Defines the source and destination directories.
+	Creates a timestamp to differentiate backup files.
+	Uses tar to create a compressed tar archive of the source directory.
+	Checks the exit status of tar to determine if the backup was successful.
+Key Points:
+
+Shell scripting provides flexibility and control over system tasks.
+It's essential for automating repetitive and time-consuming operations.
+Understanding shell scripting is crucial for Linux and Unix system administrators and developers.
+By leveraging shell scripting, you can improve efficiency, reduce errors, and streamline your workflows.
+By exploring these use cases and the example provided, you can gain a better understanding of the power and versatility of shell scripting.
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+
+3. Terraform Provisioners and AWS Instances
+-------------------------------------------------------------------------------------------------------
+Terraform Provisioners 
+	tools within Terraform 
+		support post-provisioning configuration of resources. 
+	
+	In AWS instances, provisioners can be used to:
+
+Common Use Cases for Provisioners with AWS Instances
+User Data:
+
+	Installing packages: 
+		install necessary 
+			packages or 
+			dependencies on the instance.
+	Configuring services: 
+		Configure services like 
+			Apache, 
+			Nginx, or 
+			MySQL 
+				using scripts executed via provisioners.
+	Customizing the instance: 
+		custom configuration tasks required for your specific use case.
+Remote Execution:
+
+	Running commands: 
+		Provisioners can execute commands remotely on the instance, 
+			e.g. 
+				creating users, 
+				setting up firewall rules, or 
+				modifying configuration files.
+File Transfer:
+
+Copying files: You can copy files from your local machine or a remote location to the instance using provisioners.
+Example: Installing Packages and Configuring a Web Server
+Terraform
+
+resource "aws_instance" "web_server" {
+  # ... other instance configuration ...
+
+provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("${path.module}/id_rsa")
+    }
+
+    inline = [
+      "sudo apt-get update -y",
+      "sudo apt-get install apache2 -y",
+      "sudo systemctl start apache2",
+      "echo 'Hello from Terraform!' > /var/www/html/index.html"
+    ]
+  }
+}
+Use code with caution.
+
+In this example, a remote-exec provisioner is used to:
+
+Update the package lists.
+Install Apache2.
+	Start the Apache2 service.
+	Create a simple HTML file to test the web server.
+	Additional Provisioners and Considerations
+		local-exec: 
+			Executes commands locally on your machine.
+		file: 
+			Transfers files to or from the instance.
+		remote-state: 
+			Reads or writes data to a remote state.
+		null: 
+			Performs no action but can be used for conditional execution.
+Important Considerations:
+
+	Security: 	
+		Ensure 
+			provisioner's connection details are 
+				secure to 
+					prevent unauthorized access.
+	Idempotency: 
+		Design your provisioner scripts to be idempotent, 
+			can safely run 
+				multiple times 
+					without causing unintended side effects.
+	Error Handling: 
+		Implement error handling in your provisioners to gracefully handle failures and prevent unexpected behavior.
+By effectively using Terraform provisioners, you can automate post-provisioning tasks for your AWS instances, streamlining your infrastructure management and deployment processes.
+
+
+
+
+lab/3
+
+Mylab: 
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3h_Software_provisioning_Part_1\
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3i_Software_provisioning_Part_2
+	
+Reference
+https://jhooq.com/terraform-provisioner/
+https://www.youtube.com/watch?v=xZGO7gYGlQY
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+3.1 Using Provisioners to Configure AWS Instances
+-------------------------------------------------------------------------------------------------------
+
+Done
+	remote-exec pending 
+-------------------------------------------------------------------------------------------------------
+3.2 Executing Commands on AWS Instances with Terraform
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+3.3 Configuring AWS Instances with File and filebase64 Function
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+4. Meta-Arguments with AWS
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+4.1 Understanding Meta-Arguments in Terraform
+-------------------------------------------------------------------------------------------------------
+
+For Resource Blocks:
+	count: 
+		Number of instances of a resource to create.
+	for_each: 	
+		Creates multiple instances of a resource based on a map or list.
+	lifecycle: 
+		Controls the lifecycle of a resource, including creation, updates, and destruction.
+			ignore_changes: 
+				Prevents Terraform from managing changes to specific attributes.
+			prevent_destroy: 
+				Prevents Terraform from destroying the resource.
+			create_before_destroy: 
+				Creates a new resource before destroying the old one.
+	provisioner: 
+		Configures provisioners to run commands or scripts during resource creation or destruction.
+			local-exec: Executes a local command.
+			remote-exec: Executes a command on a remote machine.
+			file: Creates or updates a file on the resource.
+			null: Performs no action.
+
+For Module Blocks:
+	source: Specifies the path to the module or the URL of a remote module.
+	version: Specifies the version of the module to use.
+	for_each: Creates multiple instances of a module based on a map or list.
+	count: Specifies the number of instances of a module to create.
+For Data Blocks:
+	count: Specifies the number of instances of a data source to retrieve.
+	for_each: Retrieves multiple instances of a data source based on a map or list.
+
+Example:
+
+Terraform
+resource "aws_instance" "example" {
+  count = 2
+  instance_type = "t2.micro"
+  ami = "ami-0c55b159cbfafe1f0"
+
+  provisioner "local-exec" {
+    command = "echo Instance created: {{ .address }}"
+  }
+}
+Use code with caution.
+
+In this example, the count meta-argument creates two instances of the aws_instance resource, and the provisioner meta-argument executes a local command to print the IP address of each instance.
+
+By understanding and effectively using meta-arguments, you can customize the behavior of your Terraform infrastructure and automate complex tasks.
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+4.2 Meta-Argument depends_on in AWS Configurations
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+4.3 Leveraging Element Function and Splat Expression in AWS
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+5. AWS Networking with Terraform
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+5.1 Creating VPCs and Subnets in AWS with Terraform
+-------------------------------------------------------------------------------------------------------
+Done
+
+-------------------------------------------------------------------------------------------------------
+5.2 Configuring Security Groups and Network ACLs
+-------------------------------------------------------------------------------------------------------
+Done
+
+-------------------------------------------------------------------------------------------------------
+5.3 Terraform count Meta-Argument for AWS Resources
+-------------------------------------------------------------------------------------------------------
+
+Done
+-------------------------------------------------------------------------------------------------------
+5.4 Using for_each with Maps and Sets in AWS Configurations
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+6. Terraform Input Variables and Outputs
+-------------------------------------------------------------------------------------------------------
+
+https://spacelift.io/blog/how-to-use-terraform-variables#environment-variables
+https://spacelift.io/blog/how-to-use-terraform-variables#local-variables
+
+Local 
+--------
+variables are declared using the locals block. It is a group of key-value pairs that can be used in the configuration. The values can be hard-coded or be a reference to another variable or resource.
+
+Local variables are accessible within the module/configuration where they are declared. Let us take an example of creating a configuration for an EC2 instance using local variables. Add this to a file named main.tf.
+
+locals {
+ ami  = "ami-0d26eb3972b7f8c96"
+ type = "t2.micro"
+ tags = {
+   Name = "My Virtual Machine"
+   Env  = "Dev"
+ }
+ subnet = "subnet-76a8163a"
+ nic    = aws_network_interface.my_nic.id
+}
+ 
+resource "aws_instance" "myvm" {
+ ami           = local.ami
+ instance_type = local.type
+ tags          = local.tags
+ 
+ network_interface {
+   network_interface_id = aws_network_interface.my_nic.id
+   device_index         = 0
+ }
+}
+ 
+resource "aws_network_interface" "my_nic" {
+ description = "My NIC"
+ subnet_id   = var.subnet
+ 
+ tags = {
+   Name = "My NIC"
+ }
+}
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+6.1 Defining Terraform Input Variables for AWS Configurations
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+6.2 Terraform Input Variable Basics and CLI Arguments
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+6.3 Overriding Input Variables with Environment Variables and Files
+-------------------------------------------------------------------------------------------------------
+	Input Variables with Environment Variables and Files
+		
+		https://spacelift.io/blog/how-to-use-terraform-variables#environment-variables
+		export TF_VAR_ami=ami-0d26eb3972b7f8c96
+
+-------------------------------------------------------------------------------------------------------
+6.4 Output Values in Terraform and Utilizing Them
+-------------------------------------------------------------------------------------------------------
+
+Output Values in Terraform:
+
+Output values in Terraform are a crucial mechanism for retrieving and displaying information about the resources and configurations managed by your infrastructure code. They are defined using the output block, which consists of the following elements:
+
+name: A unique identifier for the output.
+value: The expression that evaluates to the desired output value.
+Utilizing Output Values:
+
+Output values can be used in various ways:
+
+Displaying Information: The primary use case is to display the values of resources or configurations for reference or debugging purposes. For example, you might output the IP address of an EC2 instance or the ARN of an S3 bucket.
+Passing Values to Other Modules: Output values can be passed as input variables to other Terraform modules, enabling modularization and reusability of infrastructure code.
+Integrating with External Systems: Output values can be used to integrate Terraform with external systems or scripts. For instance, you might output the DNS name of a load balancer and use it in a configuration management tool or a custom script.
+Best Practices:
+
+Clear and Descriptive Names: Choose meaningful names for output values that accurately reflect their purpose.
+Consistent Formatting: Use consistent formatting and indentation to improve readability.
+Avoid Sensitive Information: Be cautious when outputting sensitive information like passwords or API keys. Consider using environment variables or secrets management solutions instead.
+Leverage Output Values Effectively: Utilize output values to streamline your infrastructure management and integration with external systems.
+Example:
+
+Terraform
+resource "aws_instance" "example" {
+  # ... instance configuration
+}
+
+output "instance_public_ip" {
+  value = aws_instance.example.public_ip
+}
+
+output "instance_ami" {
+  value = aws_instance.example.ami
+}
+Use code with caution.
+
+In this example, the instance_public_ip and instance_ami outputs will display the public IP address and AMI ID of the created EC2 instance, respectively.
+
+Additional Considerations:
+
+Conditional Outputs: You can use conditional logic within the value expression to output values based on certain conditions.
+Multiple Outputs: You can define multiple output values within the same module.
+Nested Outputs: Output values can be nested within other output values.
+By effectively utilizing output values, you can gain valuable insights into your Terraform infrastructure and integrate it seamlessly with other systems.
+-------------------------------------------------------------------------------------------------------
+7. Terraform Modules for AWS
+-------------------------------------------------------------------------------------------------------
+	Create and use modules for infrastructure components
+		https://spacelift.io/blog/what-are-terraform-modules-and-how-do-they-work
+	Lab	
+		https://www.env0.com/blog/terraform-modules
+		
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3e_modules
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3ea_modules
+		
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\terraform-module-tutorial	
+
+-------------------------------------------------------------------------------------------------------
+• Understand reusability concepts.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+• Create and use modules for infrastructure components.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+• Organize complex infrastructure with nested modules.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+8. Advanced Terraform Features with AWS
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Conditional Expressions in Terraform
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Implement automation tasks using conditional statements (if/else) and loops (for_each).
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Control infrastructure creation based on specific conditions.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Custom Providers (Terraform Provider Lifecycle):
+-------------------------------------------------------------------------------------------------------
+https://spacelift.io/blog/terraform-custom-provider
+https://www.youtube.com/watch?v=16qs7LJSyps
+-------------------------------------------------------------------------------------------------------
+o Explore creating custom providers to extend Terraform's functionality
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Outputting attribute
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Interpolation
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o depends_on
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+8.2 Working with Terraform Data Sources for AWS
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+8.3 Remote State and Locking with AWS S3 Backend
+-------------------------------------------------------------------------------------------------------
+https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa
+
+https://www.youtube.com/watch?v=o04xfWEouKM
+-------------------------------------------------------------------------------------------------------
+9. Terraform in real life
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+10.1. Create a new infrastructure stack and deploy a simple application on it.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+10.2. Change the machine type or size using Terraform
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+10.3. Add a new service to an existing application
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+10.4. Understand SageMaker and its use cases for machine learning workflows
+-------------------------------------------------------------------------------------------------------
+https://www.youtube.com/watch?v=KFqehCAMaLQ
+
+AWS SageMaker: A Comprehensive Overview
+	AWS SageMaker 
+		fully managed platform 
+		data scientists and developers can 
+			build, 
+			train, and 
+			deploy 
+				machine learning models at any scale. 
+		Has a range of tools and services to 
+			streamline the entire machine learning lifecycle, 
+				from data preparation to 
+					model deployment.
+
+Key Features and Benefits
+	Fully managed platform: 
+		SageMaker handles the underlying infrastructure, making it easy to get started with machine learning without managing servers or clusters.
+	Scalability: 
+		It can scale resources up or down automatically based on demand, ensuring optimal performance and cost-efficiency.
+	Integration with other AWS services: 
+		SageMaker seamlessly integrates with other AWS services like S3, IAM, and Kinesis, making it easy to manage data pipelines and access additional features.
+	Built-in algorithms: 
+		It offers a variety of pre-built algorithms for common machine learning tasks like classification, regression, and clustering.
+		More than 15 widely use algorithms
+	Custom algorithms: 
+		You can also bring your own algorithms and frameworks, such as TensorFlow, PyTorch, and MXNet.
+		Trains model faster 
+	Hyperparameter tuning: 
+		SageMaker automatically tunes hyperparameters to optimize model performance.
+	Model deployment: 
+		Deploy models to production environments with ease using SageMaker hosting or AWS Lambda.
+		All ML components stored in a single place
+	Availability:
+	High data security: 
+	Simple data transfer:
+	Pay as you go: 
+		Reduces cost 
+	Core Components
+		SageMaker Studio: 
+			A web-based IDE for building, training, and deploying machine learning models.
+		SageMaker Notebook: 
+			A Jupyter notebook environment for data exploration and experimentation.
+		SageMaker Training: 
+			A service for training machine learning models on large datasets.
+		SageMaker Hosting: 
+			A service for deploying trained models to production.
+		SageMaker Inference: 
+			A service for making predictions using deployed models.
+
+Use Cases
+	SageMaker can be used for a wide range of machine learning applications, including:
+
+	Predictive analytics: 
+		Forecasting future trends or outcomes.
+	Recommendation systems: 
+		Suggesting products or content based on user preferences.
+	Image and video analysis: 
+		Detecting objects, recognizing faces, and analyzing visual content.
+	Natural language processing: 
+		Understanding and generating human language.
+	Fraud detection: 
+		Identifying suspicious activities in financial transactions.
+
+Getting Started with SageMaker
+	To start using SageMaker, you'll need an AWS account. Once you have an account, you can create a SageMaker Studio instance or use the SageMaker console to access the various services.
+	
+ML with sagemaker 
+	3 step process
+		Build 
+			collect 
+				prepare training data 
+					or choose from s3 buckets 
+			choose algorithm 
+				stored in ECR 
+				e.g. 
+					K-means
+					Linear regression 
+					Logistic regression 
+			
+		Test and Tune 
+			
+			predict limited data at a time 
+				use Amazon sagemaker hosting services 
+			prediction for entire dataset 
+				use Amazon SageMaker batch transformation 
+		Deploy
+			After tuning 
+				models can be deployed to SageMaker endpoints 
+			In endpoints 
+				real-time prediction is performed
+			Evaluate model 
+				determine whether the goal is achieched
+			
+		
+
+Resources:
+
+SageMaker Documentation: https://docs.aws.amazon.com/sagemaker/
+SageMaker Tutorials: https://aws.amazon.com/sagemaker/getting-started/
+
+
+https://us-east-2.console.aws.amazon.com/sagemaker/home?region=us-east-2#/landing
+
+https://github.com/MlOpsWithAM/terraform-custom-pytorch-model-sagemaker-endpoint
+
+
+Plan 
+	1. Pretimed model 
+	2. Build FACTAPI 
+	3. Dockerize 
+	4. Push to aws ECR
+	5. Terraform aws sagemaker endpoint 
+
+
+Create ubuntu latest ec2 instance 
+	
+Pre-req.
+	1. Docker 
+		curl -fsSL https://get.docker.com -o get-docker.sh
+		sudo sh get-docker.sh
+	2. Terraform 
+		sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+		wget -O- https://apt.releases.hashicorp.com/gpg | \
+		gpg --dearmor | \
+		sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+		
+		echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+			https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+			sudo tee /etc/apt/sources.list.d/hashicorp.list
+		
+		sudo apt update
+		sudo apt-get install terraform
+
+
+	3. Git 
+		default present
+	4. Python 
+		default present
+	
+	git clone https://github.com/MlOpsWithAM/terraform-custom-pytorch-model-sagemaker-endpoint
+
+use ubuntu machine latest 
+	cd terraform-custom-pytorch-model-sagemaker-endpoint
+	sudo su 
+	apt update -y 
+	sudo apt install python3-pip
+    sudo apt install python3.12-venv
+
+	python3 -m venv .venv 
+	source .venv/bin/activate 
+	pip install -r requirements.txt
+	python main.py 	#python3 main.py --epochs=5
+		shoudl create a model.pt 
+		
+	uvicorn app:app --reload 	
+		http://<public ip>:8000/ping 
+	
+	docker build . -t mnist_app --platform linux/amd64
+	push image to ecr 
+	
+	
+	cd tests
+	python test_endpoint.py 
+-------------------------------------------------------------------------------------------------------
+10.Labs
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+Lab: Passing variables and using same in code
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+Lab: Checking output attributes
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+LAB: For condition and Loops
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+Lab: Use Terraform's built-in dependency management features such as
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+▪ depends_on
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+▪ count
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+▪ for_each.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+• Utilize module structures to encapsulate related resources.
+
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+Lab: HashiCorp Vault
+-------------------------------------------------------------------------------------------------------
+
+
+ubuntu 
+	install hashicorp vault 
+	vault version 
+	
+	vault server -dev
+		port 
+		storage 
+		unseal key 
+		root 
+		
+	export VAULT_ADDR=(GET FROM OUTPUT OF PREVIOUS COMMAND)
+	export VAULT_TOKEN=(GET FROM OUTPUT OF PREVIOUS COMMAND)
+		
+	vault status 	
+
+enable secret engine 
+	vault secrets enable -path=my/path kv 
+
+write 		
+	vault kv put my/path key-1=value-1
+		#key value pair 
+read		
+	vault kv get my/path 
+	vault kv get --fortmat=json my/path 
+
+list all 
+	vault secrets list 
+	
+delete 
+	vault kv delete my/path 
+	verify 
+			vault kv get my/path 
+
+
+Enable it for aws 
+	vault secrets enable -path=aws aws 
+	vault secrets list 
+
+	dsiable 	
+		vault secrets disable aws 
+	
+dynamic secrets 
+	need access key and secret key 
+	vault secrets enable -path=aws aws 
+	export access_key=########
+	export secret_key=########
+	
+	create a role 
+	vault write aws/roles ...
+	
+	
+	
+	EOF
+	
+generate dynamic roles 
+	vault read aws/creds/my-ec2-role 
+	 
+	continue https://www.youtube.com/watch?v=Opdq8YPRLBQ&list=PL7iMyoQPMtAP7XeXabzWnNKGkCex1C_3C&index=6
+	
+-------------------------------------------------------------------------------------------------------
+o Utilize tools like HashiCorp Vault or AWS Secrets Manager for secret storage.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+Lab: Workspaces Management
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Isolate infrastructure configurations for different environments (dev, test, prod).
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Override module defaults using workspaces.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Dynamic Configurations (Expressions and Functions):
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Leverage Terraform expressions for conditional logic and calculations.
+-------------------------------------------------------------------------------------------------------
+
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3o_conditional_execution
+-------------------------------------------------------------------------------------------------------
+o Explore built-in functions for manipulation and string formatting
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Create dynamic infrastructure (e.g., multiple EC2 instances) using dynamic blocks.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+o Use expressions within dynamic blocks for conditional creation.
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------
+Lab: GitHub Actions CI/CD Pipeline Execution Through Terraform
+-------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------------------------------

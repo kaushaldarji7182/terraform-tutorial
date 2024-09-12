@@ -23,6 +23,7 @@ data "aws_security_group" "default" {
 
 resource "aws_db_subnet_group" "my_db_subnet_group" {
   name = "my-db-subnet-group"
+  #RDS should be connected to at least 2 subnet
   subnet_ids = [data.aws_subnet.mysubnet_a.id,data.aws_subnet.mysubnet_b.id]
 
   tags = {
@@ -51,4 +52,5 @@ resource "aws_db_instance" "example" {
 
 variable "db-username" {}
 
+#Password should be 8 char long. No special char 
 variable "db-password" {}

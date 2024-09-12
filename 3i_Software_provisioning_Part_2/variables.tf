@@ -1,9 +1,9 @@
 variable "key_name" {
-  default = "stefan-personal-aws"
+  default = "vilasnv2"
 }
 
 variable "pvt_key" {
-  default = "/home/stefan/.ssh/stefan-personal-aws.pem"
+  default = "C:\\Users\\vilas\\Downloads\\vilasnv2.pem"
 }
 
 variable "us-east-zones" {
@@ -11,5 +11,5 @@ variable "us-east-zones" {
 }
 
 variable "sg-id" {
-  default = "sg-4e1b7b39"
+  default = "sg-083cd817b13d667d1"
 }

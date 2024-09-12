@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_iam_user" "user" {
-  name          = "stefan-tf-demo"
+  name          = "vilas-tf-demo"
   path          = "${var.path}"
   force_destroy = "${var.force_destroy}"
 }

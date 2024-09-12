@@ -18,7 +18,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "us_west_example" {
-  provider      = "aws.us-west-1"
+  provider      = aws.us-west-1
   ami           = "ami-07585467"
   instance_type = "t2.micro"
 }
