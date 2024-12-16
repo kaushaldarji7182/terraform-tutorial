@@ -1,0 +1,4 @@
+Feature				Variables						Locals
+Scope				Global							Local
+Source of Values	External input					Calculated or derived within the configuration
+Primary Use			Parameterizing configurations	Simplifying expressions and reusing values

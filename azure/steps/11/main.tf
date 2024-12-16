@@ -133,11 +133,19 @@ resource "azurerm_linux_virtual_machine" "mylinuxvm" {
     storage_account_type = "Standard_LRS"
   }
   #az vm image list --publisher RedHat --all
+#  source_image_reference {
+#    publisher = "RedHat"
+#    offer     = "RHEL"
+#    sku       = "83-gen2"
+#    version   = "latest"
+#  }
+
   source_image_reference {
-    publisher = "RedHat"
-    offer     = "RHEL"
-    sku       = "83-gen2"
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
+
   custom_data = filebase64("./app1-cloud-init.txt")
 }

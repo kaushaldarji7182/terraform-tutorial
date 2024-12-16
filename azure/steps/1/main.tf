@@ -1,5 +1,5 @@
 terraform {
-  required_verson = ">=1.0.0"	#terraform cli version - change this to <1.0 and see the effect
+  required_version = ">=1.0.0"	#terraform cli version - change this to <1.0 and see the effect
   required_providers {
      azurerm = {
        source  = "hashicorp/azurerm"

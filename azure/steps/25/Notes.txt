@@ -1,0 +1,44 @@
+secrets.tfvars: A Secure Way to Store Sensitive Information
+
+In Terraform, secrets.tfvars is a file used to store sensitive information, such as API keys, passwords, and access tokens, in a secure manner. This file is typically excluded from version control to protect sensitive data.
+
+Why Use secrets.tfvars?
+
+Security: By separating sensitive information from the main configuration files, you reduce the risk of accidentally exposing it.1   
+1.
+Managing Secrets and Sensitive Data in Terraform | by Alex - Medium
+
+medium.com
+
+Organization: It keeps your configuration clean and organized.
+Flexibility: You can easily manage and update sensitive information without modifying the main configuration files.
+How to Use secrets.tfvars:
+
+Create the File:
+
+Create a file named secrets.tfvars in your Terraform project directory.
+Add Sensitive Information:
+
+Add key-value pairs to the file, where the keys are variable names and the values are the sensitive information:
+api_key = "your_api_key"
+password = "your_password"
+Reference Variables in Your Main Configuration:
+
+Reference the variables defined in secrets.tfvars using the var function:
+Terraform
+
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+  # Reference the secret from secrets.tfvars
+  key_name = var.key_name
+}
+Important Considerations:
+
+Security Best Practices:
+Avoid Committing secrets.tfvars to Version Control: This prevents accidental exposure of sensitive information.
+Use Environment Variables: Consider using environment variables to store sensitive information, especially in CI/CD pipelines.
+Utilize Terraform Cloud or Enterprise: These platforms offer secure ways to manage and store sensitive information.
+Testing and Validation:
+Implement thorough testing and validation procedures to ensure that your Terraform configurations work correctly with the sensitive information.
