@@ -1,0 +1,3 @@
+depends_on 
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\2d_Resources
+	

@@ -3,3 +3,67 @@ https://developer.hashicorp.com/vault/tutorials/get-started/learn-terraform
 https://developer.hashicorp.com/vault/downloads#windows
     windows installation didn't work 
 
+
+
+
+--------------------------
+My old notes 
+
+ubuntu 
+	install hashicorp vault 
+	vault version 
+	
+	vault server -dev
+		port 
+		storage 
+		unseal key 
+		root 
+		
+	export VAULT_ADDR=(GET FROM OUTPUT OF PREVIOUS COMMAND)
+	export VAULT_TOKEN=(GET FROM OUTPUT OF PREVIOUS COMMAND)
+		
+	vault status 	
+
+enable secret engine 
+	vault secrets enable -path=my/path kv 
+
+write 		
+	vault kv put my/path key-1=value-1
+		#key value pair 
+read		
+	vault kv get my/path 
+	vault kv get --fortmat=json my/path 
+
+list all 
+	vault secrets list 
+	
+delete 
+	vault kv delete my/path 
+	verify 
+			vault kv get my/path 
+
+
+Enable it for aws 
+	vault secrets enable -path=aws aws 
+	vault secrets list 
+
+	dsiable 	
+		vault secrets disable aws 
+	
+dynamic secrets 
+	need access key and secret key 
+	vault secrets enable -path=aws aws 
+	export access_key=########
+	export secret_key=########
+	
+	create a role 
+	vault write aws/roles ...
+	
+	
+	
+	EOF
+	
+generate dynamic roles 
+	vault read aws/creds/my-ec2-role 
+	 
+	continue https://www.youtube.com/watch?v=Opdq8YPRLBQ&list=PL7iMyoQPMtAP7XeXabzWnNKGkCex1C_3C&index=6

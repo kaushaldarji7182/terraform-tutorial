@@ -1,0 +1,100 @@
+Terraform Provisioners 
+	tools within Terraform 
+		support post-provisioning configuration of resources. 
+	
+	In AWS instances, provisioners can be used to:
+
+Common Use Cases for Provisioners with AWS Instances
+User Data:
+
+	Installing packages: 
+		install necessary 
+			packages or 
+			dependencies on the instance.
+	Configuring services: 
+		Configure services like 
+			Apache, 
+			Nginx, or 
+			MySQL 
+				using scripts executed via provisioners.
+	Customizing the instance: 
+		custom configuration tasks required for your specific use case.
+Remote Execution:
+
+	Running commands: 
+		Provisioners can execute commands remotely on the instance, 
+			e.g. 
+				creating users, 
+				setting up firewall rules, or 
+				modifying configuration files.
+File Transfer:
+
+Copying files: You can copy files from your local machine or a remote location to the instance using provisioners.
+Example: Installing Packages and Configuring a Web Server
+Terraform
+
+resource "aws_instance" "web_server" {
+  # ... other instance configuration ...
+
+provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("${path.module}/id_rsa")
+    }
+
+    inline = [
+      "sudo apt-get update -y",
+      "sudo apt-get install apache2 -y",
+      "sudo systemctl start apache2",
+      "echo 'Hello from Terraform!' > /var/www/html/index.html"
+    ]
+  }
+}
+Use code with caution.
+
+In this example, a remote-exec provisioner is used to:
+
+Update the package lists.
+Install Apache2.
+	Start the Apache2 service.
+	Create a simple HTML file to test the web server.
+	Additional Provisioners and Considerations
+		local-exec: 
+			Executes commands locally on your machine.
+		file: 
+			Transfers files to or from the instance.
+		remote-state: 
+			Reads or writes data to a remote state.
+		null: 
+			Performs no action but can be used for conditional execution.
+Important Considerations:
+
+	Security: 	
+		Ensure 
+			provisioner's connection details are 
+				secure to 
+					prevent unauthorized access.
+	Idempotency: 
+		Design your provisioner scripts to be idempotent, 
+			can safely run 
+				multiple times 
+					without causing unintended side effects.
+	Error Handling: 
+		Implement error handling in your provisioners to gracefully handle failures and prevent unexpected behavior.
+By effectively using Terraform provisioners, you can automate post-provisioning tasks for your AWS instances, streamlining your infrastructure management and deployment processes.
+
+
+
+
+lab/3
+
+Mylab: 
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3h_Software_provisioning_Part_1\
+	D:\PraiseTheLord\HSBGInfotech\Others\vilas\terraform-tutorial\3i_Software_provisioning_Part_2
+	
+Reference
+https://jhooq.com/terraform-provisioner/
+https://www.youtube.com/watch?v=xZGO7gYGlQY
+
+

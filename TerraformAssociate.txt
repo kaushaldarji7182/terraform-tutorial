@@ -1636,41 +1636,46 @@ terraform{}.backend "<BACKEND_TYPE>":
 
 Backend vs. Cloud Configuration:
 
-	You cannot configure both a backend and a cloud block for storing state data in the same configuration.
+	You cannot configure both a 
+		backend and a 
+		cloud block 
+			for storing state data in the same configuration.
+
+
 terraform{}.cloud:
 
-Defines a set of attributes for connecting to HCP Terraform or Terraform Enterprise.
-These platforms offer state storage, remote execution, and other benefits.
-Refer to HCP Terraform and Terraform Enterprise documentation for details.
+	Defines a set of attributes for connecting to HCP Terraform or Terraform Enterprise.
+	These platforms offer state storage, remote execution, and other benefits.
+	Refer to HCP Terraform and Terraform Enterprise documentation for details.
 terraform{}.cloud Restrictions:
 
-Only one cloud block can be present per configuration.
-Cannot be used alongside a backend block for state storage.
-Cannot reference named values (variables, data sources).
+	Only one cloud block can be present per configuration.
+	Cannot be used alongside a backend block for state storage.
+	Cannot reference named values (variables, data sources).
 terraform{}.cloud{}.organization:
 
-Specifies the organization name for HCP Terraform connection.
-Alternatively, set the TF_CLOUD_ORGANIZATION environment variable.
+	Specifies the organization name for HCP Terraform connection.
+	Alternatively, set the TF_CLOUD_ORGANIZATION environment variable.
 HCP Terraform Requirements:
-organization and workspaces are mandatory when connecting to HCP Terraform.
+	organization and workspaces are mandatory when connecting to HCP Terraform.
 terraform{}.cloud{}.workspaces:
-Defines metadata for matching workspaces in HCP Terraform.
-Terraform associates the configuration with workspaces that match these criteria.
+	Defines metadata for matching workspaces in HCP Terraform.
+	Terraform associates the configuration with workspaces that match these criteria.
 terraform{}.cloud{}.workspaces Attributes:
 
 tags:
-A map of key-value tags or a list of single-value tags.
-Terraform associates the configuration with workspaces that have all matching tags.
-Requires Terraform 1.10+ to use a map type with both keys and values.
+	A map of key-value tags or a list of single-value tags.
+	Terraform associates the configuration with workspaces that have all matching tags.
+	Requires Terraform 1.10+ to use a map type with both keys and values.
 name:
-An HCP Terraform workspace name to associate the configuration with.
-Limits workspace management to the working directory and the named workspace.
-Cannot be used together with the tags attribute.
-Alternatively, set the TF_WORKSPACE environment variable.
+	An HCP Terraform workspace name to associate the configuration with.
+	Limits workspace management to the working directory and the named workspace.
+	Cannot be used together with the tags attribute.
+	Alternatively, set the TF_WORKSPACE environment variable.
 project:
-The name of an HCP Terraform project for workspace creation.
-Terraform creates workspaces using this configuration within the specified project.
-The terraform workspace list command only shows workspaces in the project.
+	The name of an HCP Terraform project for workspace creation.
+	Terraform creates workspaces using this configuration within the specified project.
+	The terraform workspace list command only shows workspaces in the project.
 Alternatively, set the TF_CLOUD_PROJECT environment variable.
 terraform{}.cloud{}.hostname:
 

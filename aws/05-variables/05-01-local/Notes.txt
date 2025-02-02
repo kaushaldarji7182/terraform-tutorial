@@ -1,0 +1,40 @@
+
+https://spacelift.io/blog/how-to-use-terraform-variables#environment-variables
+https://spacelift.io/blog/how-to-use-terraform-variables#local-variables
+
+Local 
+--------
+variables are declared using the locals block. It is a group of key-value pairs that can be used in the configuration. The values can be hard-coded or be a reference to another variable or resource.
+
+Local variables are accessible within the module/configuration where they are declared. Let us take an example of creating a configuration for an EC2 instance using local variables. Add this to a file named main.tf.
+
+locals {
+ ami  = "ami-0d26eb3972b7f8c96"
+ type = "t2.micro"
+ tags = {
+   Name = "My Virtual Machine"
+   Env  = "Dev"
+ }
+ subnet = "subnet-76a8163a"
+ nic    = aws_network_interface.my_nic.id
+}
+ 
+resource "aws_instance" "myvm" {
+ ami           = local.ami
+ instance_type = local.type
+ tags          = local.tags
+ 
+ network_interface {
+   network_interface_id = aws_network_interface.my_nic.id
+   device_index         = 0
+ }
+}
+ 
+resource "aws_network_interface" "my_nic" {
+ description = "My NIC"
+ subnet_id   = var.subnet
+ 
+ tags = {
+   Name = "My NIC"
+ }
+}

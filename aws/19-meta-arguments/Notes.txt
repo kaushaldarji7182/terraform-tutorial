@@ -1,0 +1,48 @@
+For Resource Blocks:
+    depends_on: 
+        Help decide the order of creation.
+	count: 
+		Number of instances of a resource to create.
+	for_each: 	
+		Creates multiple instances of a resource based on a map or list.
+	lifecycle: 
+		Controls the lifecycle of a resource, including creation, updates, and destruction.
+			ignore_changes: 
+				Prevents Terraform from managing changes to specific attributes.
+			prevent_destroy: 
+				Prevents Terraform from destroying the resource.
+			create_before_destroy: 
+				Creates a new resource before destroying the old one.
+	provisioner: 
+		Configures provisioners to run commands or scripts during resource creation or destruction.
+			local-exec: Executes a local command.
+			remote-exec: Executes a command on a remote machine.
+			file: Creates or updates a file on the resource.
+			null: Performs no action.
+
+For Module Blocks:
+	source: Specifies the path to the module or the URL of a remote module.
+	version: Specifies the version of the module to use.
+	for_each: Creates multiple instances of a module based on a map or list.
+	count: Specifies the number of instances of a module to create.
+For Data Blocks:
+	count: Specifies the number of instances of a data source to retrieve.
+	for_each: Retrieves multiple instances of a data source based on a map or list.
+
+Example:
+
+Terraform
+resource "aws_instance" "example" {
+  count = 2
+  instance_type = "t2.micro"
+  ami = "ami-0c55b159cbfafe1f0"
+
+  provisioner "local-exec" {
+    command = "echo Instance created: {{ .address }}"
+  }
+}
+Use code with caution.
+
+In this example, the count meta-argument creates two instances of the aws_instance resource, and the provisioner meta-argument executes a local command to print the IP address of each instance.
+
+By understanding and effectively using meta-arguments, you can customize the behavior of your Terraform infrastructure and automate complex tasks.

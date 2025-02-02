@@ -1,0 +1,179 @@
+Q1. What is Terraform used for?
+A. Continuous Integration
+B. Infrastructure as Code
+C. Logging and Monitoring
+D. Configuration Management
+
+  Answer: B. Infrastructure as Code
+
+Q2. Which command initializes a Terraform working directory?
+A. terraform apply
+B. terraform init
+C. terraform plan
+D. terraform destroy
+
+  Answer: B. terraform init
+
+Q3. What is the default file where Terraform stores state?
+A. terraform.json
+B. terraform.tfstate
+C. main.tf
+D. terraform.lock.hcl
+
+  Answer: B. terraform.tfstate
+
+Q4. How do you format Terraform files?
+A. terraform check
+B. terraform validate
+C. terraform fmt
+D. terraform lint
+
+  Answer: C. terraform fmt
+
+Q5. True or False: Terraform follows a declarative approach.
+  Answer: True
+
+Q6. Which of the following is NOT a Terraform provisioner?
+A. local-exec
+B. remote-exec
+C. docker-exec
+D. file
+
+  Answer: C. docker-exec
+
+Q7. What does the terraform validate command do?
+A. Checks if the Terraform syntax is correct
+B. Applies changes to the infrastructure
+C. Initializes a new workspace
+D. Destroys the infrastructure
+
+  Answer: A. Checks if the Terraform syntax is correct
+
+Q8. How do you remove Terraform-managed resources?
+A. terraform delete
+B. terraform destroy
+C. terraform remove
+D. terraform clean
+
+  Answer: B. terraform destroy
+
+Q9. Which of these is a valid Terraform backend?
+A. MySQL
+B. PostgreSQL
+C. S3
+D. MongoDB
+
+  Answer: C. S3
+
+Q10. What happens if you run terraform plan without terraform init?
+A. Terraform runs successfully
+B. Terraform throws an error
+C. Terraform creates a new backend
+D. Terraform automatically initializes the working directory
+
+  Answer: B. Terraform throws an error
+
+Section 2: Terraform Configuration (10 Questions)
+Q11. What is the correct extension for Terraform configuration files?
+A. .json
+B. .yml
+C. .tf
+D. .cfg
+
+  Answer: C. .tf
+
+Q12. What is the purpose of the terraform.tfvars file?
+A. Store variables and their default values
+B. Define Terraform providers
+C. Store backend configurations
+D. Manage Terraform logs
+
+  Answer: A. Store variables and their default values
+
+Q13. Which of the following is a valid data type in Terraform?
+A. map
+B. object
+C. list
+D. All of the above
+
+  Answer: D. All of the above
+
+Q14. What is the correct way to declare a variable?
+h
+ 
+Edit
+variable "region" {
+  type    = string
+  default = "us-west-1"
+}
+A.   Correct
+B.   Incorrect
+
+  Answer: A. Correct
+
+Q15. How do you define an output value in Terraform?
+hcl
+ 
+Edit
+output "instance_ip" {
+  value = aws_instance.example.public_ip
+}
+  Answer: Correct syntax
+
+Section 3: Terraform Providers (10 Questions)
+Q16. What is a Terraform provider?
+  Answer: A plugin that allows Terraform to manage different infrastructure services like AWS, Azure, and Google Cloud.
+
+Q17. Where are Terraform providers downloaded from?
+A. Terraform Registry
+B. GitHub
+C. AWS Marketplace
+D. HashiCorp Forums
+
+  Answer: A. Terraform Registry
+
+Q18. What is the purpose of provider "aws" {}?
+  Answer: Defines AWS as the cloud provider in the Terraform configuration.
+
+Q19. How do you use a specific version of a provider?
+hcl
+ 
+Edit
+provider "aws" {
+  version = ">= 3.0"
+}
+  Answer: Correct syntax
+
+Q20. How do you authenticate Terraform with AWS?
+  Answer: Using environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY), AWS profiles, or IAM roles.
+
+Section 4: Terraform State Management (10 Questions)
+Q21. Where does Terraform store its state file by default?
+  Answer: terraform.tfstate
+
+Q22. How do you inspect the Terraform state?
+ 
+ 
+Edit
+terraform state list
+  Answer: This command lists all resources in the state file.
+
+Q23. How do you remove a resource from the state file without deleting it?
+ 
+ 
+Edit
+terraform state rm aws_instance.example
+  Answer: Removes aws_instance.example from state but keeps it in the cloud.
+
+Q24. True or False: Terraform state should be stored in version control.
+  Answer: False
+
+Section 5: Terraform Modules (10 Questions)
+Q25. What is a Terraform module?
+  Answer: A reusable, self-contained package of Terraform configurations.
+
+Q26. What command initializes modules?
+  Answer: terraform init
+
+Q27. Where are Terraform modules stored?
+  Answer: Terraform Registry, GitHub, local directories

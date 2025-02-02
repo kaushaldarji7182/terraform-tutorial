@@ -1,7 +1,10 @@
 # Terraform key features
 1. Declarative
+    Terraform uses the Hashicorp Configuration Language (HCL)
 2. Cloud agnostic
+    Terraform is a great tool to automate multi-cloud deployments
 3. Ecosystem
+    
 4. Extendible
 5. Agentless
 

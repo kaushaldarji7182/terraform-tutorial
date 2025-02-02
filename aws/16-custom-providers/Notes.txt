@@ -1,0 +1,2 @@
+https://spacelift.io/blog/terraform-custom-provider
+https://www.youtube.com/watch?v=16qs7LJSyps
