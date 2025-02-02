@@ -1,0 +1,5 @@
+https://developer.hashicorp.com/vault/tutorials/get-started/learn-terraform
+
+https://developer.hashicorp.com/vault/downloads#windows
+    windows installation didn't work 
+
