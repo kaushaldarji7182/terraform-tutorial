@@ -8,8 +8,11 @@ variable "cidr" {
 }
 
 resource "aws_key_pair" "example" {
-  key_name   = "terraform-demo-abhi"  # Replace with your desired key name
+  key_name   = "terraform-demo-vilas"  # Replace with your desired key name
   public_key = file("~/.ssh/id_rsa.pub")  # Replace with the path to your public key file
+  # The public_key is read from your local ~/.ssh/id_rsa.pub file. 
+  # This key pair will be used to SSH into the EC2 instance.
+  # Important: Make sure this public key file exists and contains the correct public key.
 }
 
 resource "aws_vpc" "myvpc" {
@@ -35,11 +38,14 @@ resource "aws_route_table" "RT" {
     gateway_id = aws_internet_gateway.igw.id
   }
 }
+#Route table - defines how network traffic is routed. 
+#any IP address (0.0.0.0/0) should be routed through the internet gateway.
 
 resource "aws_route_table_association" "rta1" {
   subnet_id      = aws_subnet.sub1.id
   route_table_id = aws_route_table.RT.id
 }
+#Associates the route table with the subnet. So rules in route table will be applicable to subnet
 
 resource "aws_security_group" "webSg" {
   name   = "web"
@@ -75,7 +81,7 @@ resource "aws_security_group" "webSg" {
 resource "aws_instance" "server" {
   ami                    = "ami-0261755bbcb8c4a84"
   instance_type          = "t2.micro"
-  key_name      = aws_key_pair.example.key_name
+  key_name               = aws_key_pair.example.key_name
   vpc_security_group_ids = [aws_security_group.webSg.id]
   subnet_id              = aws_subnet.sub1.id
 

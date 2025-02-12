@@ -8,3 +8,7 @@ module "ec2_instance" {
   instance_type_value = "t2.micro"
   subnet_id_value = "subnet-02068492068419c37" # replace this
 }
+
+output "ami_instance" {
+  value = module.ec2_instance.public-ip-address
+}

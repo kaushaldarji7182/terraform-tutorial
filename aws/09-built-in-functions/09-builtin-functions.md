@@ -91,3 +91,7 @@ output "joined_string" {
 ```
 
 These are just a few examples of the built-in functions available in Terraform. You can find more functions and detailed documentation in the official Terraform documentation, which is regularly updated to include new features and improvements
+
+
+Terraform documentation on functions 
+https://developer.hashicorp.com/terraform/language/functions

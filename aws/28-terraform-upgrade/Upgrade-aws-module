@@ -1,0 +1,9 @@
+terraform init --upgrade 
+
+
+For provider upgrades in particular, assuming you are using a relatively modern version of Terraform (v0.14 or later), terraform init -upgrade means to ignore the version selections recorded in the dependency lock file .terraform.lock.hcl and instead take the latest version of each provider matching your given version constraints.
+
+terraform init alone will never modify your state, but subsequently running terraform apply (and accepting the proposed changes) after you’ve upgraded the provider may cause the provider to upgrade the data stored for each existing object in a way that won’t necessarily be compatible with earlier versions of that same provider. You can safely run terraform plan to see what changes the new provider version might propose, without any commitment to actually apply those changes or commit upgrades to the remote state others are using.
+
+Although not directly related to what you are asking here, I want to note that terraform init -upgrade will also potentially select newer versions of modules you previously installed using an earlier run of terraform init. Terraform modules don’t have locked version selections in the same way that providers do, so you are probably already using the latest version matching your version constraint, and so this is rarely a concern but still something to be aware of. Just as for providers, upgrading a module and running terraform plan won’t change anything outside of your development environment; it’s only once you run terraform apply and accept the proposed change that the effects will be published into the shared remote state.
+

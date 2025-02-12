@@ -1,7 +1,14 @@
 https://developer.hashicorp.com/vault/tutorials/get-started/learn-terraform
+vault installation works on ubuntu 
+	but not working on 
+		windows 
+		amazon cloud shell
+
 
 https://developer.hashicorp.com/vault/downloads#windows
     windows installation didn't work 
+
+
 
 
 

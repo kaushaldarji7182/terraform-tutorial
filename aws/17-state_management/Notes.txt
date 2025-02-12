@@ -1,8 +1,9 @@
 remote state 
-https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa
-	
 
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-remote
+
+https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa
+	
 
 
 https://spacelift.io/blog/terraform-remote-state

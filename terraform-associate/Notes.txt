@@ -1,0 +1,326 @@
+
+Understanding Infrastructure as Code (IaC) concepts
+	• Explain what IaC is
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Describe advantages of IaC patterns
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+• Understanding the purpose of Terraform (vs other IaC)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Explain multi-cloud and provider-agnostic benefits
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Explain the benefits of state
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+• Understand Terraform basics
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Install and version Terraform providers
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Describe plug-in based architecture
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Write Terraform configuration using multiple providers
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	• Describe how Terraform finds and fetches providers
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+
+Use Terraform outside the core workflow
+	•	Describe when to use terraform import to import existing infrastructure into your Terraform state
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Use terraform state to view Terraform state
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Describe when to enable verbose logging and what the outcome/s value is
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+
+Interact with Terraform modules
+	•	Contrast and use different module source options including the public Terraform Registry
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Interact with module inputs and outputs
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Describe variable scope within modules/child modules
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Set module version
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+•
+Use the core Terraform workflow
+	•	Describe Terraform workflow (Write -> Plan -> Create)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Initialize a Terraform working directory (terraform init)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Validate a Terraform configuration (terraform validate)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Generate and review an execution plan for Terraform (terraform plan)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Execute changes to infrastructure with Terraform (terraform apply)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Destroy Terraform managed infrastructure (terraform destroy)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Apply formatting and style adjustments to a configuration (terraform fmt)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+•
+Implement and maintain state
+	•	Describe default local backend
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Describe state locking
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Handle backend and cloud integration authentication methods
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Differentiate remote state back end options
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Manage resource drift and Terraform state
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Describe backend block and cloud integration in configuration
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Understand secret management in state files
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+•
+Read, generate, and modify configuration
+	•	Demonstrate use of variables and outputs
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Describe secure secret injection best practice
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Understand the use of collection and structural types
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Create and differentiate resource and data configuration
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Use resource addressing and resource parameters to connect resources together
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Use HCL and Terraform functions to write configuration
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+	•	Describe built-in dependency management (order of execution based)
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+
+
+
+
+Understand HCP Terraform capabilities
+	•	Explain how HCP Terraform helps to manage infrastructure
+	---------------------------------------------------------------------------
+	HCP Terraform: 
+		Manage Infrastructure with HashiCorp Cloud Platform
+1. Introduction to HCP Terraform
+	HCP Terraform (HashiCorp Cloud Platform Terraform) 
+		managed service provided by HashiCorp 
+		allows organizations to 
+			automate and 
+			manage 
+				infrastructure provisioning using Terraform 
+		without the overhead of maintaining a 
+			self-hosted Terraform Enterprise setup.
+
+	HCP Terraform provides a fully managed Terraform Cloud experience, offering collaboration, governance, security, and scalability while reducing operational complexity.
+
+2. Key Features of HCP Terraform
+	a. Remote State Management
+		Stores Terraform state securely in HCP Terraform 
+			rather than using local or self-managed storage.
+		Supports state locking to 
+			prevent conflicts when 
+			multiple users apply changes.
+	b. Workspace-based Infrastructure Management
+		Organizes infrastructure into workspaces, 
+			allow teams to manage different environments (e.g., Dev, QA, Prod).
+		Each workspace 
+			has 
+				separate Terraform configurations and 
+				state files.
+	c. Collaborative Infrastructure as Code (IaC)
+		Enables multiple users 
+			to work on the 
+				same infrastructure 
+			while maintaining version control.
+		Provides a web-based interface 
+			for 
+				running, 
+				reviewing, and 
+				approving Terraform plans.
+	d. Policy and Governance with Sentinel
+		Uses Sentinel, 
+			HashiCorp’s policy-as-code framework
+				to 
+					enforce security and 
+					compliance rules.
+			Prevents misconfigurations by applying policies before deployment.
+	e. VCS (Version Control System) Integration
+		Integrates with GitHub, GitLab, Bitbucket, and Azure Repos.
+		Automatically triggers Terraform runs when changes are pushed to a repository.
+		f. Cost Estimation and Drift Detection
+		Provides cost estimates before applying infrastructure changes.
+		Detects drift (changes made outside Terraform) and alerts users.
+	g. Private Module Registry
+		Enables organizations to create and share reusable Terraform modules internally.
+		Ensures consistency across multiple projects.
+	h. Secure Variable Management
+		Stores and manages sensitive data like API keys and credentials securely.
+
+Reduces the risk of exposing secrets in Terraform configuration files.
+i. API and CLI Access
+	Supports Terraform CLI for local development and testing.
+	Provides REST APIs for automation and integration with CI/CD pipelines.
+
+
+3. HCP Terraform vs. Terraform Open Source
+-------------------------------------------------------------------------------------------
+Feature					HCP Terraform			Terraform Open Source
+-------------------------------------------------------------------------------------------
+Remote State Storage	✅ Built-in				❌ 	Requires S3, Azure Blob, etc.
+Collaboration & Teams	✅ Multi-user			❌ Not supported
+Governance (Sentinel)	✅ Enforced policies	❌ Manual enforcement
+VCS Integration			✅ Supported			❌ Manual setup
+Private Module Registry	✅ Built-in				❌ Requires external storage
+Cost Estimation			✅ Built-in				❌ Not available
+Terraform Execution		✅ Remote backend		❌ Runs locally
+-------------------------------------------------------------------------------------------
+
+
+4. How HCP Terraform Helps Manage Infrastructure
+	a. Infrastructure Automation
+		Automates the provisioning of cloud infrastructure (AWS, Azure, GCP, Kubernetes).
+		Ensures consistency and repeatability in infrastructure deployments.
+	b. Centralized Management
+		Provides 
+			single pane of glass for 
+				managing 
+					Terraform configurations, 
+					runs, and 
+					states across teams.
+		Reduces operational overhead by eliminating the need for a self-hosted Terraform Enterprise instance.
+	c. Security & Compliance
+		Role-based access control (RBAC) restricts who can apply changes.
+		Audit logs track all Terraform operations.
+		Sentinel policies prevent security misconfigurations.
+	d. CI/CD Integration
+		Automates Terraform runs within GitHub Actions, GitLab CI/CD, Azure DevOps, Jenkins, CircleCI.
+		Ensures continuous infrastructure testing and deployment.
+5. HCP Terraform Workflow
+	Step 1: Connect to a Version Control System (VCS)
+		Link HCP Terraform to GitHub, GitLab, or Bitbucket.
+		Automatically trigger Terraform runs when changes are pushed.
+	Step 2: Create a Workspace
+		Define separate workspaces for development, staging, and production.
+		Each workspace manages its own Terraform state.
+	Step 3: Define Infrastructure as Code
+		Write Terraform configurations to provision resources (VMs, databases, networking).
+	Example Terraform code for an AWS EC2 instance:
+
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "example" {
+  ami           = "ami-12345678"
+  instance_type = "t2.micro"
+}
+Step 4: Run Terraform Commands
+	Run terraform plan and terraform apply remotely in HCP Terraform.
+	View execution logs and approve changes via the HCP Terraform UI.
+Step 5: Enforce Policies and Governance
+Apply Sentinel policies to restrict resource sizes, prevent security risks, or enforce tagging conventions.
+Example Sentinel policy to enforce specific AWS instance types:
+
+policy "restrict-instance-type" {
+  enforcement_level = "soft-mandatory"
+  rule {
+    aws_instance.example.instance_type in ["t2.micro", "t3.small"]
+  }
+}
+Step 6: Monitor and Manage
+	View cost estimates before deployment.
+	Detect drift if manual changes occur outside Terraform.
+	Rollback to previous states if necessary.
+6. HCP Terraform Pricing
+	Free Tier: Limited workspaces and concurrent runs.
+	Standard Plan: Suitable for teams, includes Sentinel policies and cost estimation.
+	Enterprise Plan: Advanced security, RBAC, private module registry, and enhanced support.
+7. Real-World Use Cases
+	a. Cloud Infrastructure Management
+	Automate provisioning of AWS, Azure, and GCP resources using Terraform.
+	Use workspaces to separate environments (Dev, Staging, Prod).
+	b. Multi-Cloud Deployment
+	Manage infrastructure across multiple cloud providers from a single platform.
+	Enforce security policies across cloud environments.
+	c. CI/CD Pipeline Integration
+	Automate Terraform deployments in CI/CD workflows.
+	Ensure infrastructure changes go through version control and approval steps.
+	d. Disaster Recovery and Backup
+	Maintain historical Terraform state versions.
+Easily rollback infrastructure changes.
+	
+	
+	---------------------------------------------------------------------------
+	•	Describe how HCP Terraform enables collaboration and governance
+	---------------------------------------------------------------------------
+	---------------------------------------------------------------------------
+
+
+
+
+Youtube references: 
+	https://www.youtube.com/watch?v=SPcwo0Gq9T8
+	https://www.youtube.com/watch?v=OHzZ7KuioMA
+	
+file provisioner 
+		did  in class but add to code base latter
+for-loops, for-each 
+dynamic blocks 
+null resource 
+workspace 
+	https://blog.gruntwork.io/how-to-manage-multiple-environments-with-terraform-using-workspaces-98680d89a03e
+	
+	
+user-data 	- done 
+depends-on 
+	
+template 
+	https://github.com/aminueza/terraform-templates
+debugging validation 
+	done 
+import state and state mv 
+upgrade 
+vault 	
+lifecycle

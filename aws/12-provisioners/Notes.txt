@@ -1,3 +1,6 @@
+https://spacelift.io/blog/terraform-provisioners
+
+
 Terraform Provisioners 
 	tools within Terraform 
 		support post-provisioning configuration of resources. 
@@ -51,7 +54,7 @@ provisioner "remote-exec" {
     ]
   }
 }
-Use code with caution.
+
 
 In this example, a remote-exec provisioner is used to:
 

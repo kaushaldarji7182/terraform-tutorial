@@ -1,0 +1,5 @@
+https://spacelift.io/blog/terraform-for-loop
+
+Same can be used for Dynamic block
+Dynamic block reference  
+    https://www.cloudbolt.io/terraform-best-practices/terraform-dynamic-blocks/

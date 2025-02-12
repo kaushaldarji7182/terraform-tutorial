@@ -1,0 +1,47 @@
+#Reference: https://spacelift.io/blog/terraform-data-sources-how-they-are-utilised
+
+
+
+
+Definition: 
+    Terraform data sources 
+        retrieve information about resources external to your current Terraform configuration.  
+        They bridge the gap between existing infrastructure and your desired state.
+
+Purpose:
+
+    Query attributes of pre-existing resources (important for IaC adoption).
+    Share resource information between independently managed Terraform projects (e.g., sharing database connection strings).
+    Enable dynamic and context-aware provisioning.
+
+Variables vs. Data Sources:
+
+    Variables: 
+        Parameterize Terraform configurations; reusable values for different environments.
+    Data Sources:
+        Retrieve information from external systems or existing resources; dynamic attributes for context-awareness.
+Import vs. Data Sources:
+
+    Import: Brings existing resources under Terraform management.
+    Data Sources: Query information about existing resources; do not manage them.
+Resources vs. Data Sources:
+
+    Resources: Define and manage infrastructure components (create, update, delete).
+    Data Sources: Retrieve information about existing resources; used to inform resource configuration.
+Locals vs. Data Sources:
+
+    Locals: Store and reuse values within a Terraform configuration (DRY principle).
+    Data Sources: Query external systems or existing resources for information.
+How to Use Data Sources:
+
+    Use the data "provider_type" "name" {} block.
+    provider_type: The type of resource you're querying (e.g., aws_vpc).
+    name: A user-defined name to reference the data source.
+    Configuration options within the block are used to filter and specify the data you want to retrieve (e.g., using an id attribute).
+    Refer to the Terraform registry for available data sources and their configuration options.
+
+
+
+
+
+
