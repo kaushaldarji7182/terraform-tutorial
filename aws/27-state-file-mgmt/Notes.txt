@@ -1,0 +1,5 @@
+terraform show 
+terraform state --help 
+terraform state list 
+terraform state show aws_instance.<name> 
+
