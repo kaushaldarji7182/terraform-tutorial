@@ -1,4 +1,4 @@
-• Introduction to Terraform
+• Introduction to Terraform   
   
 ------------------------------------------------------------------------------------
 1. What is Terraform?
